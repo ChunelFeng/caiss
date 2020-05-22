@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(ChunelAnn)
+
+set(CMAKE_CXX_STANDARD 14)
+
+add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h)

@@ -42,7 +42,7 @@ protected:
 
 private:
     L2Space*                    l2s_ptr_;
-    HierarchicalNSW<ANN_FLOAT>* hnsw_alg_ptr_;
+    HierarchicalNSW<ANN_FLOAT>* hnsw_alg_ptr_;    // 考虑这里用static信息
     RapidJsonProc*              json_proc_;
 
 };

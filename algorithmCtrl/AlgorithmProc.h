@@ -17,7 +17,6 @@ public:
     char* model_path_;
     unsigned int dim_;
 
-
 public:
 
     virtual ANN_RET_TYPE init(ANN_MODE mode, unsigned int dim, ANN_BOOL normalize, char* modelPath) = 0;

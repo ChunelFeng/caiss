@@ -12,9 +12,8 @@
 #endif
 
 #include "ChunelAnnLibDefine.h"
-#include "../algorithm/hnsw/hnswlib.h"
+#include "../algorithmCtrl/hnsw/hnswProc/hnswProc.h"
 
-using namespace hnswlib;
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef _CHUNEL_ANN_LIBRARY_H_
 #define _CHUNEL_ANN_LIBRARY_H_
 
-#define _CNL_ANN_EXPORTS    // 这里今后要给删除掉
+   #define _CNL_ANN_EXPORTS    // 这里今后要给删除掉
 
 #ifndef ANN_LIB_API
     #if defined(_CNL_ANN_EXPORTS)
@@ -12,13 +12,12 @@
 #endif
 
 #include "ChunelAnnLibDefine.h"
-#include "../algorithmCtrl/hnsw/hnswProc/hnswProc.h"
+#include "../algorithmCtrl/AlgorithmInclude.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
-
 
     ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Environment();
 //    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateInstance(void** handle);
@@ -29,4 +28,4 @@ extern "C" {
 }
 #endif    // __cplusplus
 
-#endif //CHUNELANN_LIBRARY_H
+#endif //_CHUNEL_ANN_LIBRARY_H_

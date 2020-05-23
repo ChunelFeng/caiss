@@ -85,7 +85,7 @@ namespace hnswlib {
         size_t max_elements_;
         size_t cur_element_count;
         size_t size_data_per_element_;
-        size_t size_links_per_element_;    // ÿ��Ԫ�ص�������
+        size_t size_links_per_element_;
 
         size_t M_;
         size_t maxM_;

@@ -9,7 +9,7 @@
 
 #include <string>
 #include "../chunelAnnLib/ChunelAnnLib.h"
-#include "../commonUtils/CommonUtilsInclude.h"
+#include "../utilsCtrl/UtilsInclude.h"
 
 
 const static unsigned int DEFAULT_STEP = 5;
@@ -19,6 +19,10 @@ const static unsigned int DEFAULT_SHOW_SPAN = 100;    // 100行会显示一次�
 class AlgorithmProc {
 
 public:
+    AlgorithmProc() {
+        resetMemberViriables();
+    }
+
     virtual ANN_RET_TYPE init(ANN_MODE mode, unsigned int dim, char *modelPath, unsigned int exLen) = 0;
     virtual ANN_RET_TYPE deinit() = 0;
 
@@ -34,17 +38,28 @@ public:
     virtual ANN_RET_TYPE getResultSize(unsigned int& size) = 0;
     virtual ANN_RET_TYPE getResult(char* result, unsigned int size) = 0;
 
+    virtual ANN_RET_TYPE resetMemberViriables() {
+        this->dim_ = 0;
+        this->cur_mode_ = ANN_MODE_DEFAULT;
+        this->normalize_ = ANN_FALSE;
+        this->model_path_ptr_ = nullptr;
+
+        ANN_FUNCTION_END
+    }
+
 protected:
-    virtual ~AlgorithmProc() = default;
+    virtual ~AlgorithmProc() {
+        resetMemberViriables();
+    }
 
     ANN_RET_TYPE normalizeNode(ANN_FLOAT *node) {
         ANN_ASSERT_NOT_NULL(node)
 
-        float sum = 0.0;
+        ANN_FLOAT sum = 0.0;
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
-        float denominator = fastSqrt(sum);
+        ANN_FLOAT denominator = fastSqrt(sum);
         for (unsigned int i = 0; i < this->dim_; i++) {
             node[i] = node[i] / denominator;
         }
@@ -53,6 +68,7 @@ protected:
     }
 
     float fastSqrt(float x) {
+        /* 快速开平方计算方式 */
         float xhalf = 0.5f * x;
         int i = *(int*)&x;     // get bits for floating VALUE
         i = 0x5f375a86 - (i >> 1);    // gives initial guess y0
@@ -62,8 +78,9 @@ protected:
     }
 
 
+
 protected:
-    std::string model_path_;
+    char* model_path_ptr_;
     unsigned int dim_;
     ANN_MODE cur_mode_;
     ANN_BOOL normalize_;    // 是否需要标准化数据

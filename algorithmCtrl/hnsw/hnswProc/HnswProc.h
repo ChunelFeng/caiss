@@ -9,6 +9,7 @@
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
 
+
 using namespace hnswlib;
 
 class HnswProc : public AlgorithmProc {
@@ -32,10 +33,17 @@ public:
 
 protected:
     virtual ~HnswProc();
+    ANN_RET_TYPE resetMemberViriables();
+
+    ANN_RET_TYPE loadDatas(std::vector<ANN_VECTOR_FLOAT> &datas);
+
+    ANN_RET_TYPE trainModel(const std::vector<ANN_VECTOR_FLOAT> datas);
+
 
 private:
     L2Space*                    l2s_ptr_;
     HierarchicalNSW<ANN_FLOAT>* hnsw_alg_ptr_;
+    RapidJsonProc*              json_proc_;
 
 };
 

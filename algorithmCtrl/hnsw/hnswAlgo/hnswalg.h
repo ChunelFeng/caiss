@@ -92,6 +92,8 @@ namespace hnswlib {
         size_t maxM0_;
         size_t ef_construction_;
 
+        int normalize_;    // 是否是标准化的内容
+
         double mult_, revSize_;
         int maxlevel_;
 
@@ -309,8 +311,6 @@ namespace hnswlib {
                 if (good) {
                     return_list.push_back(curent_pair);
                 }
-
-
             }
 
             for (std::pair<dist_t, tableint> curent_pair : return_list) {
@@ -498,6 +498,8 @@ namespace hnswlib {
             writeBinaryPOD(output, mult_);
             writeBinaryPOD(output, ef_construction_);
 
+            writeBinaryPOD(output, normalize_);    // fj add
+
             output.write(data_level0_memory_, cur_element_count * size_data_per_element_);
 
             for (size_t i = 0; i < cur_element_count; i++) {
@@ -538,6 +540,8 @@ namespace hnswlib {
             readBinaryPOD(input, M_);
             readBinaryPOD(input, mult_);
             readBinaryPOD(input, ef_construction_);
+
+            readBinaryPOD(input, normalize_);    // fj add
 
 
             data_size_ = s->get_data_size();
@@ -636,13 +640,17 @@ namespace hnswlib {
           return data;
         }
 
+        int isNormalize() {
+            return normalize_;
+        }
+
         void addPoint(void *data_point, labeltype label)
         {
             addPoint(data_point, label,-1);
         }
 
         tableint addPoint(void *data_point, labeltype label, int level) {
-
+            // 函数的ret值，是当前的个数
             tableint cur_c = 0;
             {
                 std::unique_lock <std::mutex> lock(cur_element_count_guard_);

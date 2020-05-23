@@ -21,13 +21,17 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 #define ANN_RET_OK     (0)
 #define ANN_RET_ERR    (-1)
 #define ANN_RET_RES    (-2)
+#define ANN_RET_MODE   (-3)
+#define ANN_RET_PATH   (-4)
+#define ANN_RET_JSON   (-5)
+
 
 #define ANN_TRUE       (1)
 #define ANN_FALSE      (0)
 
 enum ANN_MODE {
     ANN_MODE_DEFAULT = 0,  // 默认模式
-    ANN_MODE_TRAIN,    // 训练模式
+    ANN_MODE_TRAIN = 1,    // 训练模式
     ANN_MODE_PROCESS,    // 处理模式
     ANN_MODE_UPDATE,    // 更新模式
 };

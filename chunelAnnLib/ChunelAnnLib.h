@@ -1,7 +1,7 @@
-#ifndef CHUNEL_ANN_LIBRARY_H
-#define CHUNEL_ANN_LIBRARY_H
+#ifndef _CHUNEL_ANN_LIBRARY_H_
+#define _CHUNEL_ANN_LIBRARY_H_
 
-#define _CNL_ANN_EXPORTS
+#define _CNL_ANN_EXPORTS    // 这里今后要给删除掉
 
 #ifndef ANN_LIB_API
     #if defined(_CNL_ANN_EXPORTS)
@@ -11,8 +11,8 @@
     #endif
 #endif
 
-#include "../algorithm/hnsw/hnswlib.h"
 #include "ChunelAnnLibDefine.h"
+#include "../algorithm/hnsw/hnswlib.h"
 
 using namespace hnswlib;
 
@@ -22,10 +22,9 @@ extern "C" {
 
 
     ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Environment();
-    // ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateInstance(void** handle);
-    // ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_LoadModel(void* handle, char* path);
-    //ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Predict(void* handle, ANN_FLOAT* input_data, ANN_UINT top_k, char* output);
-    //ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_DestroyInstance(void* handle);
+//    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateInstance(void** handle);
+//    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_InitInsert();
+//    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Insert();
 
 #ifdef __cplusplus
 }

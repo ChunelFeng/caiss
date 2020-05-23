@@ -3,4 +3,5 @@ project(ChunelAnn)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h)
+
+add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h algorithmCtrl/AlgorithmProc.h)

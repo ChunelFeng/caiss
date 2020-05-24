@@ -19,9 +19,6 @@ public:
     void readUnlock();
     void writeUnlock();
 
-protected:
-
-
 private:
     int read_cnt_;
     std::mutex read_mtx_;

@@ -24,7 +24,7 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 #define ANN_RET_MODE   (-3)
 #define ANN_RET_PATH   (-4)
 #define ANN_RET_JSON   (-5)
-
+#define ANN_RET_PARAM  (-6)
 
 #define ANN_TRUE       (1)
 #define ANN_FALSE      (0)
@@ -48,6 +48,11 @@ enum ANN_INSERT_TYPE {
     ANN_INSERT_ADD = 0,   // 在后面添加
     ANN_INSERT_OVERWRITE = 1,   // 覆盖原有的
     ANN_INSERT_DISCARD = 2,    // 丢弃
+};
+
+enum ANN_MANAGE_TYPE {
+    ANN_MANAGE_SYNC = 0,    // 同步控制
+    ANN_MANAGE_ASYNC = 1,    // 异步控制
 };
 
 

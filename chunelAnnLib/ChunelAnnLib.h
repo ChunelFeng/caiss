@@ -1,8 +1,6 @@
 #ifndef _CHUNEL_ANN_LIBRARY_H_
 #define _CHUNEL_ANN_LIBRARY_H_
 
-   #define _CNL_ANN_EXPORTS    // 这里今后要给删除掉
-
 #ifndef ANN_LIB_API
     #if defined(_CNL_ANN_EXPORTS)
         #define ANN_LIB_API __declspec(dllexport)

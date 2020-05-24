@@ -69,7 +69,6 @@ ANN_RET_TYPE HnswProc::search(const ANN_FLOAT *query, const unsigned int topK, c
     while (!result.empty()) {
         // 把预测到的结果，pred_dist中去
         auto index = (unsigned int)result.top().second;
-        cout << index << endl;
         result.pop();
         predIndex.push_back(index);
     }

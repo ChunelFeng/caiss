@@ -4,4 +4,8 @@ project(ChunelAnn)
 set(CMAKE_CXX_STANDARD 14)
 
 
-add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h algorithmCtrl/AlgorithmProc.h algorithmCtrl/AlgorithmInclude.h algorithmCtrl/hnsw/hnswProc/HnswProc.cpp algorithmCtrl/hnsw/hnswProc/HnswProc.h utilsCtrl/UtilsInclude.h utilsCtrl/UtilsProc.h utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.h)
+# 以下是编译dll对应的内容
+add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h algorithmCtrl/AlgorithmProc.h algorithmCtrl/AlgorithmInclude.h algorithmCtrl/hnsw/hnswProc/HnswProc.cpp algorithmCtrl/hnsw/hnswProc/HnswProc.h utilsCtrl/UtilsInclude.h utilsCtrl/UtilsProc.h utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.h threadCtrl/ThreadInclude.h threadCtrl/rwLock/RWLock.cpp threadCtrl/rwLock/RWLock.h threadCtrl/rwLock/RWLockDemo.cpp)
+
+# 添加对应依赖的内容
+add_subdirectory(threadCtrl/rwLock)

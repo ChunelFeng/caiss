@@ -8,7 +8,7 @@
 
 using namespace std;
 
-RWLock* rw = new RWLock();
+static RWLock* rw = new RWLock();
 int cur = 0;
 int size = 5000;
 

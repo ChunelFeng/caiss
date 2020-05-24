@@ -16,44 +16,49 @@ const static unsigned int DEFAULT_STEP = 5;
 const static unsigned int DEFAULT_MAX_EPOCH = 10;
 const static unsigned int DEFAULT_SHOW_SPAN = 100;    // 100行会显示一次日志
 
+const static std::string MODEL_SUFFIX = ".ann";   // 默认的模型后缀
+
+
 class AlgorithmProc {
 
 public:
     AlgorithmProc() {
-        resetMemberViriables();
+        resetAlgorithmProcMember();
     }
 
-    virtual ANN_RET_TYPE init(ANN_MODE mode, unsigned int dim, char *modelPath, unsigned int exLen) = 0;
+    virtual ANN_RET_TYPE init(const ANN_MODE mode, const unsigned int dim, const char *modelPath, const unsigned int exLen) = 0;
     virtual ANN_RET_TYPE deinit() = 0;
 
     // train_mode
-    virtual ANN_RET_TYPE train(char* dataPath,
-            unsigned int maxDataSize, ANN_BOOL normalize, float precision, unsigned int fastRank, unsigned int realRank,
-            unsigned int step = DEFAULT_STEP, unsigned int maxEpoch = DEFAULT_MAX_EPOCH, unsigned int showSpan = DEFAULT_SHOW_SPAN) = 0;
+    virtual ANN_RET_TYPE train(const char *dataPath,
+                               const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
+                               const unsigned int step = DEFAULT_STEP, const unsigned int maxEpoch = DEFAULT_MAX_EPOCH, const unsigned int showSpan = DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
-    virtual ANN_RET_TYPE search(ANN_FLOAT* query, unsigned int topK, ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
-    virtual ANN_RET_TYPE insert(ANN_FLOAT* node, char* label, ANN_INSERT_TYPE insertType = ANN_INSERT_ADD) = 0;   // label 是数据标签
+    virtual ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
+    virtual ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType = ANN_INSERT_ADD) = 0;   // label 是数据标签
     virtual ANN_RET_TYPE save(char* modePah = nullptr) = 0;    // 默认写成是当前模型的
     virtual ANN_RET_TYPE getResultSize(unsigned int& size) = 0;
     virtual ANN_RET_TYPE getResult(char* result, unsigned int size) = 0;
 
-    virtual ANN_RET_TYPE resetMemberViriables() {
+    void resetAlgorithmProcMember() {
         this->dim_ = 0;
         this->cur_mode_ = ANN_MODE_DEFAULT;
         this->normalize_ = ANN_FALSE;
-        this->model_path_ptr_ = nullptr;
-
-        ANN_FUNCTION_END
+        this->model_path_.clear();
     }
 
 protected:
     virtual ~AlgorithmProc() {
-        resetMemberViriables();
+        resetAlgorithmProcMember();
     }
 
     ANN_RET_TYPE normalizeNode(ANN_FLOAT *node) {
         ANN_ASSERT_NOT_NULL(node)
+
+        if (ANN_FALSE == normalize_) {
+            return ANN_RET_OK;    // 如果不需要归一化，直接返回
+        }
 
         ANN_FLOAT sum = 0.0;
         for (unsigned int i = 0; i < this->dim_; i++) {
@@ -80,7 +85,7 @@ protected:
 
 
 protected:
-    char* model_path_ptr_;
+    std::string model_path_;
     unsigned int dim_;
     ANN_MODE cur_mode_;
     ANN_BOOL normalize_;    // 是否需要标准化数据

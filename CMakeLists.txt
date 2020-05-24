@@ -9,3 +9,6 @@ add_library(ChunelAnn SHARED chunelAnnLib/ChunelAnnLib.cpp chunelAnnLib/ChunelAn
 
 # 添加对应依赖的内容
 add_subdirectory(threadCtrl/rwLock)
+add_subdirectory(algorithmCtrl/hnsw/hnswProc)
+
+

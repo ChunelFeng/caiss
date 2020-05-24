@@ -5,6 +5,7 @@
 #ifndef CHUNELANN_UTILSINCLUDE_H
 #define CHUNELANN_UTILSINCLUDE_H
 
+#include <iostream>
 #include "../chunelAnnLib/ChunelAnnLibDefine.h"
 
 /* 以下是会utilsCtrl的Proc.h文件总和 */
@@ -32,7 +33,11 @@
     ANN_RET_TYPE ret = ANN_RET_OK;    \
 
 #define ANN_FUNCTION_CHECK_STATUS    \
-    if (ANN_RET_OK != ret)    return ret; \
+    if (ANN_RET_OK != ret)   \
+    {    \
+        std::cout << __FILE__ << __LINE__ << __FUNCTION__ << ", ret : " << ret << std::endl;    \
+        return ret; \
+    }    \
 
 #define ANN_FUNCTION_END    \
     return ANN_RET_OK;    \

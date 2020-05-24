@@ -16,28 +16,28 @@ class HnswProc : public AlgorithmProc {
 
 public:
     HnswProc();
-    ANN_RET_TYPE init(ANN_MODE mode, unsigned int dim, char *modelPath, unsigned int exLen);
+    virtual ~HnswProc();
+
+    ANN_RET_TYPE init(const ANN_MODE mode, const unsigned int dim, const char* modelPath, const unsigned int exLen);
     ANN_RET_TYPE deinit();
 
     // train_mode
-    ANN_RET_TYPE train(char* dataPath,
-            unsigned int maxDataSize, ANN_BOOL normalize, float precision, unsigned int fastRank, unsigned int realRank,
-            unsigned int step, unsigned int maxEpoch, unsigned int showSpan);
+    ANN_RET_TYPE train(const char* dataPath,
+                       const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
+                       const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan);
 
     // process_mode
-    ANN_RET_TYPE search(ANN_FLOAT* query, unsigned int topK, ANN_SEARCH_TYPE searchType);
-    ANN_RET_TYPE insert(ANN_FLOAT* node, char* label, ANN_INSERT_TYPE insertType);   // label 是数据标签
+    ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType);
+    ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType);   // label 是数据标签
     ANN_RET_TYPE save(char* modePah);    // 默认写成是当前模型的
     ANN_RET_TYPE getResultSize(unsigned int& size);
     ANN_RET_TYPE getResult(char* result, unsigned int size);
 
+
 protected:
-    virtual ~HnswProc();
-    ANN_RET_TYPE resetMemberViriables();
-
-    ANN_RET_TYPE loadDatas(std::vector<ANN_VECTOR_FLOAT> &datas);
-
-    ANN_RET_TYPE trainModel(const std::vector<ANN_VECTOR_FLOAT> datas);
+    ANN_RET_TYPE resetHnswProcMember();
+    ANN_RET_TYPE loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FLOAT> &datas);
+    ANN_RET_TYPE trainModel(std::vector<ANN_VECTOR_FLOAT> datas);
 
 
 private:

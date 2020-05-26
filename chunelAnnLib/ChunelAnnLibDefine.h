@@ -18,13 +18,14 @@ using ANN_VECTOR_FLOAT = std::vector<ANN_FLOAT>;
 using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 
 /* 函数返回值定义 */
-#define ANN_RET_OK     (0)
-#define ANN_RET_ERR    (-1)
-#define ANN_RET_RES    (-2)
-#define ANN_RET_MODE   (-3)
-#define ANN_RET_PATH   (-4)
-#define ANN_RET_JSON   (-5)
-#define ANN_RET_PARAM  (-6)
+#define ANN_RET_OK         (0)
+#define ANN_RET_ERR        (-1)
+#define ANN_RET_RES        (-2)
+#define ANN_RET_MODE       (-3)
+#define ANN_RET_PATH       (-4)
+#define ANN_RET_JSON       (-5)
+#define ANN_RET_PARAM      (-6)
+#define ANN_RET_HANDLE     (-7)
 
 #define ANN_TRUE       (1)
 #define ANN_FALSE      (0)

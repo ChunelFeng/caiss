@@ -42,8 +42,8 @@
 #define ANN_FUNCTION_END    \
     return ANN_RET_OK;    \
 
-#define ANN_CHECK_MODE_ENABLE(mode, curMode)    \
-    if (mode != curMode)    { return ANN_RET_MODE; }    \
+#define ANN_CHECK_MODE_ENABLE(mode)    \
+    if (mode != this->cur_mode_)    { return ANN_RET_MODE; }    \
 
 
 #define ANN_RETURN_IF_NOT_SUCESS(ret)    \

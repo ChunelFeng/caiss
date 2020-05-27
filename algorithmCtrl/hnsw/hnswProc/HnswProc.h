@@ -23,21 +23,24 @@ public:
 
     // train_mode
     ANN_RET_TYPE train(const char* dataPath,
-                       const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
+                       const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision,
+                       const unsigned int fastRank, const unsigned int realRank,
                        const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan);
 
     // process_mode
     ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType);
     ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType);   // label 是数据标签
-    ANN_RET_TYPE save(char* modePah);    // 默认写成是当前模型的
+    ANN_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
     ANN_RET_TYPE getResultSize(unsigned int& size);
-    ANN_RET_TYPE getResult(char* result, unsigned int size);
+    ANN_RET_TYPE getResult(char *result, unsigned int size);
+    ANN_RET_TYPE ignore(const char *label);
 
 
 protected:
     ANN_RET_TYPE resetHnswProcMember();
     ANN_RET_TYPE loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FLOAT> &datas);
-    ANN_RET_TYPE trainModel(std::vector<ANN_VECTOR_FLOAT> datas);
+    ANN_RET_TYPE trainModel(std::vector<ANN_VECTOR_FLOAT> &datas);
+    ANN_RET_TYPE buildResult(const ANN_FLOAT *query, const std::vector<unsigned int> &predIndex);
 
 
 private:

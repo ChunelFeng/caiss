@@ -19,7 +19,7 @@ int main() {
 
     proc->train(TEST_FILE_PATH.data(), 10, 1, 0, 1,1,1,1,1);
 
-    vector<float> vec = {0,1,0,0};
+    vector<float> vec = {0,1.1,0,0};
     proc->search(vec.data(), 1, ANN_SEARCH_FAST);
 
     delete proc;

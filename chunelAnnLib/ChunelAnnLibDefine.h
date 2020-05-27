@@ -26,6 +26,7 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 #define ANN_RET_JSON       (-5)
 #define ANN_RET_PARAM      (-6)
 #define ANN_RET_HANDLE     (-7)
+#define ANN_RET_DIM        (-8)
 
 #define ANN_TRUE       (1)
 #define ANN_FALSE      (0)

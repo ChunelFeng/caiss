@@ -9,8 +9,8 @@
 
 using namespace std;
 
-AnnManageProc* ptr = new SyncManageProc(1000);
-int times = 10000;
+AnnManageProc* ptr = new SyncManageProc(800);
+int times = 101;
 
 void func(int x) {
     for (int i = 0; i < times; i++) {

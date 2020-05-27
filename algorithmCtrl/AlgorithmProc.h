@@ -37,9 +37,10 @@ public:
     // process_mode
     virtual ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
     virtual ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType = ANN_INSERT_ADD) = 0;   // label 是数据标签
-    virtual ANN_RET_TYPE save(char* modePah = nullptr) = 0;    // 默认写成是当前模型的
+    virtual ANN_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
     virtual ANN_RET_TYPE getResultSize(unsigned int& size) = 0;
-    virtual ANN_RET_TYPE getResult(char* result, unsigned int size) = 0;
+    virtual ANN_RET_TYPE getResult(char *result, unsigned int size) = 0;
+    virtual ANN_RET_TYPE ignore(const char *label) = 0;
 
     void resetAlgorithmProcMember() {
         this->dim_ = 0;
@@ -53,18 +54,20 @@ protected:
         resetAlgorithmProcMember();
     }
 
-    ANN_RET_TYPE normalizeNode(ANN_FLOAT *node) {
-        ANN_ASSERT_NOT_NULL(node)
-
+    ANN_RET_TYPE normalizeNode(ANN_VECTOR_FLOAT& node) {
         if (ANN_FALSE == normalize_) {
             return ANN_RET_OK;    // 如果不需要归一化，直接返回
+        }
+
+        if (node.size() != this->dim_) {
+            return ANN_RET_DIM;    // 忽略维度不一致的情况
         }
 
         ANN_FLOAT sum = 0.0;
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
-        ANN_FLOAT denominator = fastSqrt(sum);
+        ANN_FLOAT denominator = fastSqrt(sum);    // 分母信息
         for (unsigned int i = 0; i < this->dim_; i++) {
             node[i] = node[i] / denominator;
         }
@@ -74,14 +77,13 @@ protected:
 
     float fastSqrt(float x) {
         /* 快速开平方计算方式 */
-        float xhalf = 0.5f * x;
+        float half = 0.5f * x;
         int i = *(int*)&x;     // get bits for floating VALUE
         i = 0x5f375a86 - (i >> 1);    // gives initial guess y0
         x = *(float*)&i;     // convert bits BACK to float
-        x = x * (1.5f - xhalf * x * x);     // Newton step, repeating increases accuracy
+        x = x * (1.5f - half * x * x);     // Newton step, repeating increases accuracy
         return 1 / x;
     }
-
 
 
 protected:

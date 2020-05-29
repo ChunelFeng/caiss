@@ -38,6 +38,8 @@ ANN_RET_TYPE HnswProc::init(const ANN_MODE mode, const unsigned int dim, const c
 }
 
 ANN_RET_TYPE HnswProc::deinit() {
+    ANN_FUNCTION_BEGIN
+
     ANN_FUNCTION_END
 }
 
@@ -67,6 +69,7 @@ ANN_RET_TYPE HnswProc::search(const ANN_FLOAT *query, const unsigned int topK, c
 
     ANN_ASSERT_NOT_NULL(query)
 
+    this->result_.clear();
     std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = hnsw_alg_ptr_->searchKnn((void *)query, topK);
 
     std::vector<unsigned int> predIndex;
@@ -84,6 +87,13 @@ ANN_RET_TYPE HnswProc::search(const ANN_FLOAT *query, const unsigned int topK, c
 }
 
 ANN_RET_TYPE HnswProc::insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType) {
+    ANN_FUNCTION_BEGIN
+    ANN_ASSERT_NOT_NULL(node)
+    ANN_ASSERT_NOT_NULL(label)
+    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
+
+    this->hnsw_alg_ptr_->addPoint((void *)node, this->hnsw_alg_ptr_->cur_element_count+1);
+
     ANN_FUNCTION_END
 }
 
@@ -96,7 +106,6 @@ ANN_RET_TYPE HnswProc::save(const char *modelPath) {
     } else {
         path = isAnnSuffix(modelPath) ? string(modelPath) : (string(modelPath) + MODEL_SUFFIX);
     }
-
 
     remove(path.c_str());    // 如果有的话，就删除
     this->hnsw_alg_ptr_->saveIndex(path);
@@ -184,17 +193,24 @@ ANN_RET_TYPE HnswProc::trainModel(vector<ANN_VECTOR_FLOAT> &datas) {
 ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, const std::vector<unsigned int> &predIndex) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
+    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_->fstdistfunc_)
+    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_->dist_func_param_)
     ANN_ASSERT_NOT_NULL(query)
 
+    std::vector<AnnResultDetail> details;
+
     for (unsigned int i : predIndex) {
-        ANN_VECTOR_FLOAT vec = this->hnsw_alg_ptr_->getDataByLabel<ANN_FLOAT>(i);
-        ANN_FLOAT distance = this->hnsw_alg_ptr_->fstdistfunc_((void *)vec.data(), (void *)query, nullptr);
+        AnnResultDetail detail;
+        detail.node = this->hnsw_alg_ptr_->getDataByLabel<ANN_FLOAT>(i);
+        detail.distance = this->hnsw_alg_ptr_->fstdistfunc_((void *)detail.node.data(), (void *)query, this->hnsw_alg_ptr_->dist_func_param_);
+        detail.index = i;
+        details.push_back(detail);
     }
 
+    ret = this->json_proc_->buildSearchResult(details, this->result_);
+    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }
-
-
 
 

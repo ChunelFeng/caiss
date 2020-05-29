@@ -50,3 +50,38 @@ ANN_RET_TYPE RapidJsonProc::parseInputData(const char *data, std::vector<ANN_FLO
 }
 
 
+ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail> &details, std::string &result) {
+    ANN_FUNCTION_BEGIN
+
+    Document dom;
+    dom.SetObject();
+
+    Document::AllocatorType& alloc = dom.GetAllocator();
+    dom.AddMember("version", ANN_VERSION, alloc);
+    dom.AddMember("size", details.size(), alloc);
+
+    rapidjson::Value obj(rapidjson::kObjectType);
+
+    for (const AnnResultDetail& detail : details) {
+        obj.AddMember("distance", detail.distance, alloc);
+        obj.AddMember("index", detail.index, alloc);
+
+        rapidjson::Value node;
+        node.SetArray();
+        for (auto j : detail.node) {
+            node.PushBack(j, alloc);
+        }
+        obj.AddMember("node", node, alloc);
+    }
+
+    dom.AddMember("details", obj, alloc);
+
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+    dom.Accept(writer);
+    result = buffer.GetString();    // 将最终的结果值，赋值给result信息，并返回
+
+    ANN_FUNCTION_END
+}
+
+

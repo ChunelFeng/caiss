@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#define ANN_VERSION       ("1.0.0")
+
 using ANN_RET_TYPE = int;
 using ANN_UINT = unsigned int;
 using ANN_FLOAT = float;
 using ANN_BOOL = int;
-
-
 
 using ANN_VECTOR_FLOAT = std::vector<ANN_FLOAT>;
 using ANN_VECTOR_UINT = std::vector<ANN_UINT>;

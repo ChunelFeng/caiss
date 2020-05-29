@@ -9,7 +9,6 @@
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
 
-
 using namespace hnswlib;
 
 class HnswProc : public AlgorithmProc {

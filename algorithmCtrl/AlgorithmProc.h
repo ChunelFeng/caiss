@@ -47,6 +47,7 @@ public:
         this->cur_mode_ = ANN_MODE_DEFAULT;
         this->normalize_ = ANN_FALSE;
         this->model_path_.clear();
+        this->result_.clear();
     }
 
 protected:
@@ -67,7 +68,7 @@ protected:
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
-        ANN_FLOAT denominator = fastSqrt(sum);    // 分母信息
+        ANN_FLOAT denominator = std::sqrt(sum);    // 分母信息
         for (unsigned int i = 0; i < this->dim_; i++) {
             node[i] = node[i] / denominator;
         }
@@ -91,6 +92,7 @@ protected:
     unsigned int dim_;
     ANN_MODE cur_mode_;
     ANN_BOOL normalize_;    // 是否需要标准化数据
+    std::string result_;
 };
 
 #endif //CHUNELANN_ALGORITHMPROC_H

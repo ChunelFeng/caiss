@@ -9,11 +9,11 @@
 
 class SyncManageProc : public AnnManageProc  {
 public:
-    SyncManageProc(unsigned int maxSize);
-    ~SyncManageProc();
+    explicit SyncManageProc(unsigned int maxSize);
+    ~SyncManageProc() override;
 
-    ANN_RET_TYPE createHandle(void **handle);    // 生成处理句柄
-    ANN_RET_TYPE destroyHandle(void *handle);
+    ANN_RET_TYPE createHandle(void **handle) override;    // 生成处理句柄
+    ANN_RET_TYPE destroyHandle(void *handle) override;
 
 };
 

@@ -23,11 +23,11 @@ class AlgorithmProc {
 
 public:
     AlgorithmProc() {
-        resetAlgorithmProcMember();
     }
 
-    virtual ANN_RET_TYPE init(const ANN_MODE mode, const unsigned int dim, const char *modelPath, const unsigned int exLen) = 0;
-    virtual ANN_RET_TYPE deinit() = 0;
+    virtual ANN_RET_TYPE
+    init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
+         const unsigned int exLen) = 0;
 
     // train_mode
     virtual ANN_RET_TYPE train(const char *dataPath,
@@ -42,18 +42,11 @@ public:
     virtual ANN_RET_TYPE getResult(char *result, unsigned int size) = 0;
     virtual ANN_RET_TYPE ignore(const char *label) = 0;
 
-    void resetAlgorithmProcMember() {
-        this->dim_ = 0;
-        this->cur_mode_ = ANN_MODE_DEFAULT;
-        this->normalize_ = ANN_FALSE;
-        this->model_path_.clear();
-        this->result_.clear();
+    virtual ~AlgorithmProc() {
+
     }
 
 protected:
-    virtual ~AlgorithmProc() {
-        resetAlgorithmProcMember();
-    }
 
     ANN_RET_TYPE normalizeNode(ANN_VECTOR_FLOAT& node) {
         if (ANN_FALSE == normalize_) {
@@ -93,6 +86,7 @@ protected:
     ANN_MODE cur_mode_;
     ANN_BOOL normalize_;    // 是否需要标准化数据
     std::string result_;
+    ANN_DISTANCE_TYPE distance_type_;
 };
 
 #endif //CHUNELANN_ALGORITHMPROC_H

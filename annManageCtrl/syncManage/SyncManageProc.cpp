@@ -59,5 +59,11 @@ SyncManageProc::SyncManageProc(unsigned int maxSize) : AnnManageProc(maxSize) {
 }
 
 SyncManageProc::~SyncManageProc() {
+    for (auto i : free_manage_) {
+        ANN_DELETE_PTR(i.second);
+    }
 
+    for (auto j : used_manage_) {
+        ANN_DELETE_PTR(j.second);
+    }
 }

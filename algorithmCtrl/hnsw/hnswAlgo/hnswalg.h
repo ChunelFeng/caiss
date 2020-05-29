@@ -23,7 +23,7 @@ namespace hnswlib {
         HierarchicalNSW(SpaceInterface<dist_t> *s) {
         }
 
-        HierarchicalNSW(SpaceInterface<dist_t> *s, const std::string &location, bool nmslib = false, size_t max_elements=0) {
+        HierarchicalNSW(SpaceInterface<dist_t> *s, const std::string &location, size_t max_elements=0) {
             loadIndex(location, s, max_elements);
         }
 
@@ -444,7 +444,6 @@ namespace hnswlib {
             ef_ = ef;
         }
 
-
         std::priority_queue<std::pair<dist_t, tableint>> searchKnnInternal(void *query_data, int k) {
             tableint currObj = enterpoint_node_;
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);
@@ -514,8 +513,6 @@ namespace hnswlib {
         }
 
         void loadIndex(const std::string &location, SpaceInterface<dist_t> *s, size_t max_elements_i=0) {
-
-
             std::ifstream input(location, std::ios::binary);
 
             // get file size:
@@ -527,7 +524,7 @@ namespace hnswlib {
             readBinaryPOD(input, max_elements_);
             readBinaryPOD(input, cur_element_count);
 
-            size_t max_elements=max_elements_i;
+            size_t max_elements=max_elements_i;    // 针对默认传入的max_elements_i = 0 的情况
             if(max_elements < cur_element_count)
                 max_elements = max_elements_;
             max_elements_ = max_elements;
@@ -544,7 +541,6 @@ namespace hnswlib {
             readBinaryPOD(input, ef_construction_);
 
             readBinaryPOD(input, normalize_);    // fj add
-
 
             data_size_ = s->get_data_size();
             fstdistfunc_ = s->get_dist_func();
@@ -587,16 +583,11 @@ namespace hnswlib {
             if(old_index)
                 input.seekg(((max_elements_-cur_element_count) * size_data_per_element_), input.cur);
 
-
             size_links_per_element_ = maxM_ * sizeof(tableint) + sizeof(linklistsizeint);
-
-
             size_links_level0_ = maxM0_ * sizeof(tableint) + sizeof(linklistsizeint);
             std::vector<std::mutex>(max_elements).swap(link_list_locks_);
 
-
             visited_list_pool_ = new VisitedListPool(1, max_elements);
-
 
             linkLists_ = (char **) malloc(sizeof(void *) * max_elements);
             element_levels_ = std::vector<int>(max_elements);
@@ -608,7 +599,6 @@ namespace hnswlib {
                 readBinaryPOD(input, linkListSize);
                 if (linkListSize == 0) {
                     element_levels_[i] = 0;
-
                     linkLists_[i] = nullptr;
                 } else {
                     element_levels_[i] = linkListSize / size_links_per_element_;
@@ -640,10 +630,6 @@ namespace hnswlib {
             data_ptr += 1;
           }
           return data;
-        }
-
-        int isNormalize() {
-            return normalize_;
         }
 
         void addPoint(void *data_point, labeltype label)

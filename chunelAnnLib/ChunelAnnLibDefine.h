@@ -57,5 +57,12 @@ enum ANN_MANAGE_TYPE {
     ANN_MANAGE_ASYNC = 1,    // 异步控制
 };
 
+enum ANN_DISTANCE_TYPE {
+    ANN_DISTANCE_EUC = 0,    // 欧氏距离
+    ANN_DISTANCE_INNER = 1,    // cos距离
+
+    ANN_DISTANCE_EDITION = 99,    // 自定义距离
+};
+
 
 #endif //_CHUNEL_ANN_DEFINE_H_

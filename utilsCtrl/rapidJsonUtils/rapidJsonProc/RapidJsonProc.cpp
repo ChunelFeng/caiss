@@ -4,12 +4,29 @@
 
 #include "RapidJsonProc.h"
 
+inline static std::string buildDistanceType(ANN_DISTANCE_TYPE type) {
+    std::string ret;
+    switch (type) {
+        case ANN_DISTANCE_EUC:
+            ret = "euclidean";
+            break;
+        case ANN_DISTANCE_INNER:
+            ret = "cosine";
+            break;
+        case ANN_DISTANCE_EDITION:
+            ret = "edition";
+            break;
+        default:
+            break;
+    }
+
+    return ret;
+}
+
 RapidJsonProc::RapidJsonProc() {
-    return;
 }
 
 RapidJsonProc::~RapidJsonProc() {
-    return;
 }
 
 
@@ -50,7 +67,8 @@ ANN_RET_TYPE RapidJsonProc::parseInputData(const char *data, std::vector<ANN_FLO
 }
 
 
-ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail> &details, std::string &result) {
+ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail> &details,
+        ANN_DISTANCE_TYPE distanceType, std::string &result) {
     ANN_FUNCTION_BEGIN
 
     Document dom;
@@ -59,22 +77,24 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail>
     Document::AllocatorType& alloc = dom.GetAllocator();
     dom.AddMember("version", ANN_VERSION, alloc);
     dom.AddMember("size", details.size(), alloc);
+    dom.AddMember("distance_type", StringRef(buildDistanceType(distanceType).c_str()), alloc);
 
-    rapidjson::Value obj(rapidjson::kObjectType);
+    rapidjson::Value array(rapidjson::kArrayType);
 
     for (const AnnResultDetail& detail : details) {
+        rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("distance", detail.distance, alloc);
         obj.AddMember("index", detail.index, alloc);
 
-        rapidjson::Value node;
-        node.SetArray();
+        rapidjson::Value node(rapidjson::kArrayType);
         for (auto j : detail.node) {
             node.PushBack(j, alloc);
         }
         obj.AddMember("node", node, alloc);
+        array.PushBack(obj, alloc);
     }
 
-    dom.AddMember("details", obj, alloc);
+    dom.AddMember("details", array, alloc);
 
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);

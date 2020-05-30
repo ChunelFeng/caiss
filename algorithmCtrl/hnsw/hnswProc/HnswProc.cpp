@@ -303,6 +303,7 @@ ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_p
     if (nullptr == HnswProc::hnsw_alg_ptr_) {
         HnswProc::lock_.writeLock();
         if (nullptr == HnswProc::hnsw_alg_ptr_) {
+            // 这里是static函数信息，只能通过传递值下来的方式实现
             HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<ANN_FLOAT>(distance_ptr, modelPath);
         }
         HnswProc::lock_.writeUnlock();

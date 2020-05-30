@@ -4,42 +4,72 @@
 
 #include <iostream>
 #include <thread>
+#include <vector>
+#include <fstream>
+#include <chrono>
 #include "AnnManageProc.h"
 #include "syncManage/SyncManageProc.h"
 
 using namespace std;
 
-AnnManageProc* ptr = new SyncManageProc(800);
-int times = 101;
 
-void func(int x) {
+
+void func(int x, AnnManageProc* ptr) {
+
+    ofstream outfile;
+
+    //string fileName = "./logs/" + std::to_string(x) +  ".txt";
+    //outfile.open(fileName.c_str());
+
+    int ret = 0;
+    int times = 10;
+
+    void* handle = nullptr;
+    string path = "test.ann";
+    ret = ptr->createHandle(&handle);
+
+    //outfile << x  << " thread, " << i << " times, create : " << ret << ", " << handle << endl;
+
+    ret = ptr->init(handle, ANN_MODE_PROCESS, ANN_DISTANCE_EUC, 4, path.c_str(), 0);
     for (int i = 0; i < times; i++) {
-        void* handle = nullptr;
-        cout << i << " create : " << ptr->createHandle(&handle) << ", " << handle << endl;
-        cout << i << " destroy : " << ptr->destroyHandle(handle) << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+        vector<ANN_FLOAT> query = {0, float(x), 0, 0};
+        ret = ptr->search(handle, query.data(), 2);
+
+        unsigned int size = 0;
+        ret = ptr->getResultSize(handle, size);
+
+        char *result = new char[size + 1];
+        memset(result, 0, size + 1);
+        ret = ptr->getResult(handle, result, size);
+        //outfile << x << " thread, result is : " << result << endl;
+        cout << result <<endl;
+        delete[] result;
+
+        //outfile << x << " thread, " << i << " times, destroy : " << ptr->destroyHandle(handle) << endl;
     }
+
+    ret = ptr->destroyHandle(handle);
+    outfile.close();
 }
 
 int main() {
 
-    thread th1(func, 1);
-    thread th2(func, 2);
-    thread th3(func, 3);
-    thread th4(func, 4);
-    thread th5(func, 5);
-    thread th6(func, 6);
-    thread th7(func, 7);
-    thread th8(func, 8);
+    cout << "== start ==" << endl;
+    unsigned int size = 5;
+    AnnManageProc* ptr = new SyncManageProc(size);
 
-    th1.join();
-    th2.join();
-    th3.join();
-    th4.join();
-    th5.join();
-    th6.join();
-    th7.join();
-    th8.join();
+    std::vector<std::thread> workers;
+    for (int i = 0; i < size; ++i) {
+        workers.emplace_back(func, i, ptr);
+    }
 
-    cout << "finish" << endl;
+    for (auto &w : workers) {
+        w.join();
+    }
+
+    cout << "== stop ==" << endl;
     return 0;
 }

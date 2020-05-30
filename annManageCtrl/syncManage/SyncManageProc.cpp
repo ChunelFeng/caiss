@@ -8,11 +8,12 @@
 ANN_RET_TYPE SyncManageProc::createHandle(void** handle) {
     ANN_FUNCTION_BEGIN
 
+    this->lock_.writeLock();    // 如果内部还有句柄信息的话，开始分配句柄操作
+
     if (this->free_manage_.empty()) {
+        this->lock_.writeUnlock();
         return ANN_RET_HANDLE;    // 如果是空，表示返回失败
     }
-
-    this->lock_.writeLock();    // 如果内部还有句柄信息的话，开始分配句柄操作
 
     void* key = free_manage_.begin()->first;
     AlgorithmProc* proc = free_manage_.begin()->second;
@@ -28,21 +29,33 @@ ANN_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(handle);
 
+    this->lock_.writeLock();
     if (used_manage_.find(handle) == used_manage_.end()) {
+        this->lock_.writeUnlock();
         return ANN_RET_HANDLE;
     }
 
-    this->lock_.writeLock();
-
     // 给free_manage_重新加入，并且将used_manage_中的对应句柄删除
-    int i = 0;
-    free_manage_.insert(std::make_pair<>((void*)&i, used_manage_.find(handle)->second));
+    // 注明：返回free_manage_中的句柄handle值，跟之前是保持一致的。
+    free_manage_.insert(std::make_pair<>((void*)handle, used_manage_.find(handle)->second));
     used_manage_.erase(handle);
 
     this->lock_.writeUnlock();
 
     ANN_FUNCTION_END
 }
+
+
+AlgorithmProc* SyncManageProc::getInstance(void *handle) {
+    // 通过外部传入的handle信息，转化成内部对应的真实句柄
+    AlgorithmProc *proc = nullptr;
+    if (this->used_manage_.find(handle) != this->used_manage_.end()) {
+        proc = this->used_manage_.find(handle)->second;
+    }
+
+    return proc;
+}
+
 
 /**
  * 初始化所有对应的信息
@@ -51,12 +64,13 @@ ANN_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
 SyncManageProc::SyncManageProc(unsigned int maxSize) : AnnManageProc(maxSize) {
     used_manage_.clear();
     for(unsigned int i = 0; i < maxSize; i++) {
-        AlgorithmProc* proc = new HnswProc();    // 对应的算法的句柄，需要配置
+        AlgorithmProc* proc = new HnswProc();    // todo 这里对应的，应该是不同的算法对应的句柄信息
         free_manage_.insert(std::make_pair<>((&i + i), proc));
     }
 
     this->max_size_ = maxSize;
 }
+
 
 SyncManageProc::~SyncManageProc() {
     for (auto i : free_manage_) {
@@ -70,12 +84,59 @@ SyncManageProc::~SyncManageProc() {
     this->max_size_ = 0;
 }
 
-AlgorithmProc* SyncManageProc::getInstance(void *handle) {
-    // 通过外部传入的handle信息，转化成内部对应的真实句柄
-    AlgorithmProc *proc = nullptr;
-    if (this->used_manage_.find(handle) != this->used_manage_.end()) {
-        proc = this->used_manage_.find(handle)->second;
-    }
 
-    return proc;
+ANN_RET_TYPE SyncManageProc::search(void *handle, ANN_FLOAT *query, unsigned int topK) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+
+    this->lock_.readLock();
+    ret = proc->search(query, topK);
+    this->lock_.readUnlock();
+
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
 }
+
+
+ANN_RET_TYPE SyncManageProc::init(void *handle, ANN_MODE mode, ANN_DISTANCE_TYPE distanceType,
+        const unsigned int dim, const char *modelPath, const unsigned int exLen) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+    ret = proc->init(mode, distanceType, dim, modelPath, exLen);
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+ANN_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+    ret = proc->getResultSize(size);
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+ANN_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+    ret = proc->getResult(result, size);
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+

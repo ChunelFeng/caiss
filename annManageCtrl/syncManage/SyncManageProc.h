@@ -15,6 +15,8 @@ public:
     ANN_RET_TYPE createHandle(void **handle) override;    // 生成处理句柄
     ANN_RET_TYPE destroyHandle(void *handle) override;
 
+    AlgorithmProc* getInstance(void *handle);
+
 };
 
 

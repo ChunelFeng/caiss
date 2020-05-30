@@ -10,41 +10,102 @@
 #include <string>
 #include "../chunelAnnLib/ChunelAnnLib.h"
 #include "../utilsCtrl/UtilsInclude.h"
+#include "../threadCtrl/ThreadInclude.h"
 
 
 const static unsigned int DEFAULT_STEP = 5;
 const static unsigned int DEFAULT_MAX_EPOCH = 10;
 const static unsigned int DEFAULT_SHOW_SPAN = 100;    // 100行会显示一次日志
-
 const static std::string MODEL_SUFFIX = ".ann";   // 默认的模型后缀
 
 
 class AlgorithmProc {
 
 public:
-    AlgorithmProc() {
+    explicit AlgorithmProc() {
     }
 
-    virtual ANN_RET_TYPE
-    init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-         const unsigned int exLen) = 0;
+    virtual ~AlgorithmProc() {
+    }
+
+
+    /**
+     * 初始化状态和参数信息
+     * @param mode
+     * @param distanceType
+     * @param dim
+     * @param modelPath
+     * @param exLen
+     * @return
+     */
+    virtual ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
+                              const unsigned int exLen) = 0;
 
     // train_mode
+    /**
+     * 开始精确训练方法
+     * @param dataPath
+     * @param maxDataSize
+     * @param normalize
+     * @param precision
+     * @param fastRank
+     * @param realRank
+     * @param step
+     * @param maxEpoch
+     * @param showSpan
+     * @return
+     */
     virtual ANN_RET_TYPE train(const char *dataPath,
                                const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
                                const unsigned int step = DEFAULT_STEP, const unsigned int maxEpoch = DEFAULT_MAX_EPOCH, const unsigned int showSpan = DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
+    /**
+     * 查询topK个距离query最近的结果
+     * @param query
+     * @param topK
+     * @param searchType
+     * @return
+     */
     virtual ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
+
+    /**
+     * 插入结果信息
+     * @param node
+     * @param label
+     * @param insertType
+     * @return
+     */
     virtual ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType = ANN_INSERT_ADD) = 0;   // label 是数据标签
+
+    /**
+     * 保存模型信息
+     * @param modelPath
+     * @return
+     */
     virtual ANN_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
+
+    /**
+     * 获取结果的长度
+     * @param size
+     * @return
+     */
     virtual ANN_RET_TYPE getResultSize(unsigned int& size) = 0;
+
+    /**
+     * 获取结果
+     * @param result
+     * @param size
+     * @return
+     */
     virtual ANN_RET_TYPE getResult(char *result, unsigned int size) = 0;
+
+    /**
+     * 被忽略的节点
+     * @param label
+     * @return
+     */
     virtual ANN_RET_TYPE ignore(const char *label) = 0;
-
-    virtual ~AlgorithmProc() {
-
-    }
 
 protected:
 

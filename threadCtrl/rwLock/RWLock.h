@@ -5,8 +5,6 @@
 #ifndef CHUNELANN_RWLOCK_H
 #define CHUNELANN_RWLOCK_H
 
-
-
 #include <mutex>
 
 class RWLock {
@@ -14,8 +12,8 @@ public:
     RWLock();
     ~RWLock();
 
-    void readLock();
-    void writeLock();
+    void readLock();    // 加入读锁
+    void writeLock();    // 加入写锁
     void readUnlock();
     void writeUnlock();
 

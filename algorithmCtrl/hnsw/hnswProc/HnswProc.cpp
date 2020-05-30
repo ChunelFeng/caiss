@@ -10,6 +10,9 @@
 
 using namespace std;
 
+// 静态成员变量使用前，先初始化
+HierarchicalNSW<ANN_FLOAT>*  HnswProc::hnsw_alg_ptr_ = nullptr;
+RWLock HnswProc::lock_;
 
 inline static bool isAnnSuffix(const char *modelPath) {
     string path = string(modelPath);
@@ -19,7 +22,6 @@ inline static bool isAnnSuffix(const char *modelPath) {
 
 
 HnswProc::HnswProc() {
-    this->hnsw_alg_ptr_ = nullptr;
     this->distance_ptr_ = nullptr;
 }
 
@@ -58,7 +60,6 @@ ANN_RET_TYPE HnswProc::reset() {
     ANN_FUNCTION_BEGIN
 
     ANN_DELETE_PTR(distance_ptr_)
-    ANN_DELETE_PTR(hnsw_alg_ptr_)
     this->dim_ = 0;
     this->cur_mode_ = ANN_MODE_DEFAULT;
     this->normalize_ = 0;
@@ -77,7 +78,8 @@ ANN_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSiz
     ANN_CHECK_MODE_ENABLE(ANN_MODE_TRAIN)
 
     this->normalize_ = normalize;
-    this->hnsw_alg_ptr_ = new HierarchicalNSW<ANN_FLOAT>(this->distance_ptr_, maxDataSize, normalize);    // todo，训练的时候，用这个构造函数，后面还有其他参数
+
+    createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
 
     std::vector<ANN_VECTOR_FLOAT> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
@@ -98,7 +100,7 @@ ANN_RET_TYPE HnswProc::search(const ANN_FLOAT *query, const unsigned int topK, c
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
     this->result_.clear();
-    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = hnsw_alg_ptr_->searchKnn((void *)query, topK);
+    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = HnswProc::getHnswSingleton()->searchKnn((void *)query, topK);
 
     std::list<unsigned int> predIndex;
     while (!result.empty()) {
@@ -119,11 +121,11 @@ ANN_RET_TYPE HnswProc::insert(const ANN_FLOAT *node, const char *label, const AN
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(node)
     ANN_ASSERT_NOT_NULL(label)
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
+    ANN_ASSERT_NOT_NULL(HnswProc::hnsw_alg_ptr_)
 
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
-    this->hnsw_alg_ptr_->addPoint((void *)node, this->hnsw_alg_ptr_->cur_element_count+1);
+    HnswProc::getHnswSingleton()->addPoint((void *)node, HnswProc::getHnswSingleton()->cur_element_count+1);
 
     ANN_FUNCTION_END
 }
@@ -131,7 +133,7 @@ ANN_RET_TYPE HnswProc::insert(const ANN_FLOAT *node, const char *label, const AN
 
 ANN_RET_TYPE HnswProc::save(const char *modelPath) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
 
     std::string path;
     if (nullptr == modelPath) {
@@ -141,7 +143,7 @@ ANN_RET_TYPE HnswProc::save(const char *modelPath) {
     }
 
     remove(path.c_str());    // 如果有的话，就删除
-    this->hnsw_alg_ptr_->saveIndex(path);
+    HnswProc::getHnswSingleton()->saveIndex(path);
     ANN_FUNCTION_END
 }
 
@@ -212,33 +214,33 @@ ANN_RET_TYPE HnswProc::loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FL
 
 ANN_RET_TYPE HnswProc::trainModel(vector<ANN_VECTOR_FLOAT> &datas) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
         ret = normalizeNode(datas[i]);    // 在normalizeNode函数内部，判断是否需要归一化
         ANN_FUNCTION_CHECK_STATUS
-        this->hnsw_alg_ptr_->addPoint((void *)datas[i].data(), i);
+        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].data(), i);
     }
 
-    this->hnsw_alg_ptr_->saveIndex(std::string(this->model_path_));
+    HnswProc::getHnswSingleton()->saveIndex(std::string(this->model_path_));
     ANN_FUNCTION_END
 }
 
 
 ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, const std::list<unsigned int> &predIndex) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_)
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_->fstdistfunc_)
-    ANN_ASSERT_NOT_NULL(this->hnsw_alg_ptr_->dist_func_param_)
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->fstdistfunc_)
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->dist_func_param_)
     ANN_ASSERT_NOT_NULL(query)
 
     std::vector<AnnResultDetail> details;
 
     for (unsigned int i : predIndex) {
         AnnResultDetail detail;
-        detail.node = this->hnsw_alg_ptr_->getDataByLabel<ANN_FLOAT>(i);
-        detail.distance = this->hnsw_alg_ptr_->fstdistfunc_((void *)detail.node.data(), (void *)query, this->hnsw_alg_ptr_->dist_func_param_);
+        detail.node = HnswProc::getHnswSingleton()->getDataByLabel<ANN_FLOAT>(i);
+        detail.distance = HnswProc::getHnswSingleton()->fstdistfunc_((void *)detail.node.data(), (void *)query, HnswProc::getHnswSingleton()->dist_func_param_);
         detail.index = i;
         details.push_back(detail);
     }
@@ -256,8 +258,8 @@ ANN_RET_TYPE HnswProc::loadModel(const char *modelPath) {
     ANN_ASSERT_NOT_NULL(modelPath)
     ANN_ASSERT_NOT_NULL(this->distance_ptr_)
 
-    this->hnsw_alg_ptr_ = new HierarchicalNSW<ANN_FLOAT>(this->distance_ptr_, this->model_path_);
-    this->normalize_ = this->hnsw_alg_ptr_->normalize_;    // 保存模型的时候，会写入是否被标准化的信息
+    createHnswSingleton(this->distance_ptr_, this->model_path_);    // 读取模型的时候，使用的获取方式
+    this->normalize_ = HnswProc::getHnswSingleton()->normalize_;    // 保存模型的时候，会写入是否被标准化的信息
 
     ANN_FUNCTION_END
 }
@@ -265,6 +267,7 @@ ANN_RET_TYPE HnswProc::loadModel(const char *modelPath) {
 ANN_RET_TYPE HnswProc::createDistancePtr() {
     ANN_FUNCTION_BEGIN
 
+    ANN_DELETE_PTR(this->distance_ptr_)    // 先删除，确保不会出现重复new的情况
     switch (this->distance_type_) {
         case ANN_DISTANCE_EUC :
             this->distance_ptr_ = new L2Space(this->dim_);
@@ -272,13 +275,43 @@ ANN_RET_TYPE HnswProc::createDistancePtr() {
         case ANN_DISTANCE_INNER:
             this->distance_ptr_ = new InnerProductSpace(this->dim_);
             break;
-        case ANN_DISTANCE_EDITION:
+        case ANN_DISTANCE_EDITION:    // todo 今后需要外部传入距离计算的函数
         default:
-            ANN_DELETE_PTR(this->distance_ptr_)
             break;
     }
 
     ANN_FUNCTION_END
 }
 
+ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize) {
+    ANN_FUNCTION_BEGIN
+
+    if (nullptr == HnswProc::hnsw_alg_ptr_) {
+        HnswProc::lock_.writeLock();
+        if (nullptr == HnswProc::hnsw_alg_ptr_) {
+            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<ANN_FLOAT>(distance_ptr, maxDataSize, normalize);
+        }
+        HnswProc::lock_.writeUnlock();
+    }
+
+    ANN_FUNCTION_END
+}
+
+ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_ptr, const std::string &modelPath) {
+    ANN_FUNCTION_BEGIN
+
+    if (nullptr == HnswProc::hnsw_alg_ptr_) {
+        HnswProc::lock_.writeLock();
+        if (nullptr == HnswProc::hnsw_alg_ptr_) {
+            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<ANN_FLOAT>(distance_ptr, modelPath);
+        }
+        HnswProc::lock_.writeUnlock();
+    }
+
+    ANN_FUNCTION_END
+}
+
+HierarchicalNSW<ANN_FLOAT> *HnswProc::getHnswSingleton() {
+    return HnswProc::hnsw_alg_ptr_;
+}
 

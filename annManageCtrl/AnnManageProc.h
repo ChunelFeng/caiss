@@ -16,7 +16,6 @@ using ManageCtrl = std::map<void*, AlgorithmProc*> ;
 
 class AnnManageProc {
 public:
-    // todo 可以考虑在这里做成让外部多线程，或者是内部支持多线程的版本
     explicit AnnManageProc(unsigned int maxSize) {
         this->max_size_ = maxSize;
     }

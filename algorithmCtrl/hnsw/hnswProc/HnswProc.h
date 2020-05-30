@@ -10,6 +10,7 @@
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
 
+
 using namespace hnswlib;
 
 class HnswProc : public AlgorithmProc {
@@ -44,9 +45,16 @@ protected:
     ANN_RET_TYPE createDistancePtr();
 
 
+public:
+    static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize);
+    static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, const std::string &modelPath);
+    static HierarchicalNSW<ANN_FLOAT>* getHnswSingleton();
+
+    static HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;    // 考虑这里用static信息
+    static RWLock                          lock_;
+
 private:
-    SpaceInterface<ANN_FLOAT>*      distance_ptr_;
-    HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;    // 考虑这里用static信息
+    SpaceInterface<ANN_FLOAT>*             distance_ptr_;
 };
 
 

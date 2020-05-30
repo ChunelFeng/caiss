@@ -9,7 +9,7 @@
 
 class UtilsProc {
 public:
-    UtilsProc() {
+    explicit UtilsProc() {
 
     }
     virtual ANN_RET_TYPE init() = 0;

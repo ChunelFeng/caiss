@@ -24,7 +24,7 @@ using namespace rapidjson;
 
 class RapidJsonProc : public UtilsProc  {
 public:
-    RapidJsonProc();
+    explicit RapidJsonProc();
     ~RapidJsonProc();
     ANN_RET_TYPE init() override ;
     ANN_RET_TYPE deinit() override ;

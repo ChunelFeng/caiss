@@ -12,28 +12,24 @@
 
 using namespace std;
 
+const static string MODEL_PATH = "test.ann";
 
 
 void func(int x, AnnManageProc* ptr) {
 
     ofstream outfile;
 
-    //string fileName = "./logs/" + std::to_string(x) +  ".txt";
-    //outfile.open(fileName.c_str());
+    string fileName = "./logs/" + std::to_string(x) +  ".txt";
+    outfile.open(fileName.c_str());
 
     int ret = 0;
-    int times = 10;
+    int times = 100;
 
     void* handle = nullptr;
-    string path = "test.ann";
     ret = ptr->createHandle(&handle);
 
-    //outfile << x  << " thread, " << i << " times, create : " << ret << ", " << handle << endl;
-
-    ret = ptr->init(handle, ANN_MODE_PROCESS, ANN_DISTANCE_EUC, 4, path.c_str(), 0);
+    ret = ptr->init(handle, ANN_MODE_PROCESS, ANN_DISTANCE_EUC, 4, MODEL_PATH.c_str(), 0);
     for (int i = 0; i < times; i++) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
 
         vector<ANN_FLOAT> query = {0, float(x), 0, 0};
         ret = ptr->search(handle, query.data(), 2);
@@ -44,11 +40,8 @@ void func(int x, AnnManageProc* ptr) {
         char *result = new char[size + 1];
         memset(result, 0, size + 1);
         ret = ptr->getResult(handle, result, size);
-        //outfile << x << " thread, result is : " << result << endl;
-        cout << result <<endl;
+        outfile << result << endl;
         delete[] result;
-
-        //outfile << x << " thread, " << i << " times, destroy : " << ptr->destroyHandle(handle) << endl;
     }
 
     ret = ptr->destroyHandle(handle);
@@ -58,9 +51,10 @@ void func(int x, AnnManageProc* ptr) {
 int main() {
 
     cout << "== start ==" << endl;
-    unsigned int size = 5;
-    AnnManageProc* ptr = new SyncManageProc(size);
+    unsigned int size = 10;
+    AnnManageProc* ptr = new SyncManageProc(size, ANN_ALGO_HNSW);
 
+    auto beginTime = std::chrono::high_resolution_clock::now();
     std::vector<std::thread> workers;
     for (int i = 0; i < size; ++i) {
         workers.emplace_back(func, i, ptr);
@@ -69,6 +63,10 @@ int main() {
     for (auto &w : workers) {
         w.join();
     }
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto elapsedTime= std::chrono::duration_cast<std::chrono::seconds>(endTime - beginTime);
+    cout << elapsedTime.count() << " second. " << endl;
 
     cout << "== stop ==" << endl;
     return 0;

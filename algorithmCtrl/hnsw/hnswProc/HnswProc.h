@@ -29,7 +29,8 @@ public:
 
     // process_mode
     ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType);
-    ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType);   // label 是数据标签
+    /* label暂时没有使用，今后可以考虑，把label当做是词语标签之类的信息，添加进来 */
+    ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType);
     ANN_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
     ANN_RET_TYPE getResultSize(unsigned int& size);
     ANN_RET_TYPE getResult(char *result, unsigned int size);
@@ -44,11 +45,13 @@ protected:
     ANN_RET_TYPE loadModel(const char *modelPath);
     ANN_RET_TYPE createDistancePtr();
 
-
 public:
     static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize);
     static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, const std::string &modelPath);
     static HierarchicalNSW<ANN_FLOAT>* getHnswSingleton();
+    static ANN_RET_TYPE insertByAppend(const ANN_FLOAT *node, const char *label);
+    static ANN_RET_TYPE insertByOverwrite(const ANN_FLOAT *node, const char *label);
+    static ANN_RET_TYPE insertByDiscard(const ANN_FLOAT *node, const char *label);
 
     static HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;    // 考虑这里用static信息
     static RWLock                          lock_;

@@ -632,8 +632,7 @@ namespace hnswlib {
           return data;
         }
 
-        void addPoint(void *data_point, labeltype label)
-        {
+        void addPoint(void *data_point, labeltype label) {
             addPoint(data_point, label,-1);
         }
 

@@ -1,6 +1,7 @@
 //
 // Created by Chunel on 2020/5/23.
 // hnsw算法的封装层，对外暴漏的算法使用接口
+// 这里理论上是不能有加锁操作的，所有的锁在manage这一层保存
 //
 
 #include <fstream>
@@ -79,7 +80,7 @@ ANN_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSiz
 
     this->normalize_ = normalize;
 
-    createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
+    HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
 
     std::vector<ANN_VECTOR_FLOAT> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
@@ -121,11 +122,24 @@ ANN_RET_TYPE HnswProc::insert(const ANN_FLOAT *node, const char *label, const AN
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(node)
     ANN_ASSERT_NOT_NULL(label)
-    ANN_ASSERT_NOT_NULL(HnswProc::hnsw_alg_ptr_)
 
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
-    HnswProc::getHnswSingleton()->addPoint((void *)node, HnswProc::getHnswSingleton()->cur_element_count+1);
+    switch (insertType) {
+        case ANN_INSERT_APPEND:
+            ret = insertByAppend(node, label);
+            break;
+        case ANN_INSERT_OVERWRITE:
+            ret = insertByOverwrite(node, label);
+            break;
+        case ANN_INSERT_DISCARD:
+            ret = insertByDiscard(node, label);
+            break;
+        default:
+            break;
+    }
+
+    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }
@@ -220,7 +234,7 @@ ANN_RET_TYPE HnswProc::trainModel(vector<ANN_VECTOR_FLOAT> &datas) {
     for (unsigned int i = 0; i < size; i++) {
         ret = normalizeNode(datas[i]);    // 在normalizeNode函数内部，判断是否需要归一化
         ANN_FUNCTION_CHECK_STATUS
-        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].data(), i);
+        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].data(), i);    // addPoint这里加入的i，算是位置信息
     }
 
     HnswProc::getHnswSingleton()->saveIndex(std::string(this->model_path_));
@@ -258,11 +272,12 @@ ANN_RET_TYPE HnswProc::loadModel(const char *modelPath) {
     ANN_ASSERT_NOT_NULL(modelPath)
     ANN_ASSERT_NOT_NULL(this->distance_ptr_)
 
-    createHnswSingleton(this->distance_ptr_, this->model_path_);    // 读取模型的时候，使用的获取方式
+    HnswProc::createHnswSingleton(this->distance_ptr_, this->model_path_);    // 读取模型的时候，使用的获取方式
     this->normalize_ = HnswProc::getHnswSingleton()->normalize_;    // 保存模型的时候，会写入是否被标准化的信息
 
     ANN_FUNCTION_END
 }
+
 
 ANN_RET_TYPE HnswProc::createDistancePtr() {
     ANN_FUNCTION_BEGIN
@@ -283,6 +298,14 @@ ANN_RET_TYPE HnswProc::createDistancePtr() {
     ANN_FUNCTION_END
 }
 
+
+/**
+ * 训练模型的时候，使用的构建方式（static成员函数）
+ * @param distance_ptr
+ * @param maxDataSize
+ * @param normalize
+ * @return
+ */
 ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize) {
     ANN_FUNCTION_BEGIN
 
@@ -297,6 +320,12 @@ ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_p
     ANN_FUNCTION_END
 }
 
+/**
+ * 加载模型的时候，使用的构建方式（static成员函数）
+ * @param distance_ptr
+ * @param modelPath
+ * @return
+ */
 ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_ptr, const std::string &modelPath) {
     ANN_FUNCTION_BEGIN
 
@@ -314,5 +343,45 @@ ANN_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<ANN_FLOAT> *distance_p
 
 HierarchicalNSW<ANN_FLOAT> *HnswProc::getHnswSingleton() {
     return HnswProc::hnsw_alg_ptr_;
+}
+
+
+ANN_RET_TYPE HnswProc::insertByAppend(const ANN_FLOAT *node, const char *label) {
+    ANN_FUNCTION_BEGIN
+
+    ANN_ASSERT_NOT_NULL(node)
+    ANN_ASSERT_NOT_NULL(label)
+    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
+
+
+    // todo 考虑好，今后label信息如何利用
+    int curCount = HnswProc::getHnswSingleton()->cur_element_count;
+    if (HnswProc::getHnswSingleton()->max_elements_ <= curCount) {
+        return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
+    }
+
+    HnswProc::getHnswSingleton()->addPoint((void *)node, curCount + 1);
+
+    ANN_FUNCTION_END
+}
+
+
+ANN_RET_TYPE HnswProc::insertByOverwrite(const ANN_FLOAT *node, const char *label) {
+    ANN_FUNCTION_BEGIN
+
+    ANN_ASSERT_NOT_NULL(node)
+    ANN_ASSERT_NOT_NULL(label)
+
+    ANN_FUNCTION_END
+}
+
+
+ANN_RET_TYPE HnswProc::insertByDiscard(const ANN_FLOAT *node, const char *label) {
+    ANN_FUNCTION_BEGIN
+
+    ANN_ASSERT_NOT_NULL(node)
+    ANN_ASSERT_NOT_NULL(label)
+
+    ANN_FUNCTION_END
 }
 

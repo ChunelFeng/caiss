@@ -27,6 +27,8 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 #define ANN_RET_PARAM      (-6)
 #define ANN_RET_HANDLE     (-7)
 #define ANN_RET_DIM        (-8)
+#define ANN_RET_MODEL_SIZE (-9)
+
 
 #define ANN_TRUE       (1)
 #define ANN_FALSE      (0)
@@ -34,8 +36,7 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 enum ANN_MODE {
     ANN_MODE_DEFAULT = 0,  // 默认模式
     ANN_MODE_TRAIN = 1,    // 训练模式
-    ANN_MODE_PROCESS,    // 处理模式
-    ANN_MODE_UPDATE,    // 更新模式
+    ANN_MODE_PROCESS = 2,    // 处理模式
 };
 
 enum ANN_SEARCH_TYPE {
@@ -47,9 +48,9 @@ enum ANN_SEARCH_TYPE {
 enum ANN_INSERT_TYPE {
     // 如果插入相同的数据
     ANN_INSERT_DEFAULT = 0,
-    ANN_INSERT_ADD = 0,   // 在后面添加
-    ANN_INSERT_OVERWRITE = 1,   // 覆盖原有的
-    ANN_INSERT_DISCARD = 2,    // 丢弃
+    ANN_INSERT_APPEND = 1,   // 在后面添加
+    ANN_INSERT_OVERWRITE = 2,   // 覆盖原有的
+    ANN_INSERT_DISCARD = 3,    // 丢弃
 };
 
 enum ANN_MANAGE_TYPE {
@@ -58,10 +59,15 @@ enum ANN_MANAGE_TYPE {
 };
 
 enum ANN_DISTANCE_TYPE {
-    ANN_DISTANCE_EUC = 0,    // 欧氏距离
-    ANN_DISTANCE_INNER = 1,    // cos距离
+    ANN_DISTANCE_EUC = 1,    // 欧氏距离
+    ANN_DISTANCE_INNER = 2,    // cos距离
 
     ANN_DISTANCE_EDITION = 99,    // 自定义距离
+};
+
+enum ANN_ALGO_TYPE {
+    ANN_ALGO_HNSW = 1,    // hnsw算法（准确度高，空间复杂度较大）
+    ANN_ALGO_NSG = 2    // nsg算法（准确度较高，空间复杂度小）
 };
 
 

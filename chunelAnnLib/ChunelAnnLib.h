@@ -17,7 +17,9 @@
 extern "C" {
 #endif // __cplusplus
 
-    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Environment(unsigned int maxSize);
+    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Environment(unsigned int maxSize,
+            const ANN_ALGO_TYPE algoType, const ANN_MANAGE_TYPE manageType);
+
     ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateHandle(void** handle);
 //    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Insert();
 

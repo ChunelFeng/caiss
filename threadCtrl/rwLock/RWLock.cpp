@@ -21,7 +21,6 @@ void RWLock::readLock() {
     read_mtx_.unlock();
 }
 
-
 void RWLock::writeLock() {
     write_mtx_.lock();
 }

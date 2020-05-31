@@ -46,6 +46,11 @@ ANN_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
 }
 
 
+/**
+ * 获取内部对应的算法句柄实例
+ * @param handle
+ * @return
+ */
 AlgorithmProc* SyncManageProc::getInstance(void *handle) {
     // 通过外部传入的handle信息，转化成内部对应的真实句柄
     AlgorithmProc *proc = nullptr;
@@ -58,17 +63,38 @@ AlgorithmProc* SyncManageProc::getInstance(void *handle) {
 
 
 /**
- * 初始化所有对应的信息
- * @param maxSize
+ * 构造算法句柄信息
+ * @return
  */
-SyncManageProc::SyncManageProc(unsigned int maxSize) : AnnManageProc(maxSize) {
-    used_manage_.clear();
-    for(unsigned int i = 0; i < maxSize; i++) {
-        AlgorithmProc* proc = new HnswProc();    // todo 这里对应的，应该是不同的算法对应的句柄信息
-        free_manage_.insert(std::make_pair<>((&i + i), proc));
+AlgorithmProc *SyncManageProc::createAlgoProc() {
+    AlgorithmProc *proc = nullptr;
+    switch (this->algo_type_) {
+        case ANN_ALGO_HNSW: proc = new HnswProc(); break;
+        case ANN_ALGO_NSG: break;
+        default:
+            break;
     }
 
-    this->max_size_ = maxSize;
+    return proc;
+}
+
+
+/**
+ * 初始化所有对应的信息
+ * @param maxSize
+ * @param algoType
+ */
+SyncManageProc::SyncManageProc(const unsigned int maxSize, const ANN_ALGO_TYPE algoType)
+                              : AnnManageProc(maxSize, algoType) {
+    this->max_size_ = 0;
+    this->algo_type_ = algoType;
+    for(unsigned int i = 0; i < maxSize; i++) {
+        AlgorithmProc* proc = createAlgoProc();
+        if (nullptr != proc) {
+            this->free_manage_.insert(std::make_pair<>((&i + i), proc));
+            this->max_size_++;    // 最终包含的算法句柄个数
+        }
+    }
 }
 
 
@@ -91,7 +117,7 @@ ANN_RET_TYPE SyncManageProc::search(void *handle, ANN_FLOAT *query, unsigned int
     AlgorithmProc *proc = this->getInstance(handle);
     ANN_ASSERT_NOT_NULL(proc)
 
-
+    // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();
     ret = proc->search(query, topK);
     this->lock_.readUnlock();
@@ -138,5 +164,36 @@ ANN_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigne
 
     ANN_FUNCTION_END
 }
+
+ANN_RET_TYPE SyncManageProc::insert(void *handle, const ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();
+    ret = proc->insert(node, label, insertType);
+    this->lock_.writeUnlock();
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+
+ANN_RET_TYPE SyncManageProc::save(void *handle, char *modelPath) {
+    ANN_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    ANN_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();
+    ret = proc->save(modelPath);
+    this->lock_.writeUnlock();
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+
 
 

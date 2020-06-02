@@ -28,6 +28,7 @@ using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 #define ANN_RET_HANDLE     (-7)
 #define ANN_RET_DIM        (-8)
 #define ANN_RET_MODEL_SIZE (-9)
+#define ANN_RET_INDEX      (-10)
 
 
 #define ANN_TRUE       (1)

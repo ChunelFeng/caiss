@@ -28,7 +28,7 @@ public:
                        const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan);
 
     // process_mode
-    ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType);
+    ANN_RET_TYPE search(ANN_FLOAT *query, const unsigned int topK, ANN_SEARCH_TYPE searchType);
     /* label暂时没有使用，今后可以考虑，把label当做是词语标签之类的信息，添加进来 */
     ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType);
     ANN_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的

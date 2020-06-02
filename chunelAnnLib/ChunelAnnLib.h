@@ -21,7 +21,6 @@ extern "C" {
             const ANN_ALGO_TYPE algoType, const ANN_MANAGE_TYPE manageType);
 
     ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateHandle(void** handle);
-//    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Insert();
 
 #ifdef __cplusplus
 }

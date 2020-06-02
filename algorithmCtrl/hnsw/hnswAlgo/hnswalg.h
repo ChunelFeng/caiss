@@ -13,6 +13,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
+//const static unsigned int MAX_INDEX_SIZE = 64;
+
 namespace hnswlib {
     typedef unsigned int tableint;
     typedef unsigned int linklistsizeint;
@@ -27,7 +29,7 @@ namespace hnswlib {
             loadIndex(location, s, max_elements);
         }
 
-        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, size_t M = 16, size_t ef = 10, size_t ef_construction = 200, size_t random_seed = 100) :
+        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, unsigned int index_size=64, size_t M = 16, size_t ef = 10, size_t ef_construction = 200, size_t random_seed = 100) :
                 link_list_locks_(max_elements), element_levels_(max_elements) {
             max_elements_ = max_elements;
 
@@ -52,7 +54,7 @@ namespace hnswlib {
             if (data_level0_memory_ == nullptr)
                 throw std::runtime_error("Not enough memory");
 
-            cur_element_count = 0;
+            cur_element_count_ = 0;
 
             visited_list_pool_ = new VisitedListPool(1, max_elements);
             //initializations for special treatment of the first node
@@ -64,7 +66,11 @@ namespace hnswlib {
             mult_ = 1 / log(1.0 * M_);
             revSize_ = 1.0 / mult_;
 
+
             normalize_ = normalize;
+            per_index_size_ = index_size;
+            index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);    // 分配空间，保存具体index信息
+            memset(index_ptr_, max_elements_ * per_index_size_, 0);
         }
 
         struct CompareByFirst {
@@ -76,7 +82,7 @@ namespace hnswlib {
 
         ~HierarchicalNSW() {
             free(data_level0_memory_);
-            for (tableint i = 0; i < cur_element_count; i++) {
+            for (tableint i = 0; i < cur_element_count_; i++) {
                 if (element_levels_[i] > 0)
                     free(linkLists_[i]);
             }
@@ -85,7 +91,7 @@ namespace hnswlib {
         }
 
         size_t max_elements_;
-        size_t cur_element_count;
+        size_t cur_element_count_;
         size_t size_data_per_element_;
         size_t size_links_per_element_;
 
@@ -117,8 +123,12 @@ namespace hnswlib {
         DISTFUNC<dist_t> fstdistfunc_;
         void *dist_func_param_;
         std::unordered_map<labeltype, tableint> label_lookup_;
-
         std::default_random_engine level_generator_;
+
+        char *index_ptr_;
+        unsigned int per_index_size_;
+        std::unordered_map<labeltype, std::string> index_lookup_;    // <cur_num, index>, 用于查询具体的index信息
+
 
         inline labeltype getExternalLabel(tableint internal_id) const {
             labeltype return_label;
@@ -486,10 +496,10 @@ namespace hnswlib {
 
             writeBinaryPOD(output, offsetLevel0_);
             writeBinaryPOD(output, max_elements_);
-            writeBinaryPOD(output, cur_element_count);
-            writeBinaryPOD(output, size_data_per_element_);
-            writeBinaryPOD(output, label_offset_);
-            writeBinaryPOD(output, offsetData_);
+            writeBinaryPOD(output, cur_element_count_);
+            writeBinaryPOD(output, size_data_per_element_);    // =152
+            writeBinaryPOD(output, label_offset_);    // 这个是什么 = 148
+            writeBinaryPOD(output, offsetData_);    // = 132
             writeBinaryPOD(output, maxlevel_);
             writeBinaryPOD(output, enterpoint_node_);
             writeBinaryPOD(output, maxM_);
@@ -500,15 +510,18 @@ namespace hnswlib {
             writeBinaryPOD(output, ef_construction_);
 
             writeBinaryPOD(output, normalize_);    // fj add
+            writeBinaryPOD(output, per_index_size_);
+            output.write(index_ptr_, cur_element_count_ * per_index_size_);    // 写的时候，是cur_element_count_的信息
 
-            output.write(data_level0_memory_, cur_element_count * size_data_per_element_);
+            output.write(data_level0_memory_, cur_element_count_ * size_data_per_element_);
 
-            for (size_t i = 0; i < cur_element_count; i++) {
+            for (size_t i = 0; i < cur_element_count_; i++) {
                 unsigned int linkListSize = element_levels_[i] > 0 ? size_links_per_element_ * element_levels_[i] : 0;
                 writeBinaryPOD(output, linkListSize);
                 if (linkListSize)
                     output.write(linkLists_[i], linkListSize);
             }
+
             output.close();
         }
 
@@ -517,15 +530,15 @@ namespace hnswlib {
 
             // get file size:
             input.seekg(0,input.end);
-            std::streampos total_filesize=input.tellg();
+            std::streampos total_filesize=input.tellg();    // 这里大小是668
             input.seekg(0,input.beg);
 
             readBinaryPOD(input, offsetLevel0_);
             readBinaryPOD(input, max_elements_);
-            readBinaryPOD(input, cur_element_count);
+            readBinaryPOD(input, cur_element_count_);
 
             size_t max_elements=max_elements_i;    // 针对默认传入的max_elements_i = 0 的情况
-            if(max_elements < cur_element_count)
+            if(max_elements < cur_element_count_)
                 max_elements = max_elements_;
             max_elements_ = max_elements;
             readBinaryPOD(input, size_data_per_element_);
@@ -534,13 +547,22 @@ namespace hnswlib {
             readBinaryPOD(input, maxlevel_);
             readBinaryPOD(input, enterpoint_node_);
 
-            readBinaryPOD(input, maxM_);
-            readBinaryPOD(input, maxM0_);
+            readBinaryPOD(input, maxM_);    // 16
+            readBinaryPOD(input, maxM0_);    // 32
             readBinaryPOD(input, M_);
             readBinaryPOD(input, mult_);
             readBinaryPOD(input, ef_construction_);
 
             readBinaryPOD(input, normalize_);    // fj add
+            readBinaryPOD(input, per_index_size_);
+
+            index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
+            input.read(index_ptr_, max_elements_ * per_index_size_);
+            for (int i = 0; i < cur_element_count_; ++i) {
+                char info[per_index_size_] = {0};
+                memcpy(info, index_ptr_ + i * per_index_size_, per_index_size_);
+                index_lookup_[i] = std::string(info);
+            }
 
             data_size_ = s->get_data_size();
             fstdistfunc_ = s->get_dist_func();
@@ -551,8 +573,8 @@ namespace hnswlib {
             bool old_index=false;
 
             auto pos=input.tellg();
-            input.seekg(cur_element_count * size_data_per_element_,input.cur);
-            for (size_t i = 0; i < cur_element_count; i++) {
+            input.seekg(cur_element_count_ * size_data_per_element_, input.cur);
+            for (size_t i = 0; i < cur_element_count_; i++) {
                 if(input.tellg() < 0 || input.tellg()>=total_filesize){
                     old_index = true;
                     break;
@@ -576,14 +598,13 @@ namespace hnswlib {
             input.clear();
             input.seekg(pos,input.beg);
 
-
-            data_level0_memory_ = (char *) malloc(max_elements * size_data_per_element_);
-            input.read(data_level0_memory_, cur_element_count * size_data_per_element_);
+            data_level0_memory_ = (char *) malloc(max_elements * size_data_per_element_);    // data_level0_memory_ 第0层总的buf的大小
+            input.read(data_level0_memory_, cur_element_count_ * size_data_per_element_);
 
             if(old_index)
-                input.seekg(((max_elements_-cur_element_count) * size_data_per_element_), input.cur);
+                input.seekg(((max_elements_ - cur_element_count_) * size_data_per_element_), input.cur);
 
-            size_links_per_element_ = maxM_ * sizeof(tableint) + sizeof(linklistsizeint);
+            size_links_per_element_ = maxM_ * sizeof(tableint) + sizeof(linklistsizeint);    // maxM_是邻居个数
             size_links_level0_ = maxM0_ * sizeof(tableint) + sizeof(linklistsizeint);
             std::vector<std::mutex>(max_elements).swap(link_list_locks_);
 
@@ -593,7 +614,7 @@ namespace hnswlib {
             element_levels_ = std::vector<int>(max_elements);
             revSize_ = 1.0 / mult_;
             ef_ = 10;
-            for (size_t i = 0; i < cur_element_count; i++) {
+            for (size_t i = 0; i < cur_element_count_; i++) {
                 label_lookup_[getExternalLabel(i)]=i;
                 unsigned int linkListSize;
                 readBinaryPOD(input, linkListSize);
@@ -633,29 +654,43 @@ namespace hnswlib {
         }
 
         void addPoint(void *data_point, labeltype label) {
-            addPoint(data_point, label,-1);
+            char ptr[16] = "hehe";
+            addPoint(data_point, label, ptr, -1);
         }
 
-        tableint addPoint(void *data_point, labeltype label, int level) {
+//        void addPoint(void *data_point, labeltype label, char* index) {
+//            addPoint(data_point, label, index);
+//        }
+
+
+        tableint addPoint(void *data_point, labeltype label, char* index, int level=-1) {
             // 函数的ret值，是当前的个数
+            if (index == nullptr || strlen(index) > per_index_size_) {
+                return -10;
+            }
+
             tableint cur_c = 0;
             {
                 std::unique_lock <std::mutex> lock(cur_element_count_guard_);
-                if (cur_element_count >= max_elements_) {
+                if (cur_element_count_ >= max_elements_) {    // 外面已经做捕获了，不会进入这里的
                     throw std::runtime_error("The number of elements exceeds the specified limit");
                 };
-                cur_c = cur_element_count;
+                cur_c = cur_element_count_;    // 如果当前是0，则保存
+
+                // add的时候，添加的内容
+                memcpy(index_ptr_ + cur_element_count_ * per_index_size_, index, strlen(index));
+
+                index_lookup_[label] = std::string(index);
                 label_lookup_[label] = cur_c;  // expected unique, if not will overwrite
-                cur_element_count++;
+                cur_element_count_++;
             }
+
             std::unique_lock <std::mutex> lock_el(link_list_locks_[cur_c]);
             int curlevel = getRandomLevel(mult_);
             if (level > 0)
                 curlevel = level;
 
             element_levels_[cur_c] = curlevel;
-
-
             std::unique_lock <std::mutex> templock(global);
             int maxlevelcopy = maxlevel_;
             if (curlevel <= maxlevelcopy)

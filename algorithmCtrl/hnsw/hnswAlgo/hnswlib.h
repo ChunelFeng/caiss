@@ -34,6 +34,7 @@
 namespace hnswlib {
     typedef size_t labeltype;
 
+
     template<typename T>
     static void writeBinaryPOD(std::ostream &out, const T &podRef) {
         out.write((char *) &podRef, sizeof(T));

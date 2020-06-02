@@ -67,7 +67,7 @@ public:
      * @param searchType
      * @return
      */
-    virtual ANN_RET_TYPE search(const ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
+    virtual ANN_RET_TYPE search(ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
 
     /**
      * 插入结果信息
@@ -109,12 +109,14 @@ public:
 
 protected:
 
-    ANN_RET_TYPE normalizeNode(ANN_VECTOR_FLOAT& node) {
-        if (ANN_FALSE == normalize_) {
+    ANN_RET_TYPE normalizeNode(ANN_FLOAT *node, unsigned int dim) {
+        ANN_ASSERT_NOT_NULL(node);
+
+        if (ANN_FALSE == this->normalize_) {
             return ANN_RET_OK;    // 如果不需要归一化，直接返回
         }
 
-        if (node.size() != this->dim_) {
+        if (dim != this->dim_) {
             return ANN_RET_DIM;    // 忽略维度不一致的情况
         }
 
@@ -122,6 +124,7 @@ protected:
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
+
         ANN_FLOAT denominator = std::sqrt(sum);    // 分母信息
         for (unsigned int i = 0; i < this->dim_; i++) {
             node[i] = node[i] / denominator;

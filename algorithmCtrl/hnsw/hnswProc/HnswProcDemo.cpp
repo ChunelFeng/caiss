@@ -11,15 +11,21 @@ const static string TEST_MODEL_PATH = "test.ann";
 const static string TEST_FILE_PATH = "test.txt";
 const static unsigned int DIM = 4;
 const static ANN_DISTANCE_TYPE DISTANCE_TYPE = ANN_DISTANCE_EUC;
-const static unsigned int TOP_K = 3;
+const static unsigned int TOP_K = 2;
 
-int main() {
-
+int train() {
     int ret = 0;
     auto proc = new HnswProc();
     ret = proc->init(ANN_MODE_TRAIN, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
-
     ret = proc->train(TEST_FILE_PATH.data(), 10, 0, 0, 1,1,1,1,1);
+
+    delete proc;
+    return ret;
+}
+
+int search() {
+    int ret = 0;
+    auto proc = new HnswProc();
 
     ret = proc->init(ANN_MODE_PROCESS, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
     vector<float> vec = {0,1.2,0,0};
@@ -35,5 +41,14 @@ int main() {
     delete[] result;
 
     delete proc;
+    return ret;
+}
+
+int main() {
+
+    int ret = 0;
+    ret = train();
+    ret = search();
+
     return 0;
 }

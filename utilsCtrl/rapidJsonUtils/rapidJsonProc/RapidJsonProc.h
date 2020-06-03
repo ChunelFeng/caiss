@@ -29,7 +29,7 @@ public:
     ANN_RET_TYPE init() override ;
     ANN_RET_TYPE deinit() override ;
 
-    static ANN_RET_TYPE parseInputData(const char *data, std::vector<ANN_FLOAT>& node);
+    static ANN_RET_TYPE parseInputData(const char *line, AnnDataNode& node);
     static ANN_RET_TYPE buildSearchResult(const std::vector<AnnResultDetail> &details, ANN_DISTANCE_TYPE distanceType, std::string &result);
 
 };

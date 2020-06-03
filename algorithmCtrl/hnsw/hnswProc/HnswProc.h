@@ -39,8 +39,8 @@ public:
 
 protected:
     ANN_RET_TYPE reset();
-    ANN_RET_TYPE loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FLOAT> &datas);
-    ANN_RET_TYPE trainModel(std::vector<ANN_VECTOR_FLOAT> &datas);
+    ANN_RET_TYPE loadDatas(const char *dataPath, std::vector<AnnDataNode> &datas);
+    ANN_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
     ANN_RET_TYPE buildResult(const ANN_FLOAT *query, const std::list<unsigned int> &predIndex);
     ANN_RET_TYPE loadModel(const char *modelPath);
     ANN_RET_TYPE createDistancePtr();

@@ -653,17 +653,11 @@ namespace hnswlib {
           return data;
         }
 
-        void addPoint(void *data_point, labeltype label) {
-            char ptr[16] = "hehe";
-            addPoint(data_point, label, ptr, -1);
+        void addPoint(void *data_point, labeltype label, const char *index) {
+            addPoint(data_point, label, index, -1);
         }
 
-//        void addPoint(void *data_point, labeltype label, char* index) {
-//            addPoint(data_point, label, index);
-//        }
-
-
-        tableint addPoint(void *data_point, labeltype label, char* index, int level=-1) {
+        tableint addPoint(void *data_point, labeltype label, const char* index, int level) {
             // 函数的ret值，是当前的个数
             if (index == nullptr || strlen(index) > per_index_size_) {
                 return -10;

@@ -39,30 +39,32 @@ ANN_RET_TYPE RapidJsonProc::deinit() {
 }
 
 
-ANN_RET_TYPE RapidJsonProc::parseInputData(const char *data, std::vector<ANN_FLOAT>& node) {
-    ANN_ASSERT_NOT_NULL(data)
+ANN_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNode) {
+    ANN_ASSERT_NOT_NULL(line)
 
     ANN_FUNCTION_BEGIN
 
-    node.clear();    // 首先清空node中的内容
     Document dom;
-    dom.Parse(data);    // data是一行数据
+    dom.Parse(line);    // data是一行数据，形如：{"hello" : [1,0,0,0]}
 
     if (dom.HasParseError()) {
         return ANN_RET_JSON;
     }
 
-    Value& jsonArray = dom;
-    if (!jsonArray.IsArray()) {
+    Value& jsonObject = dom;
+    if (!jsonObject.IsObject()) {
         return ANN_RET_JSON;
     }
 
-    unsigned int size = jsonArray.Size();
-    for (unsigned int i = 0; i < size; ++i) {
-        node.push_back(jsonArray[i].GetFloat());   // 给node赋值
+    for (Value::ConstMemberIterator itr = jsonObject.MemberBegin(); itr != jsonObject.MemberEnd(); ++itr) {
+        dataNode.index = itr->name.GetString();    // 获取行名称
+        rapidjson::Value& array = jsonObject[dataNode.index.c_str()];
+        for (unsigned int i = 0; i < array.Size(); ++i) {
+             dataNode.node.push_back(array[i].GetFloat());
+        }
     }
 
-    dom.Clear();
+    //dom.Clear();
     ANN_FUNCTION_END
 }
 

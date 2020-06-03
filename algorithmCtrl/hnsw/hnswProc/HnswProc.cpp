@@ -33,8 +33,9 @@ HnswProc::~HnswProc() {
 
 
 /************************ 以下是重写的算法基类接口内容 ************************/
-ANN_RET_TYPE HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-                            const unsigned int exLen) {
+ANN_RET_TYPE
+HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
+               const unsigned int exLen) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(modelPath);
 
@@ -81,7 +82,7 @@ ANN_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSiz
 
     HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
 
-    std::vector<ANN_VECTOR_FLOAT> datas;
+    std::vector<AnnDataNode> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
     ret = loadDatas(dataPath, datas);
     ANN_FUNCTION_CHECK_STATUS
@@ -93,16 +94,13 @@ ANN_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSiz
 }
 
 
-ANN_RET_TYPE HnswProc::search(ANN_FLOAT *query, const unsigned int topK, ANN_SEARCH_TYPE searchType) {
+ANN_RET_TYPE HnswProc::search(ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType) {
     ANN_FUNCTION_BEGIN
 
     ANN_ASSERT_NOT_NULL(query)
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
     this->result_.clear();
-
-    ret = normalizeNode(query, this->dim_);
-    ANN_FUNCTION_CHECK_STATUS
     std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = HnswProc::getHnswSingleton()->searchKnn((void *)query, topK);
 
     std::list<unsigned int> predIndex;
@@ -202,7 +200,7 @@ ANN_RET_TYPE HnswProc::ignore(const char *label) {
  * @param datas
  * @return
  */
-ANN_RET_TYPE HnswProc::loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FLOAT> &datas) {
+ANN_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<AnnDataNode> &datas) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(dataPath);
 
@@ -217,32 +215,28 @@ ANN_RET_TYPE HnswProc::loadDatas(const char *dataPath, std::vector<ANN_VECTOR_FL
             continue;    // 排除空格的情况
         }
 
-        std::vector<ANN_FLOAT> node;
-        ret = RapidJsonProc::parseInputData(line.data(), node);
+        AnnDataNode dataNode;
+        ret = RapidJsonProc::parseInputData(line.data(), dataNode);
         ANN_FUNCTION_CHECK_STATUS
 
-        datas.push_back(node);
+        datas.push_back(dataNode);
     }
 
     ANN_FUNCTION_END
 }
 
 
-ANN_RET_TYPE HnswProc::trainModel(vector<ANN_VECTOR_FLOAT> &datas) {
+ANN_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
-        ret = normalizeNode(datas[i].data(), this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
+        ret = normalizeNode(datas[i].node.data(), this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
         ANN_FUNCTION_CHECK_STATUS
-
-        string str = "abc";
-        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].data(), i, (char *)str.c_str());    // addPoint这里加入的i，算是位置信息
+        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].node.data(), i, (char *)datas[i].index.c_str());    // addPoint这里加入的i，算是位置信息
     }
 
-
-    remove(this->model_path_.c_str());
     HnswProc::getHnswSingleton()->saveIndex(std::string(this->model_path_));
     ANN_FUNCTION_END
 }
@@ -366,7 +360,7 @@ ANN_RET_TYPE HnswProc::insertByAppend(const ANN_FLOAT *node, const char *label) 
         return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
     }
 
-    HnswProc::getHnswSingleton()->addPoint((void *)node, curCount + 1);
+    HnswProc::getHnswSingleton()->addPoint((void *)node, curCount + 1, label);
 
     ANN_FUNCTION_END
 }
@@ -390,4 +384,5 @@ ANN_RET_TYPE HnswProc::insertByDiscard(const ANN_FLOAT *node, const char *label)
 
     ANN_FUNCTION_END
 }
+
 

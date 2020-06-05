@@ -66,6 +66,7 @@ enum ANN_DISTANCE_TYPE {
 };
 
 enum ANN_ALGO_TYPE {
+    ANN_ALGO_DEFAULT = 1,
     ANN_ALGO_HNSW = 1,    // hnsw算法（准确度高，空间复杂度较大）
     ANN_ALGO_NSG = 2    // nsg算法（准确度较高，空间复杂度小）
 };

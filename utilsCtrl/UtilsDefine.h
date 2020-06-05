@@ -9,8 +9,16 @@
 #include <vector>
 
 struct AnnDataNode {
+    /* 读取待训练的文件的时候，表示每行的信息的数据结构 */
     std::string index;
     std::vector<ANN_FLOAT> node;
+};
+
+struct AnnResultDetail {
+    std::vector<ANN_FLOAT> node;
+    ANN_FLOAT distance;    // 距离信息 （例：0.928）
+    unsigned int index;    // 个数信息 （例：1）
+    std::string label;    // 标签信息 （例：hello）
 };
 
 // 定义几个常用的宏函数

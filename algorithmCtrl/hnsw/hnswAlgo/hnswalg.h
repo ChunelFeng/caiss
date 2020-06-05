@@ -564,6 +564,8 @@ namespace hnswlib {
 
             // 记住，这里是分配了max个信息，读取了cur的个数的信息
             index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
+            memset(index_ptr_, 0, max_elements_ * per_index_size_);
+
             input.read(index_ptr_,  cur_element_count_ * per_index_size_);
             for (int i = 0; i < cur_element_count_; ++i) {
                 char info[per_index_size_] = {0};
@@ -703,7 +705,6 @@ namespace hnswlib {
            return ret;
         }
 
-
         int addPoint(void *data_point, labeltype label, const char* index, int level) {
             // 函数的ret值，是当前的个数
             if (index == nullptr || strlen(index) > per_index_size_) {
@@ -713,11 +714,12 @@ namespace hnswlib {
             tableint cur_c = 0;
             {
                 std::unique_lock <std::mutex> lock(cur_element_count_guard_);
-                if (cur_element_count_ >= max_elements_) {    // 外面已经做捕获了，不会进入这里的
-                    throw std::runtime_error("The number of elements exceeds the specified limit");
+                if (cur_element_count_ >= max_elements_) {
+                    return -9;    // 有超过最大限制的话，就返回-9
                 };
                 cur_c = cur_element_count_;    // 如果当前是0，则保存
 
+                memset(index_ptr_ + cur_element_count_ * per_index_size_, 0, per_index_size_);
                 // add的时候，添加的内容，需要双向添加<label,index>，例子：<1, hello>
                 memcpy(index_ptr_ + cur_element_count_ * per_index_size_, index, strlen(index));
                 index_lookup_.insert(BOOST_BIMAP::value_type(label, std::string(index)));
@@ -762,7 +764,7 @@ namespace hnswlib {
                             for (int i = 0; i < size; i++) {
                                 tableint cand = datal[i];
                                 if (cand < 0 || cand > max_elements_)
-                                    throw std::runtime_error("cand error");
+                                    return -9;
                                 dist_t d = fstdistfunc_(data_point, getDataByInternalId(cand), dist_func_param_);
                                 if (d < curdist) {
                                     curdist = d;
@@ -775,15 +777,13 @@ namespace hnswlib {
                 }
 
                 for (int level = std::min(curlevel, maxlevelcopy); level >= 0; level--) {
-                    if (level > maxlevelcopy || level < 0)
-                        throw std::runtime_error("Level error");
-
+                    if (level > maxlevelcopy || level < 0) {
+                        return -9;
+                    }
                     std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst> top_candidates = searchBaseLayer(
                             currObj, data_point, level);
                     mutuallyConnectNewElement(data_point, cur_c, top_candidates, level);
                 }
-
-
             } else {
                 // Do nothing for the first element
                 enterpoint_node_ = 0;
@@ -795,7 +795,9 @@ namespace hnswlib {
                 enterpoint_node_ = cur_c;
                 maxlevel_ = curlevel;
             }
-            return cur_c;
+
+            return 0;    // 0表示插入成功
+            //return cur_c;
         };
 
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {

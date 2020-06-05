@@ -6,7 +6,7 @@
 #define CHUNELANN_RAPIDJSONPROC_H
 
 #include <vector>
-
+#include <string>
 
 #include "../rapidjson/document.h"
 #include "../../UtilsProc.h"
@@ -14,11 +14,7 @@
 #include "../rapidjson/stringbuffer.h"
 #include "../rapidjson/writer.h"
 
-struct AnnResultDetail {
-    std::vector<ANN_FLOAT> node;
-    ANN_FLOAT distance;
-    unsigned int index;
-};
+
 
 using namespace rapidjson;
 
@@ -31,7 +27,6 @@ public:
 
     static ANN_RET_TYPE parseInputData(const char *line, AnnDataNode& node);
     static ANN_RET_TYPE buildSearchResult(const std::vector<AnnResultDetail> &details, ANN_DISTANCE_TYPE distanceType, std::string &result);
-
 };
 
 

@@ -259,14 +259,17 @@ ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, const std::list<unsig
     ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->fstdistfunc_)
     ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->dist_func_param_)
     ANN_ASSERT_NOT_NULL(query)
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr);
 
     std::vector<AnnResultDetail> details;
 
     for (unsigned int i : predIndex) {
         AnnResultDetail detail;
-        detail.node = HnswProc::getHnswSingleton()->getDataByLabel<ANN_FLOAT>(i);
-        detail.distance = HnswProc::getHnswSingleton()->fstdistfunc_((void *)detail.node.data(), (void *)query, HnswProc::getHnswSingleton()->dist_func_param_);
+        detail.node = ptr->getDataByLabel<ANN_FLOAT>(i);
+        detail.distance = ptr->fstdistfunc_((void *)detail.node.data(), (void *)query, HnswProc::getHnswSingleton()->dist_func_param_);
         detail.index = i;
+        detail.label = ptr->index_lookup_.left.find(i)->second;
         details.push_back(detail);
     }
 
@@ -391,8 +394,8 @@ ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int curCount, c
     if (!bret) {
         // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
         ret = ptr->addPoint(node, label, index);
-        ANN_FUNCTION_CHECK_STATUS
     }
+    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }

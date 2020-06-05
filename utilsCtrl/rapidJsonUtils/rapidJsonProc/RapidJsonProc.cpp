@@ -64,7 +64,6 @@ ANN_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNo
         }
     }
 
-    //dom.Clear();
     ANN_FUNCTION_END
 }
 
@@ -86,8 +85,8 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail>
     for (const AnnResultDetail& detail : details) {
         rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("distance", detail.distance, alloc);
-        obj.AddMember("index", detail.index, alloc);    // 这里的index，表示的是这属于模型中的第几个节点
-
+        obj.AddMember("index", detail.index, alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)
+        obj.AddMember("label", StringRef(detail.label.c_str()), alloc);
         rapidjson::Value node(rapidjson::kArrayType);
         for (auto j : detail.node) {
             node.PushBack(j, alloc);

@@ -562,8 +562,9 @@ namespace hnswlib {
             readBinaryPOD(input, normalize_);
             readBinaryPOD(input, per_index_size_);
 
+            // 记住，这里是分配了max个信息，读取了cur的个数的信息
             index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
-            input.read(index_ptr_, max_elements_ * per_index_size_);
+            input.read(index_ptr_,  cur_element_count_ * per_index_size_);
             for (int i = 0; i < cur_element_count_; ++i) {
                 char info[per_index_size_] = {0};
                 memcpy(info, index_ptr_ + i * per_index_size_, per_index_size_);
@@ -581,7 +582,8 @@ namespace hnswlib {
             auto pos=input.tellg();
             input.seekg(cur_element_count_ * size_data_per_element_, input.cur);
             for (size_t i = 0; i < cur_element_count_; i++) {
-                if(input.tellg() < 0 || input.tellg()>=total_filesize){
+                int cur_size = (int)input.tellg();   // 它返回当前定位指针的位置，也代表着输入流的大小。
+                if(cur_size < 0 || cur_size >= total_filesize){
                     old_index = true;
                     break;
                 }
@@ -589,7 +591,7 @@ namespace hnswlib {
                 unsigned int linkListSize;
                 readBinaryPOD(input, linkListSize);
                 if (linkListSize != 0) {
-                    input.seekg(linkListSize,input.cur);
+                    input.seekg(linkListSize, input.cur);
                 }
             }
 

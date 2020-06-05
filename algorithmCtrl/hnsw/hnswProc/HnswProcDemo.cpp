@@ -36,7 +36,7 @@ int search() {
     auto proc = new HnswProc();
 
     ret = proc->init(ANN_MODE_PROCESS, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
-    vector<float> vec = {0,1.2,0,0};
+    vector<float> vec = {0,1.1,0,0};
     ret = proc->search(vec.data(), TOP_K, ANN_SEARCH_FAST);
 
     unsigned int size = 0;
@@ -105,7 +105,7 @@ int bimapTest() {
 int main() {
 
     int ret = 0;
-    ret = train();
+    //ret = train();
     ret = search();
 
     return 0;

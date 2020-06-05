@@ -87,6 +87,12 @@ namespace hnswlib {
                 if (element_levels_[i] > 0)
                     free(linkLists_[i]);
             }
+
+            if (index_ptr_) {
+                delete index_ptr_;
+                index_ptr_ = nullptr;
+            }
+
             free(linkLists_);
             delete visited_list_pool_;
         }
@@ -553,7 +559,7 @@ namespace hnswlib {
             readBinaryPOD(input, mult_);
             readBinaryPOD(input, ef_construction_);
 
-            readBinaryPOD(input, normalize_);    // fj add
+            readBinaryPOD(input, normalize_);
             readBinaryPOD(input, per_index_size_);
 
             index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
@@ -561,8 +567,6 @@ namespace hnswlib {
             for (int i = 0; i < cur_element_count_; ++i) {
                 char info[per_index_size_] = {0};
                 memcpy(info, index_ptr_ + i * per_index_size_, per_index_size_);
-                //index_lookup_[i] = std::string(info);
-                //bm.insert( bm_type::value_type(1, "one" ) );
                 index_lookup_.insert(BOOST_BIMAP::value_type(i, std::string(info)));
             }
 
@@ -655,28 +659,50 @@ namespace hnswlib {
           return data;
         }
 
+        int overwriteNode(void *node, labeltype label, const char *index) {
+            // 重新写入node信息
+            if (nullptr == node || nullptr == index) {
+                return -2;
+            }
+
+            unsigned int len = (unsigned int)strlen(index);
+            if (len > per_index_size_) {
+                return -10;
+            }
+
+            char *buff = this->getDataByInternalId(label);    // 这里的label传入的值，不会超过real_count的大小
+            memset(buff, 0, this->data_size_);
+            memcpy(buff, node, this->data_size_);    // 更新node的内容
+
+            memset(this->index_ptr_ + label * per_index_size_, 0, per_index_size_);
+            memcpy(this->index_ptr_ + label * per_index_size_, index, len);    // 更新index对应的内容
+
+            index_lookup_.left.erase(label);
+            index_lookup_.insert(BOOST_BIMAP::value_type(label, std::string(index)));
+
+            return 0;
+        }
+
+        bool isInfoExist(labeltype label, const char *index) {
+            if (index_lookup_.left.find(label) != index_lookup_.left.end()) {
+                return true;
+            }
+
+            if (index_lookup_.right.find(std::string(index)) != index_lookup_.right.end()) {
+                return true;    // 如果查到了index，表示不能添加了，顾返回ANN_RET_INDEX信息
+            }
+
+            return false;
+        }
+
+
         int addPoint(void *data_point, labeltype label, const char *index) {
            int ret = addPoint(data_point, label, index, -1);
            return ret;
         }
 
-        int checkAddEnable(labeltype label, const char *index) {
-            if (nullptr == index) {
-                return -2;    // 如果index信息为空，则直接返回ANN_RET_RES
-            }
 
-            if (index_lookup_.left.find(label) != index_lookup_.left.end()) {
-                return 1;
-            }
-
-            if (index_lookup_.right.find(std::string(index)) != index_lookup_.right.end()) {
-                return 1;    // 如果查到了index，表示不能添加了，顾返回ANN_RET_INDEX信息
-            }
-
-            return 0;
-        }
-
-        tableint addPoint(void *data_point, labeltype label, const char* index, int level) {
+        int addPoint(void *data_point, labeltype label, const char* index, int level) {
             // 函数的ret值，是当前的个数
             if (index == nullptr || strlen(index) > per_index_size_) {
                 return -10;

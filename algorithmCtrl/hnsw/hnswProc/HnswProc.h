@@ -33,7 +33,7 @@ public:
     ANN_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
     ANN_RET_TYPE getResultSize(unsigned int& size);
     ANN_RET_TYPE getResult(char *result, unsigned int size);
-    ANN_RET_TYPE ignore(const char *label);
+    ANN_RET_TYPE ignore(const char *label);    // todo 暂未完成功能
 
 
 protected:
@@ -51,11 +51,11 @@ public:
     static ANN_RET_TYPE insertByOverwrite(ANN_FLOAT *node, unsigned int curCount, const char *index);
     static ANN_RET_TYPE insertByDiscard(ANN_FLOAT *node, unsigned int curCount, const char *index);
 
-    static HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;    // 考虑这里用static信息
+    static HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;
     static RWLock                          lock_;
 
 private:
-    SpaceInterface<ANN_FLOAT>*             distance_ptr_;
+    SpaceInterface<ANN_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了
 };
 
 

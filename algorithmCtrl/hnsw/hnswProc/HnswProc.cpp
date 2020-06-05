@@ -125,11 +125,13 @@ ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYP
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(node)
     ANN_ASSERT_NOT_NULL(index)
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr)
 
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
-    unsigned int curCount = HnswProc::getHnswSingleton()->cur_element_count_;
-    if (HnswProc::getHnswSingleton()->max_elements_ <= curCount) {
+    unsigned int curCount = ptr->cur_element_count_;
+    if (ptr->max_elements_ <= curCount) {
         return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
     }
 
@@ -364,8 +366,12 @@ ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int curCount,
     ANN_ASSERT_NOT_NULL(ptr);
 
     unsigned int label = curCount + 1;
-
-    ret = ptr->addPoint((void *)node, label, index);
+    bool bret = ptr->isInfoExist(label, index);
+    if (bret) {
+        ret = ptr->overwriteNode(node, label, index);    // 如果被插入过了，则覆盖之前的内容
+    } else {
+        ret = ptr->addPoint(node, label, index);    // 如果不存在，则插入内容
+    }
     ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
@@ -381,14 +387,12 @@ ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int curCount, c
     ANN_ASSERT_NOT_NULL(ptr)
 
     unsigned int label = curCount + 1;
-    ret = ptr->checkAddEnable(label, index);
-    if (1 == ret) {
-        return ANN_RET_OK;    // 特殊逻辑，如果该label，已经被用了，则无需任何操作
+    bool bret = ptr->isInfoExist(label, index);
+    if (!bret) {
+        // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
+        ret = ptr->addPoint(node, label, index);
+        ANN_FUNCTION_CHECK_STATUS
     }
-    ANN_FUNCTION_CHECK_STATUS
-
-    ret = ptr->addPoint(node, label, index);
-    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }

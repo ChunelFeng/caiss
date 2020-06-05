@@ -12,12 +12,12 @@
 #include <atomic>
 #include <unordered_set>
 #include <unordered_map>
-
-//const static unsigned int MAX_INDEX_SIZE = 64;
+#include "./boost/bimap/bimap.hpp"
 
 namespace hnswlib {
     typedef unsigned int tableint;
     typedef unsigned int linklistsizeint;
+    typedef boost::bimaps::bimap< labeltype, std::string> BOOST_BIMAP;
 
     template<typename dist_t>
     class HierarchicalNSW : public AlgorithmInterface<dist_t> {
@@ -31,6 +31,7 @@ namespace hnswlib {
 
         HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, unsigned int index_size=64, size_t M = 16, size_t ef = 10, size_t ef_construction = 200, size_t random_seed = 100) :
                 link_list_locks_(max_elements), element_levels_(max_elements) {
+
             max_elements_ = max_elements;
 
             data_size_ = s->get_data_size();
@@ -127,8 +128,7 @@ namespace hnswlib {
 
         char *index_ptr_;
         unsigned int per_index_size_;
-        std::unordered_map<labeltype, std::string> index_lookup_;    // <cur_num, index>, 用于查询具体的index信息
-
+        BOOST_BIMAP index_lookup_;
 
         inline labeltype getExternalLabel(tableint internal_id) const {
             labeltype return_label;
@@ -561,7 +561,9 @@ namespace hnswlib {
             for (int i = 0; i < cur_element_count_; ++i) {
                 char info[per_index_size_] = {0};
                 memcpy(info, index_ptr_ + i * per_index_size_, per_index_size_);
-                index_lookup_[i] = std::string(info);
+                //index_lookup_[i] = std::string(info);
+                //bm.insert( bm_type::value_type(1, "one" ) );
+                index_lookup_.insert(BOOST_BIMAP::value_type(i, std::string(info)));
             }
 
             data_size_ = s->get_data_size();
@@ -653,8 +655,25 @@ namespace hnswlib {
           return data;
         }
 
-        void addPoint(void *data_point, labeltype label, const char *index) {
-            addPoint(data_point, label, index, -1);
+        int addPoint(void *data_point, labeltype label, const char *index) {
+           int ret = addPoint(data_point, label, index, -1);
+           return ret;
+        }
+
+        int checkAddEnable(labeltype label, const char *index) {
+            if (nullptr == index) {
+                return -2;    // 如果index信息为空，则直接返回ANN_RET_RES
+            }
+
+            if (index_lookup_.left.find(label) != index_lookup_.left.end()) {
+                return 1;
+            }
+
+            if (index_lookup_.right.find(std::string(index)) != index_lookup_.right.end()) {
+                return 1;    // 如果查到了index，表示不能添加了，顾返回ANN_RET_INDEX信息
+            }
+
+            return 0;
         }
 
         tableint addPoint(void *data_point, labeltype label, const char* index, int level) {
@@ -671,10 +690,10 @@ namespace hnswlib {
                 };
                 cur_c = cur_element_count_;    // 如果当前是0，则保存
 
-                // add的时候，添加的内容
+                // add的时候，添加的内容，需要双向添加<label,index>，例子：<1, hello>
                 memcpy(index_ptr_ + cur_element_count_ * per_index_size_, index, strlen(index));
+                index_lookup_.insert(BOOST_BIMAP::value_type(label, std::string(index)));
 
-                index_lookup_[label] = std::string(index);
                 label_lookup_[label] = cur_c;  // expected unique, if not will overwrite
                 cur_element_count_++;
             }

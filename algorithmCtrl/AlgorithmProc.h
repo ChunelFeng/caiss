@@ -72,11 +72,11 @@ public:
     /**
      * 插入结果信息
      * @param node
-     * @param label
+     * @param index
      * @param insertType
      * @return
      */
-    virtual ANN_RET_TYPE insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType = ANN_INSERT_APPEND) = 0;   // label 是数据标签
+    virtual ANN_RET_TYPE insert(ANN_FLOAT *node, const char *index, const ANN_INSERT_TYPE insertType = ANN_INSERT_OVERWRITE) = 0;   // label 是数据标签
 
     /**
      * 保存模型信息

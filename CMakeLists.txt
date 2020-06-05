@@ -3,8 +3,19 @@ project(ChunelAnn)
 
 set(CMAKE_CXX_STANDARD 14)
 
+aux_source_directory(. DIRSRCS)
+
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CNL_ANN_EXPORTS)
+
+# 设置boost路径
+set (MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
+
+#添加头文件搜索路径
+include_directories(${MY_BOOST_PATH})
+
+#添加头文件搜索路径
+include_directories(${MY_BOOST_PATH}/libs)
 
 # 以下是编译dll对应的内容
 add_library(ChunelAnn SHARED annManageCtrl/AnnManageInclude.h annManageCtrl/syncManage/SyncManageProc.h

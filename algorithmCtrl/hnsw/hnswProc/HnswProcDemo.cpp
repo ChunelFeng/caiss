@@ -3,7 +3,15 @@
 //
 
 #include <string>
+
+#include <time.h>
 #include "HnswProc.h"
+
+
+#include <unordered_map>
+#include <map>
+#include "./boost/bimap/bimap.hpp"
+typedef boost::bimaps::bimap<int, int> BOOST_INT_BIMAP;
 
 using namespace std;
 
@@ -42,6 +50,56 @@ int search() {
 
     delete proc;
     return ret;
+}
+
+int bimapTest() {
+//    tree map find 9999999(一千万) times need 6557 mil seconds.
+//    hash map find 9999999 times need 1052 mil seconds.
+//    bimap left find 9999999 times need 8083 mil seconds.
+//    bimap right find 9999999 times need 8041 mil seconds.
+    int total = 9999999;
+    std::unordered_map<int, int> unmap;
+    std::map<int, int> treemap;
+    BOOST_INT_BIMAP bimap;
+    for (int i = 0; i < total; ++i) {
+        treemap.insert(make_pair(i, i));
+        unmap.insert(make_pair(i, i));
+        bimap.insert(BOOST_INT_BIMAP::value_type(i, i));
+    }
+
+    cout << "start clock " << endl;
+
+    clock_t start , ends;
+
+    start = clock();
+    for (int j = 0; j < total; ++j) {
+        treemap.find(j);
+    }
+    ends = clock();
+    cout << "tree map find 9999999 times need " << ends - start << " mil seconds." << endl;
+
+    start = clock();
+    for (int j = 0; j < total; ++j) {
+         unmap.find(j);
+    }
+    ends = clock();
+    cout << "hash map find 9999999 times need " << ends - start << " mil seconds." << endl;
+
+    start = clock();
+    for (int k = 0; k < total; k++) {
+        bimap.left.find(k);
+    }
+    ends = clock();
+    cout << "bimap left find 9999999 times need " << ends - start << " mil seconds." << endl;
+
+    start = clock();
+    for (int k = 0; k < total; k++) {
+        bimap.right.find(k);
+    }
+    ends = clock();
+    cout << "bimap right find 9999999 times need " << ends - start << " mil seconds." << endl;
+
+    return 0;
 }
 
 int main() {

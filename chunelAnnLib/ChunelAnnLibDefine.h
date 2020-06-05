@@ -48,10 +48,9 @@ enum ANN_SEARCH_TYPE {
 
 enum ANN_INSERT_TYPE {
     // 如果插入相同的数据
-    ANN_INSERT_DEFAULT = 0,
-    ANN_INSERT_APPEND = 1,   // 在后面添加
-    ANN_INSERT_OVERWRITE = 2,   // 覆盖原有的
-    ANN_INSERT_DISCARD = 3,    // 丢弃
+    ANN_INSERT_DEFAULT = 1,
+    ANN_INSERT_OVERWRITE = 1,   // 覆盖原有的
+    ANN_INSERT_DISCARD = 2,    // 丢弃
 };
 
 enum ANN_MANAGE_TYPE {

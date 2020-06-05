@@ -100,6 +100,9 @@ ANN_RET_TYPE HnswProc::search(ANN_FLOAT *query, const unsigned int topK, const A
     ANN_ASSERT_NOT_NULL(query)
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
+    ret = normalizeNode(query, this->dim_);
+    ANN_FUNCTION_CHECK_STATUS
+
     this->result_.clear();
     std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = HnswProc::getHnswSingleton()->searchKnn((void *)query, topK);
 
@@ -118,24 +121,30 @@ ANN_RET_TYPE HnswProc::search(ANN_FLOAT *query, const unsigned int topK, const A
 }
 
 
-ANN_RET_TYPE HnswProc::insert(const ANN_FLOAT *node, const char *label, const ANN_INSERT_TYPE insertType) {
+ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYPE insertType) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(node)
-    ANN_ASSERT_NOT_NULL(label)
+    ANN_ASSERT_NOT_NULL(index)
 
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
+    unsigned int curCount = HnswProc::getHnswSingleton()->cur_element_count_;
+    if (HnswProc::getHnswSingleton()->max_elements_ <= curCount) {
+        return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
+    }
+
+    ret = normalizeNode(node, this->dim_);
+    ANN_FUNCTION_CHECK_STATUS
+
     switch (insertType) {
-        case ANN_INSERT_APPEND:
-            ret = insertByAppend(node, label);
-            break;
         case ANN_INSERT_OVERWRITE:
-            ret = insertByOverwrite(node, label);
+            ret = insertByOverwrite(node, curCount, index);
             break;
         case ANN_INSERT_DISCARD:
-            ret = insertByDiscard(node, label);
+            ret = insertByDiscard(node, curCount, index);
             break;
         default:
+            ret = ANN_RET_PARAM;
             break;
     }
 
@@ -346,41 +355,40 @@ HierarchicalNSW<ANN_FLOAT> *HnswProc::getHnswSingleton() {
 }
 
 
-ANN_RET_TYPE HnswProc::insertByAppend(const ANN_FLOAT *node, const char *label) {
+ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int curCount, const char *index) {
+    ANN_FUNCTION_BEGIN
+
+    ANN_ASSERT_NOT_NULL(node)    // 传入的信息，已经是normalize后的信息了
+    ANN_ASSERT_NOT_NULL(index)
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr);
+
+    unsigned int label = curCount + 1;
+
+    ret = ptr->addPoint((void *)node, label, index);
+    ANN_FUNCTION_CHECK_STATUS
+
+    ANN_FUNCTION_END
+}
+
+
+ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int curCount, const char *index) {
     ANN_FUNCTION_BEGIN
 
     ANN_ASSERT_NOT_NULL(node)
-    ANN_ASSERT_NOT_NULL(label)
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
+    ANN_ASSERT_NOT_NULL(index)
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr)
 
-
-    // todo 考虑好，今后label信息如何利用
-    int curCount = HnswProc::getHnswSingleton()->cur_element_count_;
-    if (HnswProc::getHnswSingleton()->max_elements_ <= curCount) {
-        return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
+    unsigned int label = curCount + 1;
+    ret = ptr->checkAddEnable(label, index);
+    if (1 == ret) {
+        return ANN_RET_OK;    // 特殊逻辑，如果该label，已经被用了，则无需任何操作
     }
+    ANN_FUNCTION_CHECK_STATUS
 
-    HnswProc::getHnswSingleton()->addPoint((void *)node, curCount + 1, label);
-
-    ANN_FUNCTION_END
-}
-
-
-ANN_RET_TYPE HnswProc::insertByOverwrite(const ANN_FLOAT *node, const char *label) {
-    ANN_FUNCTION_BEGIN
-
-    ANN_ASSERT_NOT_NULL(node)
-    ANN_ASSERT_NOT_NULL(label)
-
-    ANN_FUNCTION_END
-}
-
-
-ANN_RET_TYPE HnswProc::insertByDiscard(const ANN_FLOAT *node, const char *label) {
-    ANN_FUNCTION_BEGIN
-
-    ANN_ASSERT_NOT_NULL(node)
-    ANN_ASSERT_NOT_NULL(label)
+    ret = ptr->addPoint(node, label, index);
+    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }

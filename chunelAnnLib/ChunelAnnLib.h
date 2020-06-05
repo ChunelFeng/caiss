@@ -9,18 +9,23 @@
     #endif
 #endif
 
+#ifdef WIN32
+    #define STDCALL __stdcall
+#else
+    #define STDCALL
+#endif
+
 #include "ChunelAnnLibDefine.h"
 #include "../algorithmCtrl/AlgorithmInclude.h"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_Environment(unsigned int maxSize,
+    ANN_LIB_API ANN_RET_TYPE STDCALL CNL_ANN_Environment(unsigned int maxSize,
             const ANN_ALGO_TYPE algoType, const ANN_MANAGE_TYPE manageType);
 
-    ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateHandle(void** handle);
+    //ANN_LIB_API ANN_RET_TYPE __stdcall CNL_ANN_CreateHandle(void** handle);
 
 #ifdef __cplusplus
 }

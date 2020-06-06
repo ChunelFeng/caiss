@@ -579,7 +579,7 @@ namespace hnswlib {
 
             /// Legacy, check that everything is ok
 
-            bool old_index=false;
+            bool old_index = false;
 
             auto pos=input.tellg();
             input.seekg(cur_element_count_ * size_data_per_element_, input.cur);
@@ -598,7 +598,7 @@ namespace hnswlib {
             }
 
             // check if file is ok, if not this is either corrupted or old index
-            if(input.tellg()!=total_filesize)
+            if(input.tellg() != total_filesize)
                 old_index = true;
 
             if (old_index) {
@@ -625,7 +625,7 @@ namespace hnswlib {
             revSize_ = 1.0 / mult_;
             ef_ = 10;
             for (size_t i = 0; i < cur_element_count_; i++) {
-                label_lookup_[getExternalLabel(i)]=i;
+                label_lookup_[getExternalLabel(i)]=i;    // todo 这里有问题，
                 unsigned int linkListSize;
                 readBinaryPOD(input, linkListSize);
                 if (linkListSize == 0) {
@@ -663,7 +663,7 @@ namespace hnswlib {
           return data;
         }
 
-        int overwriteNode(void *node, labeltype label, const char *index) {
+        int overwriteNode(void *node, const char *index) {
             // 重新写入node信息
             if (nullptr == node || nullptr == index) {
                 return -2;
@@ -673,6 +673,8 @@ namespace hnswlib {
             if (len > per_index_size_) {
                 return -10;
             }
+
+            labeltype label = (labeltype)index_lookup_.right.find(index)->second;
 
             char *buff = this->getDataByInternalId(label);    // 这里的label传入的值，不会超过real_count的大小
             memset(buff, 0, this->data_size_);
@@ -687,11 +689,7 @@ namespace hnswlib {
             return 0;
         }
 
-        bool isInfoExist(labeltype label, const char *index) {
-            if (index_lookup_.left.find(label) != index_lookup_.left.end()) {
-                return true;
-            }
-
+        bool isInfoExist(const char *index) {
             if (index_lookup_.right.find(std::string(index)) != index_lookup_.right.end()) {
                 return true;    // 如果查到了index，表示不能添加了，顾返回ANN_RET_INDEX信息
             }

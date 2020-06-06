@@ -48,8 +48,8 @@ public:
     static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize);
     static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, const std::string &modelPath);
     static HierarchicalNSW<ANN_FLOAT>* getHnswSingleton();
-    static ANN_RET_TYPE insertByOverwrite(ANN_FLOAT *node, unsigned int curCount, const char *index);
-    static ANN_RET_TYPE insertByDiscard(ANN_FLOAT *node, unsigned int curCount, const char *index);
+    static ANN_RET_TYPE insertByOverwrite(ANN_FLOAT *node, unsigned int label, const char *index);
+    static ANN_RET_TYPE insertByDiscard(ANN_FLOAT *node, unsigned int label, const char *index);
 
     static HierarchicalNSW<ANN_FLOAT>*     hnsw_alg_ptr_;
     static RWLock                          lock_;

@@ -158,7 +158,8 @@ ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYP
 
 ANN_RET_TYPE HnswProc::save(const char *modelPath) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr)
 
     std::string path;
     if (nullptr == modelPath) {
@@ -168,7 +169,8 @@ ANN_RET_TYPE HnswProc::save(const char *modelPath) {
     }
 
     remove(path.c_str());    // 如果有的话，就删除
-    HnswProc::getHnswSingleton()->saveIndex(path);
+    ptr->saveIndex(path);
+
     ANN_FUNCTION_END
 }
 
@@ -239,16 +241,18 @@ ANN_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<AnnDataNode> &data
 
 ANN_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr)
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
         ret = normalizeNode(datas[i].node.data(), this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
         ANN_FUNCTION_CHECK_STATUS
-        HnswProc::getHnswSingleton()->addPoint((void *)datas[i].node.data(), i, (char *)datas[i].index.c_str());    // addPoint这里加入的i，算是位置信息
+        ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
+        ANN_FUNCTION_CHECK_STATUS
     }
 
-    HnswProc::getHnswSingleton()->saveIndex(std::string(this->model_path_));
+    ptr->saveIndex(std::string(this->model_path_));
     ANN_FUNCTION_END
 }
 
@@ -360,7 +364,7 @@ HierarchicalNSW<ANN_FLOAT> *HnswProc::getHnswSingleton() {
 }
 
 
-ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int curCount, const char *index) {
+ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int label, const char *index) {
     ANN_FUNCTION_BEGIN
 
     ANN_ASSERT_NOT_NULL(node)    // 传入的信息，已经是normalize后的信息了
@@ -368,10 +372,9 @@ ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int curCount,
     auto ptr = HnswProc::getHnswSingleton();
     ANN_ASSERT_NOT_NULL(ptr);
 
-    unsigned int label = curCount + 1;
-    bool bret = ptr->isInfoExist(label, index);
+    bool bret = ptr->isInfoExist(index);
     if (bret) {
-        ret = ptr->overwriteNode(node, label, index);    // 如果被插入过了，则覆盖之前的内容
+        ret = ptr->overwriteNode(node, index);    // 如果被插入过了，则覆盖之前的内容，覆盖的时候，不需要考虑label的值，因为在里面，可以通过index获取
     } else {
         ret = ptr->addPoint(node, label, index);    // 如果不存在，则插入内容
     }
@@ -381,7 +384,7 @@ ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int curCount,
 }
 
 
-ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int curCount, const char *index) {
+ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int label, const char *index) {
     ANN_FUNCTION_BEGIN
 
     ANN_ASSERT_NOT_NULL(node)
@@ -389,12 +392,12 @@ ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int curCount, c
     auto ptr = HnswProc::getHnswSingleton();
     ANN_ASSERT_NOT_NULL(ptr)
 
-    unsigned int label = curCount + 1;
-    bool bret = ptr->isInfoExist(label, index);
+    bool bret = ptr->isInfoExist(index);
     if (!bret) {
         // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
         ret = ptr->addPoint(node, label, index);
     }
+
     ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END

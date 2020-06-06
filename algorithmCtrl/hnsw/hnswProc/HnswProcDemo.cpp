@@ -36,19 +36,27 @@ int search() {
     auto proc = new HnswProc();
 
     ret = proc->init(ANN_MODE_PROCESS, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
-
-    vector<float> ist = {0,1.2,0,0};
+    ANN_FUNCTION_CHECK_STATUS
+    vector<float> ist = {0,1.8,0,0};
     ret = proc->insert(ist.data(), "asd", ANN_INSERT_OVERWRITE);
+    ANN_FUNCTION_CHECK_STATUS
+
+    ret = proc->save(nullptr);
+    ANN_FUNCTION_CHECK_STATUS
 
     vector<float> vec = {0,1.1,0,0};
     ret = proc->search(vec.data(), TOP_K, ANN_SEARCH_FAST);
+    ANN_FUNCTION_CHECK_STATUS
 
     unsigned int size = 0;
     ret = proc->getResultSize(size);
+    ANN_FUNCTION_CHECK_STATUS
 
     char* result = new char[size + 1];
     memset(result, 0, size+1);
     ret = proc->getResult(result, size);
+    ANN_FUNCTION_CHECK_STATUS
+
     cout << result << endl;
     delete[] result;
 

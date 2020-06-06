@@ -42,9 +42,10 @@ struct AnnResultDetail {
     ANN_RET_TYPE ret = ANN_RET_OK;    \
 
 #define ANN_FUNCTION_CHECK_STATUS    \
+    std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
     if (ANN_RET_OK != ret)   \
     {    \
-        std::cout << __FILE__ << __LINE__ << __FUNCTION__ << ", ret : " << ret << std::endl;    \
+        std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
         return ret; \
     }    \
 

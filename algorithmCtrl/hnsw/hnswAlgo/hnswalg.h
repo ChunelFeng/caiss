@@ -29,7 +29,7 @@ namespace hnswlib {
             loadIndex(location, s, max_elements);
         }
 
-        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, unsigned int index_size=64, size_t M = 16, size_t ef = 10, size_t ef_construction = 200, size_t random_seed = 100) :
+        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, unsigned int index_size=64, size_t M = 64, size_t ef = 200, size_t ef_construction = 200, size_t random_seed = 100) :
                 link_list_locks_(max_elements), element_levels_(max_elements) {
 
             max_elements_ = max_elements;
@@ -689,12 +689,19 @@ namespace hnswlib {
             return 0;
         }
 
-        bool isInfoExist(const char *index) {
-            if (index_lookup_.right.find(std::string(index)) != index_lookup_.right.end()) {
-                return true;    // 如果查到了index，表示不能添加了，顾返回ANN_RET_INDEX信息
+        /**
+         * 根据传入的word信息，查询这个word对应的label（数字）是多少
+         * @param word
+         * @return
+         */
+        int findWordLabel(const char *word) {
+            int label = -1;    // 默认，没找到就是返回-1
+            auto result = index_lookup_.right.find(std::string(word));
+            if (result != index_lookup_.right.end()) {
+                label = (int)result->second;    // 如果查到了，就把对应的标签给出去
             }
 
-            return false;
+            return label;
         }
 
 

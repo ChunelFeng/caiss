@@ -28,7 +28,8 @@ public:
                        const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan);
 
     // process_mode
-    ANN_RET_TYPE search(ANN_FLOAT *query, const unsigned int topK, ANN_SEARCH_TYPE searchType);
+    //ANN_RET_TYPE search(const char *word, const unsigned int topK, ANN_SEARCH_TYPE searchType);
+    ANN_RET_TYPE search(void *info, ANN_SEARCH_TYPE searchType, const unsigned int topK);
     ANN_RET_TYPE insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYPE insertType);
     ANN_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
     ANN_RET_TYPE getResultSize(unsigned int& size);
@@ -40,7 +41,7 @@ protected:
     ANN_RET_TYPE reset();
     ANN_RET_TYPE loadDatas(const char *dataPath, std::vector<AnnDataNode> &datas);
     ANN_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
-    ANN_RET_TYPE buildResult(const ANN_FLOAT *query, const std::list<unsigned int> &predIndex);
+    ANN_RET_TYPE buildResult(const ANN_FLOAT *query, std::priority_queue<std::pair<ANN_FLOAT, labeltype>>  &predResult);
     ANN_RET_TYPE loadModel(const char *modelPath);
     ANN_RET_TYPE createDistancePtr();
 
@@ -56,6 +57,7 @@ public:
 
 private:
     SpaceInterface<ANN_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了
+    std::list<std::string>                 result_words_;
 };
 
 

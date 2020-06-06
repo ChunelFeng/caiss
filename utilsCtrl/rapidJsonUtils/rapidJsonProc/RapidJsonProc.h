@@ -5,7 +5,7 @@
 #ifndef CHUNELANN_RAPIDJSONPROC_H
 #define CHUNELANN_RAPIDJSONPROC_H
 
-#include <vector>
+#include <list>
 #include <string>
 
 #include "../rapidjson/document.h"
@@ -26,7 +26,7 @@ public:
     ANN_RET_TYPE deinit() override ;
 
     static ANN_RET_TYPE parseInputData(const char *line, AnnDataNode& node);
-    static ANN_RET_TYPE buildSearchResult(const std::vector<AnnResultDetail> &details, ANN_DISTANCE_TYPE distanceType, std::string &result);
+    static ANN_RET_TYPE buildSearchResult(const std::list<AnnResultDetail> &details, ANN_DISTANCE_TYPE distanceType, std::string &result);
 };
 
 

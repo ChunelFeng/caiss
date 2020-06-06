@@ -60,7 +60,7 @@ ANN_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNo
         dataNode.index = itr->name.GetString();    // 获取行名称
         rapidjson::Value& array = jsonObject[dataNode.index.c_str()];
         for (unsigned int i = 0; i < array.Size(); ++i) {
-             dataNode.node.push_back(array[i].GetFloat());
+            dataNode.node.push_back((ANN_FLOAT)strtod(array[i].GetString(), nullptr));
         }
     }
 
@@ -68,8 +68,8 @@ ANN_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNo
 }
 
 
-ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail> &details,
-        ANN_DISTANCE_TYPE distanceType, std::string &result) {
+ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &details,
+                                              ANN_DISTANCE_TYPE distanceType, std::string &result) {
     ANN_FUNCTION_BEGIN
 
     Document dom;
@@ -91,7 +91,7 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::vector<AnnResultDetail>
         for (auto j : detail.node) {
             node.PushBack(j, alloc);
         }
-        obj.AddMember("node", node, alloc);
+        //obj.AddMember("node", node, alloc);
         array.PushBack(obj, alloc);
     }
 

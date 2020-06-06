@@ -94,31 +94,75 @@ ANN_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSiz
 }
 
 
-ANN_RET_TYPE HnswProc::search(ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType) {
+ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsigned int topK) {
     ANN_FUNCTION_BEGIN
 
-    ANN_ASSERT_NOT_NULL(query)
+    ANN_ASSERT_NOT_NULL(info)
+    auto ptr = HnswProc::getHnswSingleton();
+    ANN_ASSERT_NOT_NULL(ptr)
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
+
+    ANN_FLOAT *query = nullptr;
+    switch (searchType) {
+        case ANN_SEARCH_QUERY: {
+            query = (ANN_FLOAT *)info;    // 如果传入的是query信息的话
+            break;
+        }
+        case ANN_SEARCH_WORD: {
+            int label = ptr->findWordLabel((const char *)info);
+            if (-1 != label) {
+                query = ptr->getDataByLabel<ANN_FLOAT>(label).data();    // 找到word的情况
+            } else {
+                ret = ANN_RET_NO_WORD;    // 没有找到word的情况
+            }
+            break;
+        }
+        default:
+            ret = ANN_RET_PARAM;
+            break;
+    }
+
+    ANN_FUNCTION_CHECK_STATUS
 
     ret = normalizeNode(query, this->dim_);
     ANN_FUNCTION_CHECK_STATUS
 
     this->result_.clear();
-    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = HnswProc::getHnswSingleton()->searchKnn((void *)query, topK);
+    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = ptr->searchKnn((void *)query, topK);
 
-    std::list<unsigned int> predIndex;
-    while (!result.empty()) {
-        // 把预测到的结果，pred_dist中去
-        auto index = (unsigned int)result.top().second;
-        result.pop();
-        predIndex.push_front(index);
-    }
-
-    ret = buildResult(query, predIndex);
+    ret = buildResult(query, result);
     ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }
+
+
+//ANN_RET_TYPE HnswProc::search(const char *word, const unsigned int topK, ANN_SEARCH_TYPE searchType) {
+//    ANN_FUNCTION_BEGIN
+//
+//    ANN_ASSERT_NOT_NULL(word)
+//    auto ptr = HnswProc::getHnswSingleton();
+//    ANN_ASSERT_NOT_NULL(ptr)
+//
+//    ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
+//    this->result_.clear();
+//    this->result_words_.clear();
+//
+//
+//
+//    int label = ptr->findWordLabel(word);
+//    if (-1 != label) {
+//        // 如果找到了
+//        ANN_VECTOR_FLOAT node = ptr->getDataByLabel<ANN_FLOAT>(label);
+//        ret = search(node.data(), topK, searchType);    // 根据这个word对应的label信息，去生成其相近的信息
+//    } else {
+//        cout << "sorry, we find nothing for the word : " << word << endl;
+//        ret = ANN_RET_NO_WORD;
+//    }
+//    ANN_FUNCTION_CHECK_STATUS
+//
+//    ANN_FUNCTION_END
+//}
 
 
 ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYPE insertType) {
@@ -131,7 +175,7 @@ ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYP
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
     unsigned int curCount = ptr->cur_element_count_;
-    if (ptr->max_elements_ <= curCount) {
+    if (curCount >= ptr->max_elements_) {
         return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
     }
 
@@ -250,6 +294,10 @@ ANN_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
         ANN_FUNCTION_CHECK_STATUS
         ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
         ANN_FUNCTION_CHECK_STATUS
+
+        if (i % 1000 == 0) {
+            std::cout << "====" << i << "====" << std::endl;
+        }
     }
 
     ptr->saveIndex(std::string(this->model_path_));
@@ -257,27 +305,26 @@ ANN_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
 }
 
 
-ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, const std::list<unsigned int> &predIndex) {
+ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, std::priority_queue<std::pair<ANN_FLOAT, labeltype>>  &predResult) {
     ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton())
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->fstdistfunc_)
-    ANN_ASSERT_NOT_NULL(HnswProc::getHnswSingleton()->dist_func_param_)
     ANN_ASSERT_NOT_NULL(query)
     auto ptr = HnswProc::getHnswSingleton();
     ANN_ASSERT_NOT_NULL(ptr);
 
-    std::vector<AnnResultDetail> details;
-
-    for (unsigned int i : predIndex) {
+    std::list<AnnResultDetail> detailsList;
+    while (!predResult.empty()) {
         AnnResultDetail detail;
-        detail.node = ptr->getDataByLabel<ANN_FLOAT>(i);
-        detail.distance = ptr->fstdistfunc_((void *)detail.node.data(), (void *)query, HnswProc::getHnswSingleton()->dist_func_param_);
-        detail.index = i;
-        detail.label = ptr->index_lookup_.left.find(i)->second;
-        details.push_back(detail);
+        auto cur = predResult.top();
+        detail.node = ptr->getDataByLabel<ANN_FLOAT>(cur.second);
+        detail.distance = cur.first;
+        detail.index = cur.second;
+        detail.label = ptr->index_lookup_.left.find(cur.second)->second;
+        detailsList.push_front(detail);
+
+        predResult.pop();
     }
 
-    ret = RapidJsonProc::buildSearchResult(details, this->distance_type_, this->result_);
+    ret = RapidJsonProc::buildSearchResult(detailsList, this->distance_type_, this->result_);
     ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
@@ -372,11 +419,12 @@ ANN_RET_TYPE HnswProc::insertByOverwrite(ANN_FLOAT *node, unsigned int label, co
     auto ptr = HnswProc::getHnswSingleton();
     ANN_ASSERT_NOT_NULL(ptr);
 
-    bool bret = ptr->isInfoExist(index);
-    if (bret) {
-        ret = ptr->overwriteNode(node, index);    // 如果被插入过了，则覆盖之前的内容，覆盖的时候，不需要考虑label的值，因为在里面，可以通过index获取
+    if (-1 == ptr->findWordLabel(index)) {
+        // 返回-1，表示没找到对应的信息，如果不存在，则插入内容
+        ret = ptr->addPoint(node, label, index);
     } else {
-        ret = ptr->addPoint(node, label, index);    // 如果不存在，则插入内容
+        // 如果被插入过了，则覆盖之前的内容，覆盖的时候，不需要考虑label的值，因为在里面，可以通过index获取
+        ret = ptr->overwriteNode(node, index);
     }
     ANN_FUNCTION_CHECK_STATUS
 
@@ -392,13 +440,12 @@ ANN_RET_TYPE HnswProc::insertByDiscard(ANN_FLOAT *node, unsigned int label, cons
     auto ptr = HnswProc::getHnswSingleton();
     ANN_ASSERT_NOT_NULL(ptr)
 
-    bool bret = ptr->isInfoExist(index);
+    bool bret = ptr->findWordLabel(index);
     if (!bret) {
         // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
         ret = ptr->addPoint(node, label, index);
+        ANN_FUNCTION_CHECK_STATUS
     }
-
-    ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
 }

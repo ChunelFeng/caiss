@@ -28,7 +28,7 @@ public:
 
     virtual ANN_RET_TYPE init(void *handle, ANN_MODE mode, ANN_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
                               unsigned int exLen) = 0;
-    virtual ANN_RET_TYPE search(void *handle, ANN_FLOAT *query, unsigned int topK) = 0;
+    //virtual ANN_RET_TYPE search(void *handle, ANN_FLOAT *query, unsigned int topK) = 0;
     virtual ANN_RET_TYPE getResultSize(void *handle, unsigned int &size) = 0;
     virtual ANN_RET_TYPE getResult(void *handle, char *result, unsigned int size) = 0;
 

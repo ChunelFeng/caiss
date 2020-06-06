@@ -119,7 +119,7 @@ ANN_RET_TYPE SyncManageProc::search(void *handle, ANN_FLOAT *query, unsigned int
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();
-    ret = proc->search(query, topK);
+    ret = proc->search(query, ANN_SEARCH_WORD, topK);
     this->lock_.readUnlock();
 
     ANN_FUNCTION_CHECK_STATUS

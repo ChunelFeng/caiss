@@ -62,12 +62,12 @@ public:
     // process_mode
     /**
      * 查询topK个距离query最近的结果
-     * @param query
+     * @param info
      * @param topK
      * @param searchType
      * @return
      */
-    virtual ANN_RET_TYPE search(ANN_FLOAT *query, const unsigned int topK, const ANN_SEARCH_TYPE searchType = ANN_SEARCH_FAST) = 0;
+    virtual ANN_RET_TYPE search(void *info, ANN_SEARCH_TYPE searchType, const unsigned int topK) = 0;
 
     /**
      * 插入结果信息

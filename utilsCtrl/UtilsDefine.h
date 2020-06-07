@@ -21,6 +21,9 @@ struct AnnResultDetail {
     std::string label;    // 标签信息 （例：hello）
 };
 
+#define     COUT     (std::cout)
+#define     ENDL     (std::endl)
+
 // 定义几个常用的宏函数
 #define ANN_DELETE_PTR(ptr) \
     if (ptr != nullptr)    \

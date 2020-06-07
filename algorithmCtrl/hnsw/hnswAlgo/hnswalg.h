@@ -40,7 +40,7 @@ namespace hnswlib {
             M_ = M;
             maxM_ = M_;
             maxM0_ = M_ * 2;
-            ef_construction_ = std::max(ef_construction,M_);
+            ef_construction_ = std::max(ef_construction, M_);
             ef_ = ef;
 
             level_generator_.seed(random_seed);
@@ -623,7 +623,7 @@ namespace hnswlib {
             linkLists_ = (char **) malloc(sizeof(void *) * max_elements);
             element_levels_ = std::vector<int>(max_elements);
             revSize_ = 1.0 / mult_;
-            ef_ = 10;
+            ef_ = 10;    // 查询的时候，比较的节点的数量
             for (size_t i = 0; i < cur_element_count_; i++) {
                 label_lookup_[getExternalLabel(i)]=i;    // todo 这里有问题，
                 unsigned int linkListSize;

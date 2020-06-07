@@ -102,16 +102,23 @@ ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsi
     ANN_ASSERT_NOT_NULL(ptr)
     ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
 
-    ANN_FLOAT *query = nullptr;
+    this->result_.clear();
+    this->result_words_.clear();
+
+    std::vector<ANN_FLOAT> vec;
+
     switch (searchType) {
-        case ANN_SEARCH_QUERY: {
-            query = (ANN_FLOAT *)info;    // 如果传入的是query信息的话
+        case ANN_SEARCH_QUERY: {    // 如果传入的是query信息的话
+            for (int i = 0; i < this->dim_; i++) {
+                vec.push_back(*((ANN_FLOAT *)info + i));
+            }
+            ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
             break;
         }
-        case ANN_SEARCH_WORD: {
+        case ANN_SEARCH_WORD: {    // 过传入的是word信息的话
             int label = ptr->findWordLabel((const char *)info);
             if (-1 != label) {
-                query = ptr->getDataByLabel<ANN_FLOAT>(label).data();    // 找到word的情况
+                vec = ptr->getDataByLabel<ANN_FLOAT>(label);    // 找到word的情况，这种情况下，不需要做normalize。因为存入的时候，已经设定好了
             } else {
                 ret = ANN_RET_NO_WORD;    // 没有找到word的情况
             }
@@ -124,13 +131,10 @@ ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsi
 
     ANN_FUNCTION_CHECK_STATUS
 
-    ret = normalizeNode(query, this->dim_);
-    ANN_FUNCTION_CHECK_STATUS
+    auto *query = (ANN_FLOAT *)vec.data();
+    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> predResult = ptr->searchKnn((void *)query, topK);
 
-    this->result_.clear();
-    std::priority_queue<std::pair<ANN_FLOAT, labeltype>> result = ptr->searchKnn((void *)query, topK);
-
-    ret = buildResult(query, result);
+    ret = buildResult(query, predResult);
     ANN_FUNCTION_CHECK_STATUS
 
     ANN_FUNCTION_END
@@ -179,15 +183,20 @@ ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYP
         return ANN_RET_MODEL_SIZE;    // 超过模型的最大尺寸了
     }
 
-    ret = normalizeNode(node, this->dim_);
+    std::vector<ANN_FLOAT> vec;
+    for (int i = 0; i < this->dim_; i++) {
+        vec.push_back(node[i]);
+    }
+
+    ret = normalizeNode(vec, this->dim_);
     ANN_FUNCTION_CHECK_STATUS
 
     switch (insertType) {
         case ANN_INSERT_OVERWRITE:
-            ret = insertByOverwrite(node, curCount, index);
+            ret = insertByOverwrite(vec.data(), curCount, index);
             break;
         case ANN_INSERT_DISCARD:
-            ret = insertByDiscard(node, curCount, index);
+            ret = insertByDiscard(vec.data(), curCount, index);
             break;
         default:
             ret = ANN_RET_PARAM;
@@ -290,7 +299,7 @@ ANN_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
-        ret = normalizeNode(datas[i].node.data(), this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
+        ret = normalizeNode(datas[i].node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
         ANN_FUNCTION_CHECK_STATUS
         ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
         ANN_FUNCTION_CHECK_STATUS

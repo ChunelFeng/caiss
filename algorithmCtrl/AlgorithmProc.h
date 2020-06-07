@@ -109,9 +109,7 @@ public:
 
 protected:
 
-    ANN_RET_TYPE normalizeNode(ANN_FLOAT *node, unsigned int dim) {
-        ANN_ASSERT_NOT_NULL(node);
-
+    ANN_RET_TYPE normalizeNode(std::vector<ANN_FLOAT>& node, unsigned int dim) {
         if (ANN_FALSE == this->normalize_) {
             return ANN_RET_OK;    // 如果不需要归一化，直接返回
         }
@@ -132,6 +130,30 @@ protected:
 
         return ANN_RET_OK;
     }
+
+//    ANN_RET_TYPE normalizeNode(ANN_FLOAT *node, unsigned int dim) {
+//        ANN_ASSERT_NOT_NULL(node);
+//
+//        if (ANN_FALSE == this->normalize_) {
+//            return ANN_RET_OK;    // 如果不需要归一化，直接返回
+//        }
+//
+//        if (dim != this->dim_) {
+//            return ANN_RET_DIM;    // 忽略维度不一致的情况
+//        }
+//
+//        ANN_FLOAT sum = 0.0;
+//        for (unsigned int i = 0; i < this->dim_; i++) {
+//            sum += (node[i] * node[i]);
+//        }
+//
+//        ANN_FLOAT denominator = std::sqrt(sum);    // 分母信息
+//        for (unsigned int i = 0; i < this->dim_; i++) {
+//            node[i] = node[i] / denominator;
+//        }
+//
+//        return ANN_RET_OK;
+//    }
 
     float fastSqrt(float x) {
         /* 快速开平方计算方式 */

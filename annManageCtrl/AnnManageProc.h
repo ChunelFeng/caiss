@@ -28,12 +28,12 @@ public:
 
     virtual ANN_RET_TYPE init(void *handle, ANN_MODE mode, ANN_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
                               unsigned int exLen) = 0;
-    //virtual ANN_RET_TYPE search(void *handle, ANN_FLOAT *query, unsigned int topK) = 0;
+    virtual ANN_RET_TYPE search(void *handle, void *query, ANN_SEARCH_TYPE searchType, unsigned int topK) = 0;
     virtual ANN_RET_TYPE getResultSize(void *handle, unsigned int &size) = 0;
     virtual ANN_RET_TYPE getResult(void *handle, char *result, unsigned int size) = 0;
 
     // label 是数据标签，index表示数据第几个信息
-    virtual ANN_RET_TYPE insert(void *handle, const ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) = 0;
+    virtual ANN_RET_TYPE insert(void *handle, ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) = 0;
     virtual ANN_RET_TYPE save(void *handle, char *modelPath) = 0;
 
 protected:

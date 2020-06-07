@@ -106,6 +106,7 @@ ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsi
     this->result_words_.clear();
 
     std::vector<ANN_FLOAT> vec;
+    vec.reserve(this->dim_);
 
     switch (searchType) {
         case ANN_SEARCH_QUERY: {    // 如果传入的是query信息的话
@@ -139,34 +140,6 @@ ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsi
 
     ANN_FUNCTION_END
 }
-
-
-//ANN_RET_TYPE HnswProc::search(const char *word, const unsigned int topK, ANN_SEARCH_TYPE searchType) {
-//    ANN_FUNCTION_BEGIN
-//
-//    ANN_ASSERT_NOT_NULL(word)
-//    auto ptr = HnswProc::getHnswSingleton();
-//    ANN_ASSERT_NOT_NULL(ptr)
-//
-//    ANN_CHECK_MODE_ENABLE(ANN_MODE_PROCESS)
-//    this->result_.clear();
-//    this->result_words_.clear();
-//
-//
-//
-//    int label = ptr->findWordLabel(word);
-//    if (-1 != label) {
-//        // 如果找到了
-//        ANN_VECTOR_FLOAT node = ptr->getDataByLabel<ANN_FLOAT>(label);
-//        ret = search(node.data(), topK, searchType);    // 根据这个word对应的label信息，去生成其相近的信息
-//    } else {
-//        cout << "sorry, we find nothing for the word : " << word << endl;
-//        ret = ANN_RET_NO_WORD;
-//    }
-//    ANN_FUNCTION_CHECK_STATUS
-//
-//    ANN_FUNCTION_END
-//}
 
 
 ANN_RET_TYPE HnswProc::insert(ANN_FLOAT *node, const char *index, ANN_INSERT_TYPE insertType) {
@@ -329,7 +302,7 @@ ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, std::priority_queue<s
         detail.index = cur.second;
         detail.label = ptr->index_lookup_.left.find(cur.second)->second;
         detailsList.push_front(detail);
-
+        this->result_words_.push_front(detail.label);    // 保存label（词语）信息
         predResult.pop();
     }
 

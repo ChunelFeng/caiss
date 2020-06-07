@@ -8,6 +8,9 @@ aux_source_directory(. DIRSRCS)
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CNL_ANN_EXPORTS)
 
+# 设置在windows上可以正常运行
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
 # 设置boost路径
 set (MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 

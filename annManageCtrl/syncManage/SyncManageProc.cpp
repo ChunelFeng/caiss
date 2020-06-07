@@ -111,7 +111,7 @@ SyncManageProc::~SyncManageProc() {
 }
 
 
-ANN_RET_TYPE SyncManageProc::search(void *handle, ANN_FLOAT *query, unsigned int topK) {
+ANN_RET_TYPE SyncManageProc::search(void *handle, void *query, ANN_SEARCH_TYPE searchType, unsigned int topK) {
     ANN_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -165,7 +165,7 @@ ANN_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigne
     ANN_FUNCTION_END
 }
 
-ANN_RET_TYPE SyncManageProc::insert(void *handle, const ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) {
+ANN_RET_TYPE SyncManageProc::insert(void *handle, ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) {
     ANN_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

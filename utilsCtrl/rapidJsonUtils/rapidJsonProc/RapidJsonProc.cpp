@@ -3,6 +3,8 @@
 //
 
 #include "RapidJsonProc.h"
+#include <string>
+
 
 inline static std::string buildDistanceType(ANN_DISTANCE_TYPE type) {
     std::string ret;
@@ -78,7 +80,9 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &
     Document::AllocatorType& alloc = dom.GetAllocator();
     dom.AddMember("version", ANN_VERSION, alloc);
     dom.AddMember("size", details.size(), alloc);
-    dom.AddMember("distance_type", StringRef(buildDistanceType(distanceType).c_str()), alloc);
+
+    std::string type = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
+    dom.AddMember("distance_type", StringRef(type.c_str()), alloc);
 
     rapidjson::Value array(rapidjson::kArrayType);
 
@@ -88,7 +92,7 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &
         obj.AddMember("distance", (detail.distance < 0.00001) ? (0.0f) : detail.distance, alloc);
         obj.AddMember("index", detail.index, alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)
         obj.AddMember("label", StringRef(detail.label.c_str()), alloc);
-//        rapidjson::Value node(rapidjson::kArrayType);
+//        rapidjson::Value node(rapidjson::kArrayType);    // 输出向量的具体内容，暂时不需要了
 //        for (auto j : detail.node) {
 //            node.PushBack(j, alloc);
 //        }

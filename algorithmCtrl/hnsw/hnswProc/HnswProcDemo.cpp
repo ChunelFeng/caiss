@@ -151,7 +151,9 @@ int main() {
         ret = search(SEARCH_WORD);
     } else if (ACTION == 2) {
         cout << "**** Please enter a word, we will recommend 5 similar words for you. enter : ";
-        while (true) {
+        int times = 100000;
+        while (times--)
+        {
             string ipt;
             cin >> ipt;
             transform(ipt.begin(), ipt.end(), ipt.begin(), ::tolower);

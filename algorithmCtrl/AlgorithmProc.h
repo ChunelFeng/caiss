@@ -3,12 +3,12 @@
 // 所有算法类的基类信息
 //
 
-#ifndef CHUNELANN_ALGORITHMPROC_H
-#define CHUNELANN_ALGORITHMPROC_H
+#ifndef CHUNELCAISS_ALGORITHMPROC_H
+#define CHUNELCAISS_ALGORITHMPROC_H
 
 
 #include <string>
-#include "../chunelAnnLib/ChunelAnnLib.h"
+#include "../caissLib/CaissLib.h"
 #include "../utilsCtrl/UtilsInclude.h"
 #include "../threadCtrl/ThreadInclude.h"
 
@@ -38,7 +38,7 @@ public:
      * @param exLen
      * @return
      */
-    virtual ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
+    virtual CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
                               const unsigned int exLen) = 0;
 
     // train_mode
@@ -55,8 +55,8 @@ public:
      * @param showSpan
      * @return
      */
-    virtual ANN_RET_TYPE train(const char *dataPath,
-                               const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
+    virtual CAISS_RET_TYPE train(const char *dataPath,
+                               const unsigned int maxDataSize, const CAISS_BOOL normalize, const float precision, const unsigned int fastRank, const unsigned int realRank,
                                const unsigned int step = DEFAULT_STEP, const unsigned int maxEpoch = DEFAULT_MAX_EPOCH, const unsigned int showSpan = DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
@@ -67,7 +67,7 @@ public:
      * @param searchType
      * @return
      */
-    virtual ANN_RET_TYPE search(void *info, ANN_SEARCH_TYPE searchType, const unsigned int topK) = 0;
+    virtual CAISS_RET_TYPE search(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK) = 0;
 
     /**
      * 插入结果信息
@@ -76,21 +76,21 @@ public:
      * @param insertType
      * @return
      */
-    virtual ANN_RET_TYPE insert(ANN_FLOAT *node, const char *index, const ANN_INSERT_TYPE insertType = ANN_INSERT_OVERWRITE) = 0;   // label 是数据标签
+    virtual CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, const CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
 
     /**
      * 保存模型信息
      * @param modelPath
      * @return
      */
-    virtual ANN_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
+    virtual CAISS_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
 
     /**
      * 获取结果的长度
      * @param size
      * @return
      */
-    virtual ANN_RET_TYPE getResultSize(unsigned int& size) = 0;
+    virtual CAISS_RET_TYPE getResultSize(unsigned int& size) = 0;
 
     /**
      * 获取结果
@@ -98,61 +98,61 @@ public:
      * @param size
      * @return
      */
-    virtual ANN_RET_TYPE getResult(char *result, unsigned int size) = 0;
+    virtual CAISS_RET_TYPE getResult(char *result, unsigned int size) = 0;
 
     /**
      * 被忽略的节点
      * @param label
      * @return
      */
-    virtual ANN_RET_TYPE ignore(const char *label) = 0;
+    virtual CAISS_RET_TYPE ignore(const char *label) = 0;
 
 protected:
 
-    ANN_RET_TYPE normalizeNode(std::vector<ANN_FLOAT>& node, unsigned int dim) {
-        if (ANN_FALSE == this->normalize_) {
-            return ANN_RET_OK;    // 如果不需要归一化，直接返回
+    CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
+        if (CAISS_FALSE == this->normalize_) {
+            return CAISS_RET_OK;    // 如果不需要归一化，直接返回
         }
 
         if (dim != this->dim_) {
-            return ANN_RET_DIM;    // 忽略维度不一致的情况
+            return CAISS_RET_DIM;    // 忽略维度不一致的情况
         }
 
-        ANN_FLOAT sum = 0.0;
+        CAISS_FLOAT sum = 0.0;
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
 
-        ANN_FLOAT denominator = std::sqrt(sum);    // 分母信息
+        CAISS_FLOAT denominator = std::sqrt(sum);    // 分母信息
         for (unsigned int i = 0; i < this->dim_; i++) {
             node[i] = node[i] / denominator;
         }
 
-        return ANN_RET_OK;
+        return CAISS_RET_OK;
     }
 
-//    ANN_RET_TYPE normalizeNode(ANN_FLOAT *node, unsigned int dim) {
-//        ANN_ASSERT_NOT_NULL(node);
+//    CAISS_RET_TYPE normalizeNode(CAISS_FLOAT *node, unsigned int dim) {
+//        CAISS_ASSERT_NOT_NULL(node);
 //
-//        if (ANN_FALSE == this->normalize_) {
-//            return ANN_RET_OK;    // 如果不需要归一化，直接返回
+//        if (CAISS_FALSE == this->normalize_) {
+//            return CAISS_RET_OK;    // 如果不需要归一化，直接返回
 //        }
 //
 //        if (dim != this->dim_) {
-//            return ANN_RET_DIM;    // 忽略维度不一致的情况
+//            return CAISS_RET_DIM;    // 忽略维度不一致的情况
 //        }
 //
-//        ANN_FLOAT sum = 0.0;
+//        CAISS_FLOAT sum = 0.0;
 //        for (unsigned int i = 0; i < this->dim_; i++) {
 //            sum += (node[i] * node[i]);
 //        }
 //
-//        ANN_FLOAT denominator = std::sqrt(sum);    // 分母信息
+//        CAISS_FLOAT denominator = std::sqrt(sum);    // 分母信息
 //        for (unsigned int i = 0; i < this->dim_; i++) {
 //            node[i] = node[i] / denominator;
 //        }
 //
-//        return ANN_RET_OK;
+//        return CAISS_RET_OK;
 //    }
 
     float fastSqrt(float x) {
@@ -169,10 +169,10 @@ protected:
 protected:
     std::string model_path_;
     unsigned int dim_;
-    ANN_MODE cur_mode_;
-    ANN_BOOL normalize_;    // 是否需要标准化数据
+    CAISS_MODE cur_mode_;
+    CAISS_BOOL normalize_;    // 是否需要标准化数据
     std::string result_;
-    ANN_DISTANCE_TYPE distance_type_;
+    CAISS_DISTANCE_TYPE distance_type_;
 };
 
-#endif //CHUNELANN_ALGORITHMPROC_H
+#endif //CHUNELCAISS_ALGORITHMPROC_H

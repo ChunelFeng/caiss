@@ -5,14 +5,13 @@
 
 #include "SyncManageProc.h"
 
-ANN_RET_TYPE SyncManageProc::createHandle(void** handle) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::createHandle(void **handle) {
+    CAISS_FUNCTION_BEGIN
 
     this->lock_.writeLock();    // 如果内部还有句柄信息的话，开始分配句柄操作
-
     if (this->free_manage_.empty()) {
         this->lock_.writeUnlock();
-        return ANN_RET_HANDLE;    // 如果是空，表示返回失败
+        return CAISS_RET_HANDLE;    // 如果是空，表示返回失败
     }
 
     void* key = free_manage_.begin()->first;
@@ -22,17 +21,17 @@ ANN_RET_TYPE SyncManageProc::createHandle(void** handle) {
 
     *handle = key;
     this->lock_.writeUnlock();
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
-ANN_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
-    ANN_FUNCTION_BEGIN
-    ANN_ASSERT_NOT_NULL(handle);
+CAISS_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(handle);
 
     this->lock_.writeLock();
     if (used_manage_.find(handle) == used_manage_.end()) {
         this->lock_.writeUnlock();
-        return ANN_RET_HANDLE;
+        return CAISS_RET_HANDLE;
     }
 
     // 给free_manage_重新加入，并且将used_manage_中的对应句柄删除
@@ -42,7 +41,7 @@ ANN_RET_TYPE SyncManageProc::destroyHandle(void* handle) {
 
     this->lock_.writeUnlock();
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 
@@ -69,8 +68,8 @@ AlgorithmProc* SyncManageProc::getInstance(void *handle) {
 AlgorithmProc *SyncManageProc::createAlgoProc() {
     AlgorithmProc *proc = nullptr;
     switch (this->algo_type_) {
-        case ANN_ALGO_HNSW: proc = new HnswProc(); break;
-        case ANN_ALGO_NSG: break;
+        case CAISS_ALGO_HNSW: proc = new HnswProc(); break;
+        case CAISS_ALGO_NSG: break;
         default:
             break;
     }
@@ -84,10 +83,9 @@ AlgorithmProc *SyncManageProc::createAlgoProc() {
  * @param maxSize
  * @param algoType
  */
-SyncManageProc::SyncManageProc(const unsigned int maxSize, const ANN_ALGO_TYPE algoType)
-                              : AnnManageProc(maxSize, algoType) {
+SyncManageProc::SyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType)
+                              : manageProc(maxSize, algoType) {
     this->max_size_ = 0;
-    this->algo_type_ = algoType;
     for(unsigned int i = 0; i < maxSize; i++) {
         AlgorithmProc* proc = createAlgoProc();
         if (nullptr != proc) {
@@ -100,98 +98,98 @@ SyncManageProc::SyncManageProc(const unsigned int maxSize, const ANN_ALGO_TYPE a
 
 SyncManageProc::~SyncManageProc() {
     for (auto i : free_manage_) {
-        ANN_DELETE_PTR(i.second);
+        CAISS_DELETE_PTR(i.second);
     }
 
     for (auto j : used_manage_) {
-        ANN_DELETE_PTR(j.second);
+        CAISS_DELETE_PTR(j.second);
     }
 
     this->max_size_ = 0;
 }
 
 
-ANN_RET_TYPE SyncManageProc::search(void *handle, void *query, ANN_SEARCH_TYPE searchType, unsigned int topK) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::search(void *handle, void *query, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();
-    ret = proc->search(query, ANN_SEARCH_WORD, topK);
+    ret = proc->search(query, CAISS_SEARCH_WORD, topK);
     this->lock_.readUnlock();
 
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 
-ANN_RET_TYPE SyncManageProc::init(void *handle, ANN_MODE mode, ANN_DISTANCE_TYPE distanceType,
-        const unsigned int dim, const char *modelPath, const unsigned int exLen) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
+                                  const unsigned int dim, const char *modelPath, const unsigned int exLen) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     ret = proc->init(mode, distanceType, dim, modelPath, exLen);
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
-ANN_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     ret = proc->getResultSize(size);
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
-ANN_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     ret = proc->getResult(result, size);
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
-ANN_RET_TYPE SyncManageProc::insert(void *handle, ANN_FLOAT *node, const char *label, ANN_INSERT_TYPE insertType) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     this->lock_.writeLock();
     ret = proc->insert(node, label, insertType);
     this->lock_.writeUnlock();
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 
-ANN_RET_TYPE SyncManageProc::save(void *handle, char *modelPath) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE SyncManageProc::save(void *handle, char *modelPath) {
+    CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
-    ANN_ASSERT_NOT_NULL(proc)
+    CAISS_ASSERT_NOT_NULL(proc)
 
     this->lock_.writeLock();
     ret = proc->save(modelPath);
     this->lock_.writeUnlock();
-    ANN_FUNCTION_CHECK_STATUS
+    CAISS_FUNCTION_CHECK_STATUS
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 

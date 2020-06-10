@@ -7,7 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
-#include "AnnManageProc.h"
+#include "manageProc.h"
 #include "syncManage/SyncManageProc.h"
 
 using namespace std;
@@ -17,7 +17,7 @@ const static string MODEL_PATH = "result-71290words-128dim.ann";
 //const static string MODEL_PATH = "test.ann";
 
 
-void func(int x, AnnManageProc* ptr, string word) {
+void func(int x, manageProc* ptr, string word) {
 
     ofstream outfile;
 
@@ -28,10 +28,10 @@ void func(int x, AnnManageProc* ptr, string word) {
     void* handle = nullptr;
     ret = ptr->createHandle(&handle);
 
-    ret = ptr->init(handle, ANN_MODE_PROCESS, ANN_DISTANCE_INNER, 128, MODEL_PATH.c_str(), 0);
+    ret = ptr->init(handle, CAISS_MODE_PROCESS, CAISS_DISTANCE_INNER, 128, MODEL_PATH.c_str(), 0);
     for (int i = 0; i < times; i++) {
-        //vector<ANN_FLOAT> query = {0, float(x), 0, 0};
-        ret = ptr->search(handle, (void *)word.data(), ANN_SEARCH_WORD, 2);
+        //vector<CAISS_FLOAT> query = {0, float(x), 0, 0};
+        ret = ptr->search(handle, (void *)word.data(), CAISS_SEARCH_WORD, 2);
 
         unsigned int size = 0;
         ret = ptr->getResultSize(handle, size);
@@ -52,7 +52,7 @@ int main() {
     cout << "== start ==" << endl;
     cout << "8 thread, 100w times" << endl;
     unsigned int size = 8;
-    AnnManageProc* ptr = new SyncManageProc(size, ANN_ALGO_HNSW);
+    manageProc* ptr = new SyncManageProc(size, CAISS_ALGO_HNSW);
 
     vector<string> vec = {"one", "two", "three", "one", "two", "three", "one", "two", "three",
                           "one", "two", "three", "one", "two", "three", "one", "two", "three",

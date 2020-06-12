@@ -17,6 +17,9 @@ using ANN_BOOL = int;
 using ANN_VECTOR_FLOAT = std::vector<ANN_FLOAT>;
 using ANN_VECTOR_UINT = std::vector<ANN_UINT>;
 
+typedef ANN_FLOAT (STDCALL * CAISS_DIST_FUNC)(const void *pVect1, const void *pVect2, const void *qty_ptr);
+
+
 /* 函数返回值定义 */
 #define ANN_RET_WARNING    (1)     // 流程告警
 #define ANN_RET_OK         (0)     // 流程正常

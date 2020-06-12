@@ -9,6 +9,7 @@
 
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
+#include "../../../chunelAnnLib/ChunelAnnLibDefine.h"
 #include <./boost/bimap/bimap.hpp>
 
 using namespace hnswlib;
@@ -22,7 +23,7 @@ public:
     virtual ~HnswProc();
 
     ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType,
-                      const unsigned int dim, const char *modelPath, const unsigned int exLen);
+                      const unsigned int dim, const char *modelPath, const CAISS_DISTFUNC func);
 
     // train_mode
     ANN_RET_TYPE train(const char* dataPath, const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision,
@@ -58,6 +59,7 @@ public:
 
 private:
     SpaceInterface<ANN_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了
+    CAISS_DIST_FUNC                        distance_func_;
 };
 
 

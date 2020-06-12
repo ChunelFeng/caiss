@@ -163,6 +163,10 @@ namespace hnswlib {
             data_size_ = dim * sizeof(float);
         }
 
+        void set_dist_func(DISTFUNC<float> dist_func) {
+            return;    // 具体距离，无任何操作
+        }
+
         size_t get_data_size() {
             return data_size_;
         }

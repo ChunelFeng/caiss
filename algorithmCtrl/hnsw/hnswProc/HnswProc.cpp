@@ -8,6 +8,7 @@
 #include <queue>
 #include <iomanip>
 #include "HnswProc.h"
+#include "../../../chunelAnnLib/ChunelAnnLibDefine.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ HnswProc::~HnswProc() {
 /************************ 以下是重写的算法基类接口内容 ************************/
 ANN_RET_TYPE
 HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-               const unsigned int exLen) {
+               const CAISS_DIST_FUNC func = nullptr) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(modelPath);
 
@@ -46,6 +47,7 @@ HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const 
     // 如果是train模式，则是需要保存到这里；如果process模式，则是读取模型
     this->model_path_ = isAnnSuffix(modelPath) ? (string(modelPath)) : (string(modelPath) + MODEL_SUFFIX);
     this->distance_type_ = distanceType;
+    this->distance_func_ = func;
     createDistancePtr();
 
     if (this->cur_mode_ == ANN_MODE_PROCESS) {
@@ -337,7 +339,9 @@ ANN_RET_TYPE HnswProc::createDistancePtr() {
         case ANN_DISTANCE_INNER:
             this->distance_ptr_ = new InnerProductSpace(this->dim_);
             break;
-        case ANN_DISTANCE_EDITION:    // todo 今后需要外部传入距离计算的函数
+        case ANN_DISTANCE_EDITION:
+            this->distance_ptr_ = new EditionProductSpace(this->dim_);
+            this->distance_ptr_->set_dist_func((DISTFUNC<float>)this->distance_func_);
         default:
             break;
     }

@@ -57,6 +57,8 @@ namespace hnswlib {
 
         virtual DISTFUNC<MTYPE> get_dist_func() = 0;
 
+        virtual void set_dist_func(DISTFUNC<MTYPE> dist_func) = 0;
+
         virtual void *get_dist_func_param() = 0;
 
         virtual ~SpaceInterface() {}
@@ -77,5 +79,6 @@ namespace hnswlib {
 
 #include "space_l2.h"
 #include "space_ip.h"
+#include "space_edition.h"
 #include "bruteforce.h"
 #include "hnswalg.h"

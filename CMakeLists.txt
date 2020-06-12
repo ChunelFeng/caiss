@@ -27,7 +27,7 @@ add_library(ChunelAnn SHARED annManageCtrl/AnnManageInclude.h annManageCtrl/sync
         algorithmCtrl/AlgorithmInclude.h algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
         algorithmCtrl/hnsw/hnswProc/HnswProc.h utilsCtrl/UtilsInclude.h utilsCtrl/UtilsProc.h
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.h
-        threadCtrl/ThreadInclude.h threadCtrl/rwLock/RWLock.cpp threadCtrl/rwLock/RWLock.h threadCtrl/rwLock/RWLockDemo.cpp)
+        threadCtrl/ThreadInclude.h threadCtrl/rwLock/RWLock.cpp threadCtrl/rwLock/RWLock.h threadCtrl/rwLock/RWLockDemo.cpp algorithmCtrl/hnsw/hnswAlgo/space_edition.h)
 
 # 添加对应依赖的内容
 add_subdirectory(threadCtrl/rwLock)

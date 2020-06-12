@@ -36,9 +36,12 @@ HnswProc::~HnswProc() {
 /************************ 以下是重写的算法基类接口内容 ************************/
 ANN_RET_TYPE
 HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-               const CAISS_DIST_FUNC func = nullptr) {
+               const CAISS_DIST_FUNC distFunc = nullptr) {
     ANN_FUNCTION_BEGIN
     ANN_ASSERT_NOT_NULL(modelPath);
+    if (distanceType == ANN_DISTANCE_EDITION) {
+        ANN_ASSERT_NOT_NULL(distFunc)    // 如果是定制距离的话，必须传距离计算函数下来
+    }
 
     reset();    // 清空所有数据信息
 
@@ -47,8 +50,7 @@ HnswProc::init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const 
     // 如果是train模式，则是需要保存到这里；如果process模式，则是读取模型
     this->model_path_ = isAnnSuffix(modelPath) ? (string(modelPath)) : (string(modelPath) + MODEL_SUFFIX);
     this->distance_type_ = distanceType;
-    this->distance_func_ = func;
-    createDistancePtr();
+    createDistancePtr(distFunc);
 
     if (this->cur_mode_ == ANN_MODE_PROCESS) {
         ret = loadModel(modelPath);    // 如果是处理模式的话，则读取模型内容信息
@@ -106,6 +108,7 @@ ANN_RET_TYPE HnswProc::search(void *info, ANN_SEARCH_TYPE searchType, const unsi
 
     this->result_.clear();
     this->result_words_.clear();
+    this->result_distance_.clear();
 
     std::vector<ANN_FLOAT> vec;
     vec.reserve(this->dim_);
@@ -305,6 +308,7 @@ ANN_RET_TYPE HnswProc::buildResult(const ANN_FLOAT *query, std::priority_queue<s
         detail.label = ptr->index_lookup_.left.find(cur.second)->second;
         detailsList.push_front(detail);
         this->result_words_.push_front(detail.label);    // 保存label（词语）信息
+        this->result_distance_.push_front(detail.distance);    // 保存距离信息
         predResult.pop();
     }
 
@@ -328,7 +332,12 @@ ANN_RET_TYPE HnswProc::loadModel(const char *modelPath) {
 }
 
 
-ANN_RET_TYPE HnswProc::createDistancePtr() {
+/**
+ * 设定距离信息
+ * @param distFunc
+ * @return
+ */
+ANN_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
     ANN_FUNCTION_BEGIN
 
     ANN_DELETE_PTR(this->distance_ptr_)    // 先删除，确保不会出现重复new的情况
@@ -341,7 +350,10 @@ ANN_RET_TYPE HnswProc::createDistancePtr() {
             break;
         case ANN_DISTANCE_EDITION:
             this->distance_ptr_ = new EditionProductSpace(this->dim_);
-            this->distance_ptr_->set_dist_func((DISTFUNC<float>)this->distance_func_);
+            if (nullptr != distFunc) {
+                this->distance_ptr_->set_dist_func((DISTFUNC<float>)distFunc);
+            }
+            break;
         default:
             break;
     }

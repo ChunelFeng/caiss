@@ -9,13 +9,12 @@
 #include "hnswlib.h"
 
 namespace hnswlib {
-
-
     class EditionProductSpace : public SpaceInterface<float> {
 
         DISTFUNC<float> fstdistfunc_;
         size_t data_size_;
         size_t dim_;
+
     public:
         EditionProductSpace(size_t dim) {
             fstdistfunc_ = nullptr;

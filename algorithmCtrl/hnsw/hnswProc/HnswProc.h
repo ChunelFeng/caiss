@@ -18,12 +18,13 @@ class HnswProc : public AlgorithmProc {
 
 public:
     std::list<std::string>                 result_words_;    // todo 这里需要给删除，今后再删
+    std::list<ANN_FLOAT>                   result_distance_;    // 查找到的距离
 
     HnswProc();
     virtual ~HnswProc();
 
     ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType,
-                      const unsigned int dim, const char *modelPath, const CAISS_DISTFUNC func);
+                      const unsigned int dim, const char *modelPath, const CAISS_DISTFUNC distFunc);
 
     // train_mode
     ANN_RET_TYPE train(const char* dataPath, const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision,
@@ -45,7 +46,9 @@ protected:
     ANN_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
     ANN_RET_TYPE buildResult(const ANN_FLOAT *query, std::priority_queue<std::pair<ANN_FLOAT, labeltype>>  &predResult);
     ANN_RET_TYPE loadModel(const char *modelPath);
-    ANN_RET_TYPE createDistancePtr();
+    ANN_RET_TYPE createDistancePtr(CAISS_DISTFUNC distFunc);
+
+    ANN_RET_TYPE forceLoop(ANN_FLOAT *info, const unsigned int topK);
 
 public:
     static ANN_RET_TYPE createHnswSingleton(SpaceInterface<ANN_FLOAT>* distance_ptr, unsigned int maxDataSize, ANN_BOOL normalize);
@@ -59,7 +62,6 @@ public:
 
 private:
     SpaceInterface<ANN_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了
-    CAISS_DIST_FUNC                        distance_func_;
 };
 
 

@@ -3,7 +3,7 @@ project(SyncManageProc)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES ../AnnManageProc.h
+set(SOURCE_FILES ../manageProc.h
         ../../utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.h ../../utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         ../../algorithmCtrl/hnsw/hnswAlgo/hnswalg.h
         ../../algorithmCtrl/AlgorithmProc.h

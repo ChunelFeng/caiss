@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 aux_source_directory(. DIRSRCS)
 
 # 以下是加入编译的时候，需要的宏
-add_definitions(-D_CNL_ANN_EXPORTS)
+add_definitions(-D_CNL_CAISS_EXPORTS)
 
 # 设置在windows上可以正常运行
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
@@ -21,9 +21,9 @@ include_directories(${MY_BOOST_PATH})
 include_directories(${MY_BOOST_PATH}/libs)
 
 # 以下是编译dll对应的内容
-add_library(ChunelAnn SHARED annManageCtrl/AnnManageInclude.h annManageCtrl/syncManage/SyncManageProc.h
-        annManageCtrl/syncManage/SyncManageProc.cpp chunelAnnLib/ChunelAnnLib.cpp
-        chunelAnnLib/ChunelAnnLib.h chunelAnnLib/ChunelAnnLibDefine.h algorithmCtrl/AlgorithmProc.h
+add_library(ChunelAnn SHARED manageCtrl/manageInclude.h manageCtrl/syncManage/SyncManageProc.h
+        manageCtrl/syncManage/SyncManageProc.cpp caissLib/CaissLib.cpp
+        caissLib/CaissLib.h caissLib/CaissLibDefine.h algorithmCtrl/AlgorithmProc.h
         algorithmCtrl/AlgorithmInclude.h algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
         algorithmCtrl/hnsw/hnswProc/HnswProc.h utilsCtrl/UtilsInclude.h utilsCtrl/UtilsProc.h
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.h
@@ -32,5 +32,5 @@ add_library(ChunelAnn SHARED annManageCtrl/AnnManageInclude.h annManageCtrl/sync
 # 添加对应依赖的内容
 add_subdirectory(threadCtrl/rwLock)
 add_subdirectory(algorithmCtrl/hnsw/hnswProc)
-add_subdirectory(annManageCtrl/)
-add_subdirectory(annManageCtrl/syncManage)
+add_subdirectory(manageCtrl/)
+add_subdirectory(manageCtrl/syncManage)

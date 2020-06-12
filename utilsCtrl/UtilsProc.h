@@ -2,18 +2,18 @@
 // Created by Chunel on 2020/5/24.
 //
 
-#ifndef CHUNELANN_UTILSPROC_H
-#define CHUNELANN_UTILSPROC_H
+#ifndef CHUNELCAISS_UTILSPROC_H
+#define CHUNELCAISS_UTILSPROC_H
 
-#include "../chunelAnnLib/ChunelAnnLibDefine.h"
+#include "../caissLib/CaissLibDefine.h"
 
 class UtilsProc {
 public:
     explicit UtilsProc() {
 
     }
-    virtual ANN_RET_TYPE init() = 0;
-    virtual ANN_RET_TYPE deinit() = 0;
+    virtual CAISS_RET_TYPE init() = 0;
+    virtual CAISS_RET_TYPE deinit() = 0;
 
 protected:
     virtual ~UtilsProc() {
@@ -22,4 +22,4 @@ protected:
 };
 
 
-#endif //CHUNELANN_UTILSPROC_H
+#endif //CHUNELCAISS_UTILSPROC_H

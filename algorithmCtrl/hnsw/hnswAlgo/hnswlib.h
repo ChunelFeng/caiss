@@ -79,6 +79,5 @@ namespace hnswlib {
 
 #include "space_l2.h"
 #include "space_ip.h"
-#include "space_edition.h"
 #include "bruteforce.h"
 #include "hnswalg.h"

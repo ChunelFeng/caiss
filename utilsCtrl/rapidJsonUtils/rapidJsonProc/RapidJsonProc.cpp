@@ -6,16 +6,16 @@
 #include <string>
 
 
-inline static std::string buildDistanceType(ANN_DISTANCE_TYPE type) {
+inline static std::string buildDistanceType(CAISS_DISTANCE_TYPE type) {
     std::string ret;
     switch (type) {
-        case ANN_DISTANCE_EUC:
+        case CAISS_DISTANCE_EUC:
             ret = "euclidean";
             break;
-        case ANN_DISTANCE_INNER:
+        case CAISS_DISTANCE_INNER:
             ret = "cosine";
             break;
-        case ANN_DISTANCE_EDITION:
+        case CAISS_DISTANCE_EDITION:
             ret = "edition";
             break;
         default:
@@ -32,53 +32,53 @@ RapidJsonProc::~RapidJsonProc() {
 }
 
 
-ANN_RET_TYPE RapidJsonProc::init() {
-    ANN_FUNCTION_END
+CAISS_RET_TYPE RapidJsonProc::init() {
+    CAISS_FUNCTION_END
 }
 
-ANN_RET_TYPE RapidJsonProc::deinit() {
-    ANN_FUNCTION_END
+CAISS_RET_TYPE RapidJsonProc::deinit() {
+    CAISS_FUNCTION_END
 }
 
 
-ANN_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNode) {
-    ANN_ASSERT_NOT_NULL(line)
+CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNode) {
+    CAISS_ASSERT_NOT_NULL(line)
 
-    ANN_FUNCTION_BEGIN
+    CAISS_FUNCTION_BEGIN
 
     Document dom;
     dom.Parse(line);    // data是一行数据，形如：{"hello" : [1,0,0,0]}
 
     if (dom.HasParseError()) {
-        return ANN_RET_JSON;
+        return CAISS_RET_JSON;
     }
 
     Value& jsonObject = dom;
     if (!jsonObject.IsObject()) {
-        return ANN_RET_JSON;
+        return CAISS_RET_JSON;
     }
 
     for (Value::ConstMemberIterator itr = jsonObject.MemberBegin(); itr != jsonObject.MemberEnd(); ++itr) {
         dataNode.index = itr->name.GetString();    // 获取行名称
         rapidjson::Value& array = jsonObject[dataNode.index.c_str()];
         for (unsigned int i = 0; i < array.Size(); ++i) {
-            dataNode.node.push_back((ANN_FLOAT)strtod(array[i].GetString(), nullptr));
+            dataNode.node.push_back((CAISS_FLOAT)strtod(array[i].GetString(), nullptr));
         }
     }
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 
-ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &details,
-                                              ANN_DISTANCE_TYPE distanceType, std::string &result) {
-    ANN_FUNCTION_BEGIN
+CAISS_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &details,
+                                              CAISS_DISTANCE_TYPE distanceType, std::string &result) {
+    CAISS_FUNCTION_BEGIN
 
     Document dom;
     dom.SetObject();
 
     Document::AllocatorType& alloc = dom.GetAllocator();
-    dom.AddMember("version", ANN_VERSION, alloc);
+    dom.AddMember("version", CAISS_VERSION, alloc);
     dom.AddMember("size", details.size(), alloc);
 
     std::string type = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
@@ -107,7 +107,7 @@ ANN_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &
     dom.Accept(writer);
     result = buffer.GetString();    // 将最终的结果值，赋值给result信息，并返回
 
-    ANN_FUNCTION_END
+    CAISS_FUNCTION_END
 }
 
 

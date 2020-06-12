@@ -13,7 +13,10 @@ inline static std::string buildDistanceType(CAISS_DISTANCE_TYPE type) {
             ret = "euclidean";
             break;
         case CAISS_DISTANCE_INNER:
-            ret = "cosine";
+            ret = "inner";
+            break;
+        case CAISS_DISTANCE_JACCARD:
+            ret = "jaccard";
             break;
         case CAISS_DISTANCE_EDITION:
             ret = "edition";
@@ -41,7 +44,7 @@ CAISS_RET_TYPE RapidJsonProc::deinit() {
 }
 
 
-CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& dataNode) {
+CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& dataNode) {
     CAISS_ASSERT_NOT_NULL(line)
 
     CAISS_FUNCTION_BEGIN
@@ -70,8 +73,9 @@ CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, AnnDataNode& data
 }
 
 
-CAISS_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail> &details,
-                                              CAISS_DISTANCE_TYPE distanceType, std::string &result) {
+CAISS_RET_TYPE
+RapidJsonProc::buildSearchResult(const std::list<CaissResultDetail> &details, CAISS_DISTANCE_TYPE distanceType,
+                                 std::string &result, std::string searchType) {
     CAISS_FUNCTION_BEGIN
 
     Document dom;
@@ -81,15 +85,16 @@ CAISS_RET_TYPE RapidJsonProc::buildSearchResult(const std::list<AnnResultDetail>
     dom.AddMember("version", CAISS_VERSION, alloc);
     dom.AddMember("size", details.size(), alloc);
 
-    std::string type = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
-    dom.AddMember("distance_type", StringRef(type.c_str()), alloc);
+    std::string distType = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
+    dom.AddMember("distance_type", StringRef(distType.c_str()), alloc);
+    dom.AddMember("search_type", StringRef(searchType.c_str()), alloc);
 
     rapidjson::Value array(rapidjson::kArrayType);
 
-    for (const AnnResultDetail& detail : details) {
+    for (const CaissResultDetail& detail : details) {
         rapidjson::Value obj(rapidjson::kObjectType);
 
-        obj.AddMember("distance", (detail.distance < 0.00001) ? (0.0f) : detail.distance, alloc);
+        obj.AddMember("distance", (detail.distance < 0.00001 && detail.distance > -0.00001) ? (0.0f) : detail.distance, alloc);
         obj.AddMember("index", detail.index, alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)
         obj.AddMember("label", StringRef(detail.label.c_str()), alloc);
 //        rapidjson::Value node(rapidjson::kArrayType);    // 输出向量的具体内容，暂时不需要了

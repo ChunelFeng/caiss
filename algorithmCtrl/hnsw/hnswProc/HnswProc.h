@@ -17,7 +17,7 @@ class HnswProc : public AlgorithmProc {
 
 public:
     std::list<std::string>                 result_words_;    // todo 这里需要给删除，今后再删
-    std::list<CAISS_FLOAT>                   result_distance_;    // 查找到的距离
+    std::list<CAISS_FLOAT>                 result_distance_;    // 查找到的距离
 
     HnswProc();
     virtual ~HnswProc();
@@ -41,13 +41,17 @@ public:
 
 protected:
     CAISS_RET_TYPE reset();
-    CAISS_RET_TYPE loadDatas(const char *dataPath, std::vector<AnnDataNode> &datas);
-    CAISS_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
-    CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>  &predResult);
+    CAISS_RET_TYPE loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
+    CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas);
+    CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, const CAISS_SEARCH_TYPE searchType,
+                               std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> &predResult);
     CAISS_RET_TYPE loadModel(const char *modelPath);
     CAISS_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
+    CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK);
+    CAISS_RET_TYPE checkModelEnable(const float precision, const unsigned int fastRank, const unsigned int realRank);
 
-public:
+    // 静态成员变量
+private:
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize);
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, const std::string &modelPath);
     static HierarchicalNSW<CAISS_FLOAT>* getHnswSingleton();
@@ -55,7 +59,7 @@ public:
     static CAISS_RET_TYPE insertByDiscard(CAISS_FLOAT *node, unsigned int label, const char *index);
 
     static HierarchicalNSW<CAISS_FLOAT>*     hnsw_alg_ptr_;
-    static RWLock                          lock_;
+    static RWLock                            lock_;
 
 private:
     SpaceInterface<CAISS_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了

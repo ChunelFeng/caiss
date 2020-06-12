@@ -8,21 +8,18 @@
 #include <string>
 #include <vector>
 
-struct AnnDataNode {
+struct CaissDataNode {
     /* 读取待训练的文件的时候，表示每行的信息的数据结构 */
     std::string index;
     std::vector<CAISS_FLOAT> node;
 };
 
-struct AnnResultDetail {
+struct CaissResultDetail {
     std::vector<CAISS_FLOAT> node;
     CAISS_FLOAT distance;    // 距离信息 （例：0.928）
-    unsigned int index;    // 个数信息 （例：1）
+    unsigned int index;    // 个数信息 （例：5）
     std::string label;    // 标签信息 （例：hello）
 };
-
-#define     COUT     (std::cout)
-#define     ENDL     (std::endl)
 
 // 定义几个常用的宏函数
 #define CAISS_DELETE_PTR(ptr) \

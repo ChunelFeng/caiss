@@ -85,7 +85,7 @@ CAISS_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataS
 
     HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
 
-    std::vector<AnnDataNode> datas;
+    std::vector<CaissDataNode> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
     ret = loadDatas(dataPath, datas);
     CAISS_FUNCTION_CHECK_STATUS
@@ -101,44 +101,13 @@ CAISS_RET_TYPE HnswProc::search(void *info, CAISS_SEARCH_TYPE searchType, const 
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
-    auto ptr = HnswProc::getHnswSingleton();
-    CAISS_ASSERT_NOT_NULL(ptr)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
 
     this->result_.clear();
     this->result_words_.clear();
+    this->result_distance_.clear();
 
-    std::vector<CAISS_FLOAT> vec;
-    vec.reserve(this->dim_);
-
-    switch (searchType) {
-        case CAISS_SEARCH_QUERY: {    // 如果传入的是query信息的话
-            for (int i = 0; i < this->dim_; i++) {
-                vec.push_back(*((CAISS_FLOAT *)info + i));
-            }
-            ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
-            break;
-        }
-        case CAISS_SEARCH_WORD: {    // 过传入的是word信息的话
-            int label = ptr->findWordLabel((const char *)info);
-            if (-1 != label) {
-                vec = ptr->getDataByLabel<CAISS_FLOAT>(label);    // 找到word的情况，这种情况下，不需要做normalize。因为存入的时候，已经设定好了
-            } else {
-                ret = CAISS_RET_NO_WORD;    // 没有找到word的情况
-            }
-            break;
-        }
-        default:
-            ret = CAISS_RET_PARAM;
-            break;
-    }
-
-    CAISS_FUNCTION_CHECK_STATUS
-
-    auto *query = (CAISS_FLOAT *)vec.data();
-    std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> predResult = ptr->searchKnn((void *)query, topK);
-
-    ret = buildResult(query, predResult);
+    ret = innerSearchResult(info, searchType, topK);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -242,7 +211,7 @@ CAISS_RET_TYPE HnswProc::ignore(const char *label) {
  * @param datas
  * @return
  */
-CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<AnnDataNode> &datas) {
+CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &datas) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(dataPath);
 
@@ -257,7 +226,7 @@ CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<AnnDataNode> &da
             continue;    // 排除空格的情况
         }
 
-        AnnDataNode dataNode;
+        CaissDataNode dataNode;
         ret = RapidJsonProc::parseInputData(line.data(), dataNode);
         CAISS_FUNCTION_CHECK_STATUS
 
@@ -268,7 +237,7 @@ CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<AnnDataNode> &da
 }
 
 
-CAISS_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
+CAISS_RET_TYPE HnswProc::trainModel(vector<CaissDataNode> &datas) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -290,26 +259,36 @@ CAISS_RET_TYPE HnswProc::trainModel(vector<AnnDataNode> &datas) {
 }
 
 
-CAISS_RET_TYPE HnswProc::buildResult(const CAISS_FLOAT *query, std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>  &predResult) {
+CAISS_RET_TYPE HnswProc::buildResult(const CAISS_FLOAT *query, const CAISS_SEARCH_TYPE searchType,
+                                     std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> &predResult) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(query)
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr);
 
-    std::list<AnnResultDetail> detailsList;
+    std::list<CaissResultDetail> detailsList;
     while (!predResult.empty()) {
-        AnnResultDetail detail;
+        CaissResultDetail detail;
         auto cur = predResult.top();
         detail.node = ptr->getDataByLabel<CAISS_FLOAT>(cur.second);
         detail.distance = cur.first;
         detail.index = cur.second;
         detail.label = ptr->index_lookup_.left.find(cur.second)->second;
         detailsList.push_front(detail);
-        this->result_words_.push_front(detail.label);    // 保存label（词语）信息
         predResult.pop();
+
+        this->result_words_.push_front(detail.label);    // 保存label（词语）信息
+        this->result_distance_.push_front(detail.distance);    // 保存对应的距离信息
     }
 
-    ret = RapidJsonProc::buildSearchResult(detailsList, this->distance_type_, this->result_);
+    std::string type;
+    if (CAISS_SEARCH_QUERY == searchType || CAISS_SEARCH_WORD == searchType) {
+        type = "ann_search";
+    } else {
+        type = "force_loop";
+    }
+
+    ret = RapidJsonProc::buildSearchResult(detailsList, this->distance_type_, this->result_, type);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -435,6 +414,92 @@ CAISS_RET_TYPE HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, 
         // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
         ret = ptr->addPoint(node, label, index);
         CAISS_FUNCTION_CHECK_STATUS
+    }
+
+    CAISS_FUNCTION_END
+}
+
+
+/**
+ * 内部真实查询信息的时候，使用的函数。可以确保不用进入process状态，也可以查询
+ * @param info
+ * @param searchType
+ * @param topK
+ * @return
+ */
+CAISS_RET_TYPE HnswProc::innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK) {
+    CAISS_FUNCTION_BEGIN
+
+    CAISS_ASSERT_NOT_NULL(info)
+    auto ptr = HnswProc::getHnswSingleton();
+    CAISS_ASSERT_NOT_NULL(ptr)
+
+    std::vector<CAISS_FLOAT> vec;
+    vec.reserve(this->dim_);
+
+    switch (searchType) {
+        case CAISS_SEARCH_QUERY:
+        case CAISS_LOOP_QUERY: {    // 如果传入的是query信息的话
+            for (int i = 0; i < this->dim_; i++) {
+                vec.push_back(*((CAISS_FLOAT *)info + i));
+            }
+            ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
+            break;
+        }
+        case CAISS_SEARCH_WORD:
+        case CAISS_LOOP_WORD: {    // 过传入的是word信息的话
+            int label = ptr->findWordLabel((const char *)info);
+            if (-1 != label) {
+                vec = ptr->getDataByLabel<CAISS_FLOAT>(label);    // 找到word的情况，这种情况下，不需要做normalize。因为存入的时候，已经设定好了
+            } else {
+                ret = CAISS_RET_NO_WORD;    // 没有找到word的情况
+            }
+            break;
+        }
+        default:
+            ret = CAISS_RET_PARAM;
+            break;
+    }
+
+    CAISS_FUNCTION_CHECK_STATUS
+
+    auto *query = (CAISS_FLOAT *)vec.data();
+
+    std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> result;
+    if (CAISS_SEARCH_QUERY == searchType || CAISS_SEARCH_WORD == searchType)  {
+        result = ptr->searchKnn((void *)query, topK);
+    } else {
+        result = ptr->forceLoop((void *)query, topK);
+    }
+
+    ret = buildResult(query, searchType, result);
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END;
+}
+
+/**
+ * 检查最终训练出来的模型，是否符合预期
+ * @param precision
+ * @param fastRank
+ * @param realRank
+ * @return
+ */
+CAISS_RET_TYPE HnswProc::checkModelEnable(const float precision, const unsigned int fastRank, const unsigned int realRank) {
+    CAISS_FUNCTION_BEGIN
+    auto ptr = HnswProc::getHnswSingleton();
+    CAISS_ASSERT_NOT_NULL(ptr)
+
+    unsigned int times = 0;
+    for (unsigned int i = 0; i < 10000; i++) {
+        std::vector<CAISS_FLOAT> temp;
+        for (unsigned int j = 0; j < this->dim_; j++) {
+            temp.push_back((CAISS_FLOAT)rand());
+            normalizeNode(temp, this->dim_);
+            auto fastResult = ptr->searchKnn((void *)temp.data(), fastRank);
+            auto realResult = ptr->forceLoop((void *)temp.data(), realRank);
+            // todo 比较值，然后更新训练模型
+        }
     }
 
     CAISS_FUNCTION_END

@@ -59,8 +59,10 @@ enum CAISS_MODE {
 
 enum CAISS_SEARCH_TYPE {
     CAISS_SEARCH_DEFAULT = 1,
-    CAISS_SEARCH_QUERY = 1,    // 通过query信息查询
-    CAISS_SEARCH_WORD = 2,    // 通过word信息查询
+    CAISS_SEARCH_QUERY = 1,    // 通过快速检索的方式，查询query信息
+    CAISS_SEARCH_WORD = 2,    // 通过快速检索的方式，查询word信息
+    CAISS_LOOP_QUERY = 3,    // 通过暴力循环的方式，查询query信息
+    CAISS_LOOP_WORD = 4    // 通过暴力循环的方式，查询word信息
 };
 
 enum CAISS_INSERT_TYPE {

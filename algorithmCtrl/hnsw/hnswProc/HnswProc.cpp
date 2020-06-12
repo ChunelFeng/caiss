@@ -38,8 +38,8 @@ HnswProc::init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, co
                const CAISS_DIST_FUNC distFunc = nullptr) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(modelPath);
-    if (distanceType == ANN_DISTANCE_EDITION) {
-        ANN_ASSERT_NOT_NULL(distFunc)    // 如果是定制距离的话，必须传距离计算函数下来
+    if (distanceType == CAISS_DISTANCE_EDITION) {
+        CAISS_ASSERT_NOT_NULL(distFunc)    // 如果是定制距离的话，必须传距离计算函数下来
     }
 
     reset();    // 清空所有数据信息

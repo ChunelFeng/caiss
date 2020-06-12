@@ -1,20 +1,6 @@
 #ifndef _CHUNEL_CAISS_LIBRARY_H_
 #define _CHUNEL_CAISS_LIBRARY_H_
 
-#ifndef CAISS_LIB_API
-    #if defined(_CNL_CAISS_EXPORTS)
-        #define CAISS_LIB_API __declspec(dllexport)
-    #else
-        #define CAISS_LIB_API __declspec(dllimport)
-    #endif
-#endif
-
-#ifdef WIN32
-    #define STDCALL __stdcall
-#else
-    #define STDCALL
-#endif
-
 #include "CaissLibDefine.h"
 #include "../algorithmCtrl/AlgorithmInclude.h"
 

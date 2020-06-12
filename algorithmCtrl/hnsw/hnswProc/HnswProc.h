@@ -17,7 +17,7 @@ class HnswProc : public AlgorithmProc {
 
 public:
     std::list<std::string>                 result_words_;    // todo 这里需要给删除，今后再删
-    std::list<ANN_FLOAT>                   result_distance_;    // 查找到的距离
+    std::list<CAISS_FLOAT>                   result_distance_;    // 查找到的距离
 
     HnswProc();
     virtual ~HnswProc();
@@ -45,7 +45,7 @@ protected:
     CAISS_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
     CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>  &predResult);
     CAISS_RET_TYPE loadModel(const char *modelPath);
-    CAISS_RET_TYPE createDistancePtr();
+    CAISS_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
 
 public:
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize);

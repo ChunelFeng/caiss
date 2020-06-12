@@ -5,6 +5,20 @@
 #ifndef _CHUNEL_CAISS_DEFINE_H_
 #define _CHUNEL_CAISS_DEFINE_H_
 
+#ifndef CAISS_LIB_API
+    #if defined(_CNL_CAISS_EXPORTS)
+        #define CAISS_LIB_API __declspec(dllexport)
+    #else
+        #define CAISS_LIB_API __declspec(dllimport)
+    #endif
+#endif
+
+#ifdef WIN32
+    #define STDCALL __stdcall
+#else
+    #define STDCALL
+#endif
+
 #define CAISS_VERSION       ("1.0.0")
 
 #include <vector>
@@ -16,6 +30,8 @@ using CAISS_BOOL = int;
 
 using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
 using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
+
+typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* param);
 
 /* 函数返回值定义 */
 #define CAISS_RET_WARNING    (1)     // 流程告警
@@ -63,7 +79,8 @@ enum CAISS_MANAGE_TYPE {
 enum CAISS_DISTANCE_TYPE {
     CAISS_DISTANCE_DEFAULT = 1,
     CAISS_DISTANCE_EUC = 1,    // 欧氏距离
-    CAISS_DISTANCE_INNER = 2,    // cos距离
+    CAISS_DISTANCE_INNER = 2,    // 内积距离
+    CAISS_DISTANCE_JACCARD = 3,    // 杰卡德距离
 
     CAISS_DISTANCE_EDITION = 99,    // 自定义距离
 };

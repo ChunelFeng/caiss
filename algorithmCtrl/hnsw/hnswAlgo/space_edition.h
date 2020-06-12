@@ -22,12 +22,6 @@ namespace hnswlib {
             data_size_ = dim * sizeof(float);
         }
 
-        EditionProductSpace(size_t dim, CAISS_DIST_FUNC func) {
-            fstdistfunc_ = (DISTFUNC<float>)func;
-            dim_ = dim;
-            data_size_ = dim * sizeof(float);
-        }
-
         size_t get_data_size() {
             return data_size_;
         }

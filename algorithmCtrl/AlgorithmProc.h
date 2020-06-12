@@ -39,7 +39,7 @@ public:
      * @return
      */
     virtual ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-                              CAISS_DIST_FUNC func) = 0;
+                              const CAISS_DIST_FUNC func) = 0;
 
     // train_mode
     /**

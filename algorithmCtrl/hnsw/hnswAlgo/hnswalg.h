@@ -671,7 +671,7 @@ namespace hnswlib {
 
             unsigned int len = (unsigned int)strlen(index);
             if (len > per_index_size_) {
-                return ANN_RET_WORD_SIZE;
+                return -10;
             }
 
             labeltype label = (labeltype)index_lookup_.right.find(index)->second;

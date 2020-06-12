@@ -24,7 +24,7 @@ public:
     virtual ~HnswProc();
 
     ANN_RET_TYPE init(const ANN_MODE mode, const ANN_DISTANCE_TYPE distanceType,
-                      const unsigned int dim, const char *modelPath, const CAISS_DISTFUNC distFunc);
+                      const unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc);
 
     // train_mode
     ANN_RET_TYPE train(const char* dataPath, const unsigned int maxDataSize, const ANN_BOOL normalize, const float precision,
@@ -46,7 +46,7 @@ protected:
     ANN_RET_TYPE trainModel(std::vector<AnnDataNode> &datas);
     ANN_RET_TYPE buildResult(const ANN_FLOAT *query, std::priority_queue<std::pair<ANN_FLOAT, labeltype>>  &predResult);
     ANN_RET_TYPE loadModel(const char *modelPath);
-    ANN_RET_TYPE createDistancePtr(CAISS_DISTFUNC distFunc);
+    ANN_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
 
     ANN_RET_TYPE forceLoop(ANN_FLOAT *info, const unsigned int topK);
 

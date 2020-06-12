@@ -342,7 +342,7 @@ ANN_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
 
     ANN_DELETE_PTR(this->distance_ptr_)    // 先删除，确保不会出现重复new的情况
     switch (this->distance_type_) {
-        case ANN_DISTANCE_EUC :
+        case ANN_DISTANCE_EUC:
             this->distance_ptr_ = new L2Space(this->dim_);
             break;
         case ANN_DISTANCE_INNER:

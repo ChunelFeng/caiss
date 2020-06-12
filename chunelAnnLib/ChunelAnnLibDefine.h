@@ -5,6 +5,20 @@
 #ifndef _CHUNEL_ANN_DEFINE_H_
 #define _CHUNEL_ANN_DEFINE_H_
 
+#ifndef ANN_LIB_API
+    #if defined(_CNL_ANN_EXPORTS)
+        #define ANN_LIB_API __declspec(dllexport)
+    #else
+        #define ANN_LIB_API __declspec(dllimport)
+    #endif
+#endif
+
+#ifdef WIN32
+    #define STDCALL __stdcall
+#else
+    #define STDCALL
+#endif
+
 #define ANN_VERSION       ("1.0.0")
 
 #include <vector>

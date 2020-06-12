@@ -27,7 +27,7 @@ public:
     virtual CAISS_RET_TYPE destroyHandle(void *handle) = 0;
 
     virtual CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
-                              unsigned int exLen) = 0;
+                                const CAISS_DIST_FUNC distFunc) = 0;
     virtual CAISS_RET_TYPE search(void *handle, void *query, CAISS_SEARCH_TYPE searchType, unsigned int topK) = 0;
     virtual CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) = 0;
     virtual CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) = 0;

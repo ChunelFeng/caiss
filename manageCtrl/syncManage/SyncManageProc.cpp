@@ -127,13 +127,13 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *query, CAISS_SEARCH_TY
 
 
 CAISS_RET_TYPE SyncManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
-                                  const unsigned int dim, const char *modelPath, const unsigned int exLen) {
+                                    unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
     CAISS_ASSERT_NOT_NULL(proc)
 
-    ret = proc->init(mode, distanceType, dim, modelPath, exLen);
+    ret = proc->init(mode, distanceType, dim, modelPath, distFunc);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END

@@ -1,6 +1,6 @@
 #include "CaissLib.h"
 
-#include "../annManageCtrl/manageInclude.h"
+#include "../manageCtrl/manageInclude.h"
 
 static manageProc* g_manage = nullptr;
 static CAISS_BOOL g_init = CAISS_FALSE;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ChunelAnn)
+project(Caiss)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -21,7 +21,7 @@ include_directories(${MY_BOOST_PATH})
 include_directories(${MY_BOOST_PATH}/libs)
 
 # 以下是编译dll对应的内容
-add_library(ChunelAnn SHARED manageCtrl/manageInclude.h manageCtrl/syncManage/SyncManageProc.h
+add_library(Caiss SHARED manageCtrl/manageInclude.h manageCtrl/syncManage/SyncManageProc.h
         manageCtrl/syncManage/SyncManageProc.cpp caissLib/CaissLib.cpp
         caissLib/CaissLib.h caissLib/CaissLibDefine.h algorithmCtrl/AlgorithmProc.h
         algorithmCtrl/AlgorithmInclude.h algorithmCtrl/hnsw/hnswProc/HnswProc.cpp

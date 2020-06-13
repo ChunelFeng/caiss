@@ -97,9 +97,10 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 
     unsigned int epoch = 0;
     while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
-        printf("[caiss] start train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
-        ret = trainModel(datas);
+        printf("[caiss] start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
+        ret = trainModel(datas, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
+        printf("[caiss] train caiss model finished, check precision automatic. \n");
 
         float calcPrecision = 0.0f;
         ret = checkModelEnable(precision, fastRank, realRank, datas, calcPrecision);
@@ -108,7 +109,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
             break;
         } else if (CAISS_RET_WARNING == ret) {
             float span = precision - calcPrecision;
-            printf("[caiss] warning, the model's precision is not suitable, train again automatic. \n");
+            printf("[caiss] warning, the model's precision is not suitable, span = [%f], train again automatic. \n", span);
             params.update(span);
             destroyHnswSingleton();    // 销毁句柄信息，重新训练
             createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, params.neighborNums, params.efSearch, params.efConstructor);
@@ -120,7 +121,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 }
 
 
-CAISS_RET_TYPE HnswProc::search(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK) {
+CAISS_RET_TYPE HnswProc::search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -264,7 +265,7 @@ CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &
 }
 
 
-CAISS_RET_TYPE HnswProc::trainModel(vector<CaissDataNode> &datas) {
+CAISS_RET_TYPE HnswProc::trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -274,7 +275,7 @@ CAISS_RET_TYPE HnswProc::trainModel(vector<CaissDataNode> &datas) {
         ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
         CAISS_FUNCTION_CHECK_STATUS
 
-        if (i % 10000 == 0) {
+        if (showSpan != 0 && i % showSpan == 0) {
             printf("[caiss] train [%d] node, total size is [%d]. \n", i, (int)datas.size());
         }
     }

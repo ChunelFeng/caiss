@@ -67,7 +67,6 @@ namespace hnswlib {
             mult_ = 1 / log(1.0 * M_);
             revSize_ = 1.0 / mult_;
 
-
             normalize_ = normalize;
             per_index_size_ = index_size;
             index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);    // 分配空间，保存具体index信息
@@ -108,6 +107,14 @@ namespace hnswlib {
         size_t ef_construction_;
 
         int normalize_;    // 是否是标准化的内容
+        int placeholder_0_;    // 添加placeholder信息
+        int placeholder_1_;
+        int placeholder_2_;
+        int placeholder_3_;
+        int placeholder_4_;
+        int placeholder_5_;
+        int placeholder_6_;
+        int placeholder_7_;
 
         double mult_, revSize_;
         int maxlevel_;
@@ -516,6 +523,15 @@ namespace hnswlib {
             writeBinaryPOD(output, ef_construction_);
 
             writeBinaryPOD(output, normalize_);    // fj add
+            writeBinaryPOD(output, placeholder_0_);
+            writeBinaryPOD(output, placeholder_1_);
+            writeBinaryPOD(output, placeholder_2_);
+            writeBinaryPOD(output, placeholder_3_);
+            writeBinaryPOD(output, placeholder_4_);
+            writeBinaryPOD(output, placeholder_5_);
+            writeBinaryPOD(output, placeholder_6_);
+            writeBinaryPOD(output, placeholder_7_);
+
             writeBinaryPOD(output, per_index_size_);
             output.write(index_ptr_, cur_element_count_ * per_index_size_);    // 写的时候，是cur_element_count_的信息
 
@@ -560,6 +576,15 @@ namespace hnswlib {
             readBinaryPOD(input, ef_construction_);
 
             readBinaryPOD(input, normalize_);
+            readBinaryPOD(input, placeholder_0_);
+            readBinaryPOD(input, placeholder_1_);
+            readBinaryPOD(input, placeholder_2_);
+            readBinaryPOD(input, placeholder_3_);
+            readBinaryPOD(input, placeholder_4_);
+            readBinaryPOD(input, placeholder_5_);
+            readBinaryPOD(input, placeholder_6_);
+            readBinaryPOD(input, placeholder_7_);
+
             readBinaryPOD(input, per_index_size_);
 
             // 记住，这里是分配了max个信息，读取了cur的个数的信息
@@ -623,9 +648,11 @@ namespace hnswlib {
             linkLists_ = (char **) malloc(sizeof(void *) * max_elements);
             element_levels_ = std::vector<int>(max_elements);
             revSize_ = 1.0 / mult_;
-            ef_ = 10;    // 查询的时候，比较的节点的数量
+            //ef_ = 10;
+            ef_ = ef_construction_;    // 查询的时候，默认使用
+            printf("load model ef = [%d] .", ef_);
             for (size_t i = 0; i < cur_element_count_; i++) {
-                label_lookup_[getExternalLabel(i)]=i;    // todo 这里有问题，
+                label_lookup_[getExternalLabel(i)]=i;
                 unsigned int linkListSize;
                 readBinaryPOD(input, linkListSize);
                 if (linkListSize == 0) {

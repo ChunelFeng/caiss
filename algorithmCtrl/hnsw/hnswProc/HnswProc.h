@@ -33,7 +33,7 @@ public:
                          const unsigned int showSpan);
 
     // process_mode
-    CAISS_RET_TYPE search(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK);
+    CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK);
     CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType);
     CAISS_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
     CAISS_RET_TYPE getResultSize(unsigned int& size);
@@ -44,7 +44,7 @@ public:
 protected:
     CAISS_RET_TYPE reset();
     CAISS_RET_TYPE loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
-    CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas);
+    CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan);
     CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, const CAISS_SEARCH_TYPE searchType,
                                std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> &predResult);
     CAISS_RET_TYPE loadModel(const char *modelPath);

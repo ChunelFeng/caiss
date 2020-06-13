@@ -83,14 +83,13 @@ AlgorithmProc *SyncManageProc::createAlgoProc() {
  * @param maxSize
  * @param algoType
  */
-SyncManageProc::SyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType)
+SyncManageProc::SyncManageProc(const unsigned int maxSize, CAISS_ALGO_TYPE algoType)
                               : manageProc(maxSize, algoType) {
-    this->max_size_ = 0;
+    this->max_size_ = maxSize;
     for(unsigned int i = 0; i < maxSize; i++) {
         AlgorithmProc* proc = createAlgoProc();
         if (nullptr != proc) {
             this->free_manage_.insert(std::make_pair<>((&i + i), proc));
-            this->max_size_++;    // 最终包含的算法句柄个数
         }
     }
 }
@@ -109,7 +108,7 @@ SyncManageProc::~SyncManageProc() {
 }
 
 
-CAISS_RET_TYPE SyncManageProc::search(void *handle, void *query, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -117,7 +116,7 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *query, CAISS_SEARCH_TY
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();
-    ret = proc->search(query, CAISS_SEARCH_WORD, topK);
+    ret = proc->search(info, searchType, topK);
     this->lock_.readUnlock();
 
     CAISS_FUNCTION_CHECK_STATUS

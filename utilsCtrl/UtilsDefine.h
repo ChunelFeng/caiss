@@ -41,6 +41,11 @@ struct CaissResultDetail {
 #define CAISS_FUNCTION_BEGIN    \
     CAISS_RET_TYPE ret = CAISS_RET_OK;    \
 
+#define CAISS_ASSERT_ENVIRONMENT_INIT    \
+    if (CAISS_TRUE != g_init) {    \
+        return CAISS_RET_ERR;    \
+    }    \
+
 #define CAISS_FUNCTION_CHECK_STATUS    \
     if (CAISS_RET_OK != ret)   \
     {    \
@@ -67,7 +72,5 @@ struct CaissResultDetail {
 #define CAISS_ASSERT_NUM1_NO_LESS_THAN_NUM2(num1, num2)    \
     return (num1 >= num2) ? (CAISS_TRUE) : (CAISS_FALSE);   \
 
-#define CAISS_RETURN_ERR_WHEN_FALSE(input)    \
-    if (input == CAISS_FALSE)    { return CAISS_RET_ERR }    \
 
 #endif //CHUNELCAISS_UTILSDEFINE_H

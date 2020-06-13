@@ -9,7 +9,7 @@
 
 class SyncManageProc : public manageProc  {
 public:
-    explicit SyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType);
+    explicit SyncManageProc(const unsigned int maxSize, CAISS_ALGO_TYPE algoType);
     ~SyncManageProc() override ;
 
     CAISS_RET_TYPE createHandle(void **handle) override ;    // 生成处理句柄
@@ -17,7 +17,7 @@ public:
 
     CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
                         unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc) override ;
-    CAISS_RET_TYPE search(void *handle, void *query, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
+    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
     CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) override ;
     CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;
 

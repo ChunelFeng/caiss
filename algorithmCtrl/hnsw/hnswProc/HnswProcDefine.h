@@ -31,8 +31,6 @@ struct HnswTrainParams {
         this->neighborNums += (unsigned int)(10.0f + (float)this->neighborNums * (1.0f + span * 10.0f) * (float)step / 10.0f);
         this->efConstructor += (unsigned int)(20.0f + (float)this->efConstructor * (1.0f + span * 5.0f) * (float)step / 5.0f);
         this->efSearch = this->efConstructor;
-
-        printf("[caiss] Update : [%d - %d - %d], span = [%f] \n", neighborNums, efSearch, efConstructor, span);
     }
 
     unsigned int neighborNums;      // 最大邻居树

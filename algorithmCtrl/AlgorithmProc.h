@@ -69,7 +69,7 @@ public:
      * @param searchType
      * @return
      */
-    virtual CAISS_RET_TYPE search(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK) = 0;
+    virtual CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK) = 0;
 
     /**
      * 插入结果信息

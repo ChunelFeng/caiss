@@ -37,7 +37,7 @@ static int train() {
     ret = proc->init(CAISS_MODE_TRAIN, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 0, 1,1,1,1,1);
+    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 64, 0, 1, 1, 1, 1, 1);
     CAISS_FUNCTION_CHECK_STATUS
 
     delete proc;

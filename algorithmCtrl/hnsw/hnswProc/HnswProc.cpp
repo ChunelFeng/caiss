@@ -73,9 +73,10 @@ CAISS_RET_TYPE HnswProc::reset() {
 }
 
 
-CAISS_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize, const float precision,
-                             const unsigned int fastRank, const unsigned int realRank,
-                             const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan) {
+CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
+                               const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                               const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
+                               const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(dataPath)
     CAISS_ASSERT_NOT_NULL(this->distance_ptr_)
@@ -83,15 +84,39 @@ CAISS_RET_TYPE HnswProc::train(const char* dataPath, const unsigned int maxDataS
 
     this->normalize_ = normalize;
 
-    HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize);
+    // 设定训练参数
 
     std::vector<CaissDataNode> datas;
+
     datas.reserve(maxDataSize);    // 提前分配好内存信息
     ret = loadDatas(dataPath, datas);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = trainModel(datas);
-    CAISS_FUNCTION_CHECK_STATUS
+    for (auto data : datas) {
+        ret = normalizeNode(data.node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
+        CAISS_FUNCTION_CHECK_STATUS
+    }
+
+    HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize);
+    HnswTrainParams params(step);
+
+    unsigned int epoch = maxEpoch;
+    while (epoch--) {    // 如果批量走完了，则默认返回
+        ret = trainModel(datas);
+        CAISS_FUNCTION_CHECK_STATUS
+
+        float calcPrecision = 0.0f;
+        ret = checkModelEnable(precision, fastRank, calcPrecision);
+        if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
+            std::cout << "model check enable..."  << std::endl;
+            break;
+        } else {
+            destroyHnswSingleton();    // 销毁句柄信息，重新训练
+            params.update(precision - calcPrecision);
+            //createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, );
+        }
+    }
+
 
     CAISS_FUNCTION_END
 }
@@ -244,8 +269,6 @@ CAISS_RET_TYPE HnswProc::trainModel(vector<CaissDataNode> &datas) {
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
-        ret = normalizeNode(datas[i].node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
-        CAISS_FUNCTION_CHECK_STATUS
         ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
         CAISS_FUNCTION_CHECK_STATUS
 
@@ -340,13 +363,14 @@ CAISS_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
  * @param normalize
  * @return
  */
-CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize) {
+CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize,
+                                              const unsigned int maxIndexSize, const unsigned int maxNeighbor, const unsigned int efSearch, const unsigned int efConstruction) {
     CAISS_FUNCTION_BEGIN
 
     if (nullptr == HnswProc::hnsw_alg_ptr_) {
         HnswProc::lock_.writeLock();
         if (nullptr == HnswProc::hnsw_alg_ptr_) {
-            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, maxDataSize, normalize);
+            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, maxDataSize, normalize, maxIndexSize, maxNeighbor, efSearch, efConstruction);
         }
         HnswProc::lock_.writeUnlock();
     }
@@ -374,6 +398,19 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distan
 
     CAISS_FUNCTION_END
 }
+
+
+CAISS_RET_TYPE HnswProc::destroyHnswSingleton() {
+    CAISS_FUNCTION_BEGIN
+
+    HnswProc::lock_.writeLock();
+    CAISS_DELETE_PTR(HnswProc::hnsw_alg_ptr_);
+    HnswProc::lock_.writeUnlock();
+
+    CAISS_FUNCTION_END
+}
+
+
 
 HierarchicalNSW<CAISS_FLOAT> *HnswProc::getHnswSingleton() {
     return HnswProc::hnsw_alg_ptr_;
@@ -478,31 +515,41 @@ CAISS_RET_TYPE HnswProc::innerSearchResult(void *info, CAISS_SEARCH_TYPE searchT
     CAISS_FUNCTION_END;
 }
 
-/**
- * 检查最终训练出来的模型，是否符合预期
- * @param precision
- * @param fastRank
- * @param realRank
- * @return
- */
-CAISS_RET_TYPE HnswProc::checkModelEnable(const float precision, const unsigned int fastRank, const unsigned int realRank) {
+
+CAISS_RET_TYPE
+HnswProc::checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+                           float &calcPrecision) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
 
-    unsigned int times = 0;
-    for (unsigned int i = 0; i < 10000; i++) {
+    unsigned int suitableTimes = 0;
+    unsigned int totalTimes = 10000;
+    for (unsigned int i = 0; i < totalTimes; i++) {
         std::vector<CAISS_FLOAT> temp;
         for (unsigned int j = 0; j < this->dim_; j++) {
-            temp.push_back((CAISS_FLOAT)rand());
-            normalizeNode(temp, this->dim_);
-            auto fastResult = ptr->searchKnn((void *)temp.data(), fastRank);
-            auto realResult = ptr->forceLoop((void *)temp.data(), realRank);
-            // todo 比较值，然后更新训练模型
+            temp.push_back((CAISS_FLOAT)rand());    // TODO 这里给改成抽前面x个数据，不要用随机生成了
+        }
+
+        normalizeNode(temp, this->dim_);
+        auto fastResult = ptr->searchKnn((void *)temp.data(), fastRank);    // 记住，fastResult是倒叙的
+        auto realResult = ptr->forceLoop((void *)temp.data(), realRank);
+
+        CAISS_FLOAT fastFarDistance = fastResult.top().first;
+        CAISS_FLOAT realFarDistance = 0.0f;
+        while (!realResult.empty()) {
+            realFarDistance = realResult.top().first;    // 找到距离最大的那个
+            realResult.pop();
+        }
+
+        if (fastFarDistance <= realFarDistance) {
+            suitableTimes++;
         }
     }
 
+    calcPrecision = (CAISS_FLOAT)suitableTimes / (CAISS_FLOAT)totalTimes;
+    ret = (calcPrecision >= targetPrecision) ? CAISS_RET_OK : CAISS_RET_WARNING;
+    CAISS_FUNCTION_CHECK_STATUS
+
     CAISS_FUNCTION_END
 }
-
-

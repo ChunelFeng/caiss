@@ -100,7 +100,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
         printf("[caiss] start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
         ret = trainModel(datas, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
-        printf("[caiss] train caiss model finished, check precision automatic. \n");
+        printf("[caiss] train caiss model finished, check model precision automatic, please wait for a moment... \n");
 
         float calcPrecision = 0.0f;
         ret = checkModelEnable(precision, fastRank, realRank, datas, calcPrecision);
@@ -346,11 +346,9 @@ CAISS_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
         case CAISS_DISTANCE_INNER:
             this->distance_ptr_ = new InnerProductSpace(this->dim_);
             break;
-        case CAISS_DISTANCE_EDITION:    // todo 今后需要外部传入距离计算的函数
+        case CAISS_DISTANCE_EDITION:
             this->distance_ptr_ = new EditionProductSpace(this->dim_);
-            if (nullptr != distFunc) {
-                this->distance_ptr_->set_dist_func((DISTFUNC<float>)distFunc);
-            }
+            this->distance_ptr_->set_dist_func((DISTFUNC<float>)distFunc);
             break;
         default:
             break;
@@ -540,7 +538,6 @@ CAISS_RET_TYPE HnswProc::checkModelEnable(const float targetPrecision, const uns
     }
 
     calcPrecision = (float)suitableTimes / (float)calcTimes;
-    std::cout << "calc precision is : " << calcPrecision << std::endl;
     ret = (calcPrecision >= targetPrecision) ? CAISS_RET_OK : CAISS_RET_WARNING;
     CAISS_FUNCTION_CHECK_STATUS
 

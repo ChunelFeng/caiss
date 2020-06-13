@@ -14,8 +14,8 @@
 
 
 const static unsigned int DEFAULT_STEP = 2;
-const static unsigned int DEFAULT_MAX_EPOCH = 10;
-const static unsigned int DEFAULT_SHOW_SPAN = 100;    // 100行会显示一次日志
+const static unsigned int DEFAULT_MAX_EPOCH = 5;
+const static unsigned int DEFAULT_SHOW_SPAN = 1000;    // 1000行会显示一次日志
 const static std::string MODEL_SUFFIX = ".caiss";   // 默认的模型后缀
 
 

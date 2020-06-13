@@ -191,6 +191,24 @@ CAISS_RET_TYPE SyncManageProc::save(void *handle, char *modelPath) {
     CAISS_FUNCTION_END
 }
 
+CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize, CAISS_BOOL normalize,
+                      const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                      const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
+                      const unsigned int showSpan) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();
+    ret = proc->train(dataPath, maxDataSize, normalize, maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
+    this->lock_.writeUnlock();
+
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END
+}
+
 
 
 

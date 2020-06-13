@@ -84,7 +84,7 @@ enum CAISS_DISTANCE_TYPE {
     CAISS_DISTANCE_INNER = 2,    // 内积距离
     CAISS_DISTANCE_JACCARD = 3,    // 杰卡德距离
 
-    CAISS_DISTANCE_EDITION = 99,    // 自定义距离
+    CAISS_DISTANCE_EDITION = 99,    // 自定义距离（注：距离需要较小的值，表示较为接近）
 };
 
 enum CAISS_ALGO_TYPE {

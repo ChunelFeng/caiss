@@ -17,6 +17,12 @@ public:
 
     CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
                         unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc) override ;
+
+    CAISS_RET_TYPE train(void *handle,  const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
+                         const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                         const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
+                         const unsigned int showSpan) override ;
+
     CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
     CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) override ;
     CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;

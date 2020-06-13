@@ -46,6 +46,28 @@ extern "C" {
             const CAISS_DIST_FUNC func);
 
 
+
+    /**
+     *
+     * @param handle
+     * @param dataPath
+     * @param maxDataSize
+     * @param normalize
+     * @param maxIndexSize
+     * @param precision
+     * @param fastRank
+     * @param realRank
+     * @param step
+     * @param maxEpoch
+     * @param showSpan
+     * @return
+     */
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,  const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
+                                                     const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                                                     const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
+                                                     const unsigned int showSpan);
+
+
     /**
      *
      * @param handle

@@ -17,11 +17,11 @@ typedef boost::bimaps::bimap<int, int> BOOST_INT_BIMAP;
 
 using namespace std;
 
-const static string TEST_MODEL_PATH = "bert";
-//const static string TEST_FILE_PATH = "bert_word_result.txt";
+const static string TEST_MODEL_PATH = "train-ex";
+const static string TEST_FILE_PATH = "bert_71290words_768dim.txt";
 //const static string TEST_FILE_PATH = "result-71290words-128dim.txt";
-const static string TEST_FILE_PATH = "test.txt";
-const static int ACTION = 1;    // 0-train. 1-search. 2-demo
+//const static string TEST_FILE_PATH = "result-1000words-128dim.txt";
+const static int ACTION = 0;    // 0-train. 1-search. 2-demo
 const static unsigned int DIM = 768;
 const static CAISS_DISTANCE_TYPE DISTANCE_TYPE = CAISS_DISTANCE_INNER;
 const static CAISS_BOOL NORMALIZE = 1;
@@ -37,7 +37,9 @@ static int train() {
     ret = proc->init(CAISS_MODE_TRAIN, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 64, 0, 1, 1, 1, 1, 1);
+    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 64, 0.999, 10, 10, 1, 5, 100);
+    cout << "train return : " << ret <<endl;
+
     CAISS_FUNCTION_CHECK_STATUS
 
     delete proc;
@@ -142,7 +144,8 @@ int bimapTest() {
 }
 
 
-void mainFunc () {
+int mainFunc() {
+
     SetConsoleTitle("ANN");
     int ret = 0;
     if (ACTION == 0) {
@@ -174,6 +177,8 @@ void mainFunc () {
 
             ret = search(ipt);
 
+
+
             if (CAISS_RET_NO_WORD == ret) {
                 cout << "" << endl;
                 cout << "**** Fuck,  [" << ipt << "] is not a word, please try again... " << endl;
@@ -188,15 +193,11 @@ void mainFunc () {
             }
         }
     }
-}
-
-
-
-int test () {
-
 
     return 0;
 }
+
+
 
 int main() {
     mainFunc();

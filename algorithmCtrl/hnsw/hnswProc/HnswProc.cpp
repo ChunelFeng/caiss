@@ -5,6 +5,7 @@
 //
 
 #include <fstream>
+#include <algorithm>
 #include <queue>
 #include <iomanip>
 #include "HnswProc.h"
@@ -82,42 +83,39 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
     CAISS_ASSERT_NOT_NULL(this->distance_ptr_)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_TRAIN)
 
-    this->normalize_ = normalize;
-
     // 设定训练参数
-
+    this->normalize_ = normalize;
     std::vector<CaissDataNode> datas;
-
     datas.reserve(maxDataSize);    // 提前分配好内存信息
+
+    printf("[caiss] start load datas from [%s]. \n", dataPath);
     ret = loadDatas(dataPath, datas);
     CAISS_FUNCTION_CHECK_STATUS
-
-    for (auto data : datas) {
-        ret = normalizeNode(data.node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
-        CAISS_FUNCTION_CHECK_STATUS
-    }
 
     HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize);
     HnswTrainParams params(step);
 
-    unsigned int epoch = maxEpoch;
-    while (epoch--) {    // 如果批量走完了，则默认返回
+    unsigned int epoch = 0;
+    while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
+        printf("[caiss] start train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
         ret = trainModel(datas);
         CAISS_FUNCTION_CHECK_STATUS
 
         float calcPrecision = 0.0f;
-        ret = checkModelEnable(precision, fastRank, calcPrecision);
+        ret = checkModelEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
-            std::cout << "model check enable..."  << std::endl;
+            printf("[caiss] train success, model is saved to path [%s] \n", this->model_path_.c_str());
             break;
-        } else {
+        } else if (CAISS_RET_WARNING == ret) {
+            float span = precision - calcPrecision;
+            printf("[caiss] warning, the model's precision is not suitable, train again automatic. \n");
+            params.update(span);
             destroyHnswSingleton();    // 销毁句柄信息，重新训练
-            params.update(precision - calcPrecision);
-            //createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, );
+            createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, params.neighborNums, params.efSearch, params.efConstructor);
         }
     }
 
-
+    CAISS_FUNCTION_CHECK_STATUS    // 如果是precision达不到要求，则返回警告信息
     CAISS_FUNCTION_END
 }
 
@@ -255,9 +253,13 @@ CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &
         ret = RapidJsonProc::parseInputData(line.data(), dataNode);
         CAISS_FUNCTION_CHECK_STATUS
 
+        ret = normalizeNode(dataNode.node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
+        CAISS_FUNCTION_CHECK_STATUS
+
         datas.push_back(dataNode);
     }
 
+    in.close();
     CAISS_FUNCTION_END
 }
 
@@ -272,8 +274,8 @@ CAISS_RET_TYPE HnswProc::trainModel(vector<CaissDataNode> &datas) {
         ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
         CAISS_FUNCTION_CHECK_STATUS
 
-        if (i % 1000 == 0) {
-            std::cout << "====" << i << "====" << std::endl;
+        if (i % 10000 == 0) {
+            printf("[caiss] train [%d] node, total size is [%d]. \n", i, (int)datas.size());
         }
     }
 
@@ -516,40 +518,30 @@ CAISS_RET_TYPE HnswProc::innerSearchResult(void *info, CAISS_SEARCH_TYPE searchT
 }
 
 
-CAISS_RET_TYPE
-HnswProc::checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
-                           float &calcPrecision) {
+CAISS_RET_TYPE HnswProc::checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+                                          const vector<CaissDataNode> &datas, float &calcPrecision) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
 
     unsigned int suitableTimes = 0;
-    unsigned int totalTimes = 10000;
-    for (unsigned int i = 0; i < totalTimes; i++) {
-        std::vector<CAISS_FLOAT> temp;
-        for (unsigned int j = 0; j < this->dim_; j++) {
-            temp.push_back((CAISS_FLOAT)rand());    // TODO 这里给改成抽前面x个数据，不要用随机生成了
-        }
+    unsigned int calcTimes = min((int)datas.size(), 1000);    // 最多1000次比较
+    for (unsigned int i = 0; i < calcTimes; i++) {
+        auto fastResult = ptr->searchKnn((void *)datas[i].node.data(), fastRank);    // 记住，fastResult是倒叙的
+        auto realResult = ptr->forceLoop((void *)datas[i].node.data(), realRank);
+        float fastFarDistance = fastResult.top().first;
+        float realFarDistance = realResult.top().first;
 
-        normalizeNode(temp, this->dim_);
-        auto fastResult = ptr->searchKnn((void *)temp.data(), fastRank);    // 记住，fastResult是倒叙的
-        auto realResult = ptr->forceLoop((void *)temp.data(), realRank);
-
-        CAISS_FLOAT fastFarDistance = fastResult.top().first;
-        CAISS_FLOAT realFarDistance = 0.0f;
-        while (!realResult.empty()) {
-            realFarDistance = realResult.top().first;    // 找到距离最大的那个
-            realResult.pop();
-        }
-
-        if (fastFarDistance <= realFarDistance) {
+        if (abs(fastFarDistance - realFarDistance) < 0.00001f) {    // 这里近似小于
             suitableTimes++;
         }
     }
 
-    calcPrecision = (CAISS_FLOAT)suitableTimes / (CAISS_FLOAT)totalTimes;
+    calcPrecision = (float)suitableTimes / (float)calcTimes;
+    std::cout << "calc precision is : " << calcPrecision << std::endl;
     ret = (calcPrecision >= targetPrecision) ? CAISS_RET_OK : CAISS_RET_WARNING;
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
 }
+

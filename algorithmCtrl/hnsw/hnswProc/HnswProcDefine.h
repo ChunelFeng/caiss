@@ -5,12 +5,14 @@
 #ifndef CAISS_HNSWPROCDEFINE_H
 #define CAISS_HNSWPROCDEFINE_H
 
-const static unsigned int NEIGHBOR_NUMS_DEFAULT = 32;
-const static unsigned int EF_SEARCH_DEFAULT = 100;
-const static unsigned int EF_CONSTRUCTOR_DEFAULT = 100;
+#include <stdio.h>
+
+const static unsigned int NEIGHBOR_NUMS_DEFAULT = 64;
+const static unsigned int EF_SEARCH_DEFAULT = 200;
+const static unsigned int EF_CONSTRUCTOR_DEFAULT = 200;
 
 struct HnswTrainParams {
-    HnswTrainParams(unsigned int step) {
+    explicit HnswTrainParams(unsigned int step) {
         this->neighborNums = NEIGHBOR_NUMS_DEFAULT;
         this->efSearch = EF_SEARCH_DEFAULT;
         this->efConstructor = EF_CONSTRUCTOR_DEFAULT;
@@ -26,9 +28,11 @@ struct HnswTrainParams {
 
     void update(float span) {
         // 传入的是精确度的差距
-        this->neighborNums += (unsigned int)((float)this->neighborNums * (1.0f + span * 10.0f) * (float)step / 10.0f);
-        this->efConstructor += (unsigned int)((float)this->efConstructor * (1.0f + span * 5.0f) * (float)step / 5.0f);
+        this->neighborNums += (unsigned int)(10.0f + (float)this->neighborNums * (1.0f + span * 10.0f) * (float)step / 10.0f);
+        this->efConstructor += (unsigned int)(20.0f + (float)this->efConstructor * (1.0f + span * 5.0f) * (float)step / 5.0f);
         this->efSearch = this->efConstructor;
+
+        printf("[caiss] Update : [%d - %d - %d], span = [%f] \n", neighborNums, efSearch, efConstructor, span);
     }
 
     unsigned int neighborNums;      // 最大邻居树

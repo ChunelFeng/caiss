@@ -50,7 +50,7 @@ CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& da
     CAISS_FUNCTION_BEGIN
 
     Document dom;
-    dom.Parse(line);    // data是一行数据，形如：{"hello" : [1,0,0,0]}
+    dom.Parse(line);    // data是一行数据，形如：{"hello" : ["1","0","0","0"]}
 
     if (dom.HasParseError()) {
         return CAISS_RET_JSON;

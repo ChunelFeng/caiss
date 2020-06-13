@@ -13,7 +13,7 @@
 #include "../threadCtrl/ThreadInclude.h"
 
 
-const static unsigned int DEFAULT_STEP = 5;
+const static unsigned int DEFAULT_STEP = 2;
 const static unsigned int DEFAULT_MAX_EPOCH = 10;
 const static unsigned int DEFAULT_SHOW_SPAN = 100;    // 100行会显示一次日志
 const static std::string MODEL_SUFFIX = ".caiss";   // 默认的模型后缀
@@ -58,8 +58,8 @@ public:
      */
     virtual CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
                                  const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
-                                 const unsigned int showSpan) = 0;
+                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP, const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                                 const unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
     /**

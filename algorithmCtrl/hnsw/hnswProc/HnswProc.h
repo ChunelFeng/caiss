@@ -50,8 +50,7 @@ protected:
     CAISS_RET_TYPE loadModel(const char *modelPath);
     CAISS_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
     CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK);
-    CAISS_RET_TYPE checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
-                     float &calcPrecision);
+
 
     // 静态成员变量
 private:
@@ -60,6 +59,8 @@ private:
                                               const unsigned int maxNeighbor=32, const unsigned int efSearch=100, const unsigned int efConstruction=100);
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, const std::string &modelPath);
     static CAISS_RET_TYPE destroyHnswSingleton();
+    static CAISS_RET_TYPE checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+                                           const std::vector<CaissDataNode> &datas, float &calcPrecision);
 
     static HierarchicalNSW<CAISS_FLOAT>* getHnswSingleton();
     static CAISS_RET_TYPE insertByOverwrite(CAISS_FLOAT *node, unsigned int label, const char *index);

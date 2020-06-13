@@ -650,7 +650,6 @@ namespace hnswlib {
             revSize_ = 1.0 / mult_;
             //ef_ = 10;
             ef_ = ef_construction_;    // 查询的时候，默认使用
-            printf("load model ef = [%d] .", ef_);
             for (size_t i = 0; i < cur_element_count_; i++) {
                 label_lookup_[getExternalLabel(i)]=i;
                 unsigned int linkListSize;

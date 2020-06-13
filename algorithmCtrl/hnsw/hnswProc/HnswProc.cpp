@@ -280,6 +280,7 @@ CAISS_RET_TYPE HnswProc::trainModel(std::vector<CaissDataNode> &datas, const uns
         }
     }
 
+    remove(this->model_path_.c_str());
     ptr->saveIndex(std::string(this->model_path_));
     CAISS_FUNCTION_END
 }

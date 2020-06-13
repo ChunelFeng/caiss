@@ -17,7 +17,7 @@ typedef boost::bimaps::bimap<int, int> BOOST_INT_BIMAP;
 
 using namespace std;
 
-const static string TEST_MODEL_PATH = "train-ex";
+const static string TEST_MODEL_PATH = "libDemo";
 const static string TEST_FILE_PATH = "bert_71290words_768dim.txt";
 //const static string TEST_FILE_PATH = "result-71290words-128dim.txt";
 //const static string TEST_FILE_PATH = "result-1000words-128dim.txt";
@@ -37,7 +37,7 @@ static int train() {
     ret = proc->init(CAISS_MODE_TRAIN, DISTANCE_TYPE, DIM, TEST_MODEL_PATH.data(), 0);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 64, 0.98, 10, 10, 1, 5, 100);
+    ret = proc->train(TEST_FILE_PATH.data(), 100000, NORMALIZE, 64, 0.95, 5, 5, 1, 2, 10000);
     cout << "train return : " << ret <<endl;
 
     CAISS_FUNCTION_CHECK_STATUS

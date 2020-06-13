@@ -6,7 +6,7 @@
 #define _CHUNEL_CAISS_DEFINE_H_
 
 #ifndef CAISS_LIB_API
-    #if defined(_CNL_CAISS_EXPORTS)
+    #if defined(_CAISS_EXPORTS_)
         #define CAISS_LIB_API __declspec(dllexport)
     #else
         #define CAISS_LIB_API __declspec(dllimport)

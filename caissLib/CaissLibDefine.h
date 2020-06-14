@@ -69,7 +69,7 @@ enum CAISS_INSERT_TYPE {
     // 如果插入相同的数据
     CAISS_INSERT_DEFAULT = 1,
     CAISS_INSERT_OVERWRITE = 1,   // 覆盖原有的
-    CAISS_INSERT_DISCARD = 2,    // 丢弃
+    CAISS_INSERT_DISCARD = 2,    // 丢弃当前的
 };
 
 enum CAISS_MANAGE_TYPE {

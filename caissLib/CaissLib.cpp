@@ -1,11 +1,8 @@
 #include "CaissLib.h"
-
 #include "../manageCtrl/manageInclude.h"
 
-#include <atomic>
-
 static manageProc* g_manage = nullptr;
-static std::atomic<CAISS_BOOL> g_init(CAISS_FALSE);
+static CAISS_BOOL g_init = CAISS_FALSE;
 static RWLock g_lock;
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSize,
@@ -16,7 +13,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSiz
         g_lock.writeLock();
         if (nullptr == g_manage) {
             g_manage = new SyncManageProc(maxSize, algoType);    // 暂时只做同步的版本
-            g_init = CAISS_TRUE;    // 通过init参数，来确定环境是否初始化。如果初始化了，则
+            g_init = CAISS_TRUE;    // 通过init参数，来确定环境是否初始化。如果初始化了，则不需要进行
         }
         g_lock.writeUnlock();
     } else {
@@ -30,7 +27,6 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSiz
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_CreateHandle(void** handle) {
     CAISS_ASSERT_ENVIRONMENT_INIT
-
     return g_manage->createHandle(handle);
 }
 
@@ -40,15 +36,23 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Init(void* handle,
                                                 const CAISS_DISTANCE_TYPE distanceType,
                                                 const unsigned int dim,
                                                 const char *modelPath,
-                                                const CAISS_DIST_FUNC func) {
+                                                const CAISS_DIST_FUNC distFunc) {
     CAISS_ASSERT_ENVIRONMENT_INIT
-    return g_manage->init(handle, mode, distanceType, dim, modelPath, func);
+    return g_manage->init(handle, mode, distanceType, dim, modelPath, distFunc);
 }
 
 
-CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,  const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                                                 const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                                 const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch, const unsigned int showSpan) {
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
+                                                 const char *dataPath,
+                                                 const unsigned int maxDataSize,
+                                                 const CAISS_BOOL normalize,
+                                                 const unsigned int maxIndexSize,
+                                                 const float precision,
+                                                 const unsigned int fastRank,
+                                                 const unsigned int realRank,
+                                                 const unsigned int step,
+                                                 const unsigned int maxEpoch,
+                                                 const unsigned int showSpan) {
     CAISS_ASSERT_ENVIRONMENT_INIT;
     return g_manage->train(handle, dataPath, maxDataSize, normalize, maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
 }
@@ -75,6 +79,22 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_getResult(void *handle,
                                                      unsigned int size) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->getResult(handle, result, size);
+}
+
+
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Insert(void *handle,
+                                                  CAISS_FLOAT *node,
+                                                  const char *label,
+                                                  CAISS_INSERT_TYPE insertType) {
+    CAISS_ASSERT_ENVIRONMENT_INIT
+    return g_manage->insert(handle, node, label, insertType);
+}
+
+
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Save(void *handle,
+                                                char *modelPath) {
+    CAISS_ASSERT_ENVIRONMENT_INIT
+    return g_manage->save(handle, modelPath);
 }
 
 

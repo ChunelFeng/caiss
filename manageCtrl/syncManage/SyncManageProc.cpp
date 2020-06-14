@@ -177,7 +177,7 @@ CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const cha
 }
 
 
-CAISS_RET_TYPE SyncManageProc::save(void *handle, char *modelPath) {
+CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

@@ -28,7 +28,7 @@ public:
     CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;
 
     CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
-    CAISS_RET_TYPE save(void *handle, char *modelPath) override ;
+    CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
 
 protected:
     AlgorithmProc* getInstance(void *handle);    // 同步方式下，通过传入的handle，返回具体的算法处理类

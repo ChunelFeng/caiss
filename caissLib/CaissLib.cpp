@@ -92,7 +92,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Insert(void *handle,
 
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Save(void *handle,
-                                                char *modelPath) {
+                                                const char *modelPath) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->save(handle, modelPath);
 }

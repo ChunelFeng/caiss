@@ -40,7 +40,7 @@ public:
 
     // label 是数据标签，index表示数据第几个信息
     virtual CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) = 0;
-    virtual CAISS_RET_TYPE save(void *handle, char *modelPath) = 0;
+    virtual CAISS_RET_TYPE save(void *handle, const char *modelPath) = 0;
 
 protected:
     ManageCtrl free_manage_;    // 没有被用过的句柄管理类

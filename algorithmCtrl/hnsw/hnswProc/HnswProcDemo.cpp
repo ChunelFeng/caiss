@@ -19,8 +19,8 @@ typedef boost::bimaps::bimap<int, int> BOOST_INT_BIMAP;
 
 using namespace std;
 
-const static string TEST_MODEL_PATH = "libDemo";
-const static string TEST_FILE_PATH = "bert_71290words_768dim.txt";
+const static string TEST_MODEL_PATH = "../../libDemo";
+const static string TEST_FILE_PATH = "../../doc/bert_71290words_768dim.txt";
 //const static string TEST_FILE_PATH = "result-71290words-128dim.txt";
 //const static string TEST_FILE_PATH = "result-1000words-128dim.txt";
 const static int ACTION = 2;    // 0-train. 1-search. 2-demo

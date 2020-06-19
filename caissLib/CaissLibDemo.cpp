@@ -15,13 +15,13 @@ static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;
-static const char *model_path_ = "libDemo.caiss";
+static const char *model_path_ = "../../doc/libDemo.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static std::string info_ = "decent";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
-static const string data_path_ = "bert_71290words_768dim.txt";
+static const string data_path_ = "../../doc/bert_71290words_768dim.txt";
 static const unsigned int max_data_size_ = 100000;
 static const CAISS_BOOL normalize_ = CAISS_TRUE;
 static const unsigned int max_index_size_ = 64;

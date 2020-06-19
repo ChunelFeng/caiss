@@ -100,12 +100,12 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
         printf("[caiss] start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
         ret = trainModel(datas, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
-        printf("[caiss] train caiss model finished, check model precision automatic, please wait for a moment... \n");
+        printf("[caiss] model build finished, check model precision automatic, please wait for a moment... \n");
 
         float calcPrecision = 0.0f;
         ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
-            printf("[caiss] train success, model is saved to path [%s] \n", this->model_path_.c_str());
+            printf("[caiss] train success, precision is [%0.4f] , model is saved to path [%s] \n", calcPrecision, this->model_path_.c_str());
             break;
         } else if (CAISS_RET_WARNING == ret) {
             float span = precision - calcPrecision;

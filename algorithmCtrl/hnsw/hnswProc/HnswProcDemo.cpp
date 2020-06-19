@@ -89,10 +89,6 @@ int search(string word) {
 }
 
 
-int insert() {
-
-    return 0;
-}
 
 
 int bimapTest() {

@@ -7,5 +7,6 @@
 
 int train();
 int search();
+int insert();
 
 #endif //CAISS_CAISSSIMPLE_H

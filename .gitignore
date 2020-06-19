@@ -1,3 +1,5 @@
 /cmake-build-debug/
 /cmake-build-release/
 /.idea/
+/doc/bert_71290words_768dim.txt
+/doc/libDemo.caiss

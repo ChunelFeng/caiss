@@ -1,0 +1,80 @@
+//
+// Created by Chunel on 2020/6/16.
+//
+
+#ifndef CAISS_LRUPROC_H
+#define CAISS_LRUPROC_H
+
+#include <string>
+#include <list>
+#include <unordered_map>
+#include <utility>
+
+#include "./LruProcDefine.h"
+#include "../UtilsProc.h"
+
+using namespace std;
+
+class LruProc : UtilsProc {
+public:
+    explicit LruProc(unsigned int capacity) {
+        this->cur_size_ = 0;
+        this->capacity_ = capacity;
+    };
+
+    explicit LruProc() {
+        this->cur_size_ = 0;
+        this->capacity_ = DEFAULT_CAPACITY;
+    };
+
+    ~LruProc() override = default;
+
+    string get(const string& word) {
+        string result;
+        auto cur = cache_.find(word);
+        if (cur != cache_.end()) {
+            result = cur->second->result;    // 如果找到了
+            put(word, result);    // 重新放入，就是为了靠前一些
+        }
+
+        return result;
+    };
+
+    int put(const string& word, const string result) {
+        auto cur = cache_.find(word);
+        if (cur != cache_.end()) {
+            nodes_.erase(cache_[word]);    // 删除对应的iter信息
+            cache_.erase(word);    // 如果存在，先删掉，后来加上
+            cur_size_--;
+        } else if (cur_size_ >= capacity_) {
+            auto back = nodes_.back();    // 删除最后一个
+            cache_.erase(back.word);
+            nodes_.pop_back();    // 如果不存在，并且已经超过容量了，则删除最后一个
+            cur_size_--;
+        }
+
+        nodes_.push_front(LruNode(word, result));
+        cache_[word] = nodes_.begin();
+        cur_size_++;
+
+        return 0;
+    };
+
+    int clear() {    // 清空内部的所有数据
+        nodes_.clear();
+        cache_.clear();
+        cur_size_ = 0;    // 当前数量清零，容量保持不变
+
+        return 0;
+    }
+
+
+private:
+    unsigned int cur_size_;
+    unsigned int capacity_;
+    unordered_map<string, list<LruNode>::iterator> cache_;    // 缓存的信息，保存list中的
+    list<LruNode> nodes_;
+};
+
+
+#endif //CAISS_LRUPROC_H

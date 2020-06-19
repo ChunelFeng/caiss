@@ -23,11 +23,13 @@ class AlgorithmProc {
 
 public:
     explicit AlgorithmProc() {
+        this->last_search_type_ = CAISS_SEARCH_DEFAULT;
+        this->last_topK_ = UINT_MAX;
+        this->cur_mode_ = CAISS_MODE_DEFAULT;
     }
 
     virtual ~AlgorithmProc() {
     }
-
 
     /**
      * 初始化状态和参数信息
@@ -111,6 +113,13 @@ public:
 
 
 protected:
+    /**
+     * 从lru中查询
+     * @param word
+     * @param isGet
+     * @return
+     */
+    virtual CAISS_RET_TYPE searchInLruCache(const char *word, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, CAISS_BOOL &isGet) = 0;
 
     CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
         if (CAISS_FALSE == this->normalize_) {
@@ -152,6 +161,10 @@ protected:
     CAISS_BOOL normalize_;    // 是否需要标准化数据
     std::string result_;
     CAISS_DISTANCE_TYPE distance_type_;
+
+    LruProc lru_cache_;    // 最近N次的查询记录
+    unsigned int last_topK_;    // 记录上一次的topK跟这一次的topK是否相同
+    CAISS_SEARCH_TYPE last_search_type_;
 };
 
 #endif //CHUNELCAISS_ALGORITHMPROC_H

@@ -17,7 +17,7 @@ static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;
 static const char *model_path_ = "libDemo.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
-static std::string info_ = "hello";
+static std::string info_ = "decent";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
@@ -84,7 +84,8 @@ int main() {
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = train();
+    //ret = train();
+    ret = search();
     return 0;
 }
 

@@ -22,8 +22,6 @@ class RapidJsonProc : public UtilsProc  {
 public:
     explicit RapidJsonProc();
     ~RapidJsonProc();
-    CAISS_RET_TYPE init() override ;
-    CAISS_RET_TYPE deinit() override ;
 
     static CAISS_RET_TYPE parseInputData(const char *line, CaissDataNode& node);
     static CAISS_RET_TYPE buildSearchResult(const std::list<CaissResultDetail> &details, CAISS_DISTANCE_TYPE distanceType,

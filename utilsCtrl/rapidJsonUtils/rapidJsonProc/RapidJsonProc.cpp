@@ -35,15 +35,6 @@ RapidJsonProc::~RapidJsonProc() {
 }
 
 
-CAISS_RET_TYPE RapidJsonProc::init() {
-    CAISS_FUNCTION_END
-}
-
-CAISS_RET_TYPE RapidJsonProc::deinit() {
-    CAISS_FUNCTION_END
-}
-
-
 CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& dataNode) {
     CAISS_ASSERT_NOT_NULL(line)
 

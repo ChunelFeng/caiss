@@ -14,7 +14,7 @@ using namespace std;
 
 // 静态成员变量使用前，先初始化
 HierarchicalNSW<CAISS_FLOAT>*  HnswProc::hnsw_alg_ptr_ = nullptr;
-RWLock HnswProc::lock_;
+RWLock HnswProc::hnsw_lock_;
 
 inline static bool isAnnSuffix(const char *modelPath) {
     string path = string(modelPath);
@@ -103,7 +103,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
         printf("[caiss] train caiss model finished, check model precision automatic, please wait for a moment... \n");
 
         float calcPrecision = 0.0f;
-        ret = checkModelEnable(precision, fastRank, realRank, datas, calcPrecision);
+        ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
             printf("[caiss] train success, model is saved to path [%s] \n", this->model_path_.c_str());
             break;
@@ -127,12 +127,28 @@ CAISS_RET_TYPE HnswProc::search(void *info, const CAISS_SEARCH_TYPE searchType, 
     CAISS_ASSERT_NOT_NULL(info)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
 
+    /* 将信息清空 */
     this->result_.clear();
-    this->result_words_.clear();
-    this->result_distance_.clear();
 
-    ret = innerSearchResult(info, searchType, topK);
+    CAISS_BOOL isGet = CAISS_FALSE;
+    if (CAISS_SEARCH_WORD == searchType || CAISS_LOOP_WORD == searchType) {
+        ret = searchInLruCache((const char *) info, searchType, topK, isGet);    // 如果查询的是单词，则先进入cache中获取
+        CAISS_FUNCTION_CHECK_STATUS
+    }
+
+    if (CAISS_FALSE == isGet) {    // 如果在cache中没找到，将之前查询的距离和单词都删除
+        this->result_words_.clear();
+        this->result_distance_.clear();
+        ret = innerSearchResult(info, searchType, topK);
+    }
+
     CAISS_FUNCTION_CHECK_STATUS
+
+    this->last_topK_ = topK;    // 查询完毕之后，记录当前的topK信息
+    this->last_search_type_ = searchType;
+    if (searchType == CAISS_SEARCH_WORD || searchType == CAISS_LOOP_WORD) {
+        this->lru_cache_.put(std::string((char *)info), this->result_);
+    }
 
     CAISS_FUNCTION_END
 }
@@ -174,6 +190,7 @@ CAISS_RET_TYPE HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSE
 
     CAISS_FUNCTION_CHECK_STATUS
 
+    this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
     CAISS_FUNCTION_END
 }
 
@@ -358,6 +375,30 @@ CAISS_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
 }
 
 
+CAISS_RET_TYPE HnswProc::searchInLruCache(const char *word, const CAISS_SEARCH_TYPE searchType, const unsigned int topK,
+                                          CAISS_BOOL &isGet) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(word)
+
+    if (topK == last_topK_ && searchType == last_search_type_) {    // 查询的还是上次的topK，并且查詢的方式还是一致的话
+        std::string&& result = lru_cache_.get(std::string(word));
+        if (!result.empty()) {
+            isGet = CAISS_TRUE;    // 如果有值，直接给result赋值
+            this->result_ = std::move(result);
+            cout << "find word in cache - " << word << endl;
+        } else {
+            cout << "not find word in cache - " << word << endl;
+            isGet = CAISS_FALSE;
+        }
+    } else {
+        isGet = CAISS_FALSE;
+        lru_cache_.clear();    // 如果topK有变动，或者有信息插入的话，清空缓存信息
+    }
+
+    CAISS_FUNCTION_END
+}
+
+
 /**
  * 训练模型的时候，使用的构建方式（static成员函数）
  * @param distance_ptr
@@ -370,11 +411,11 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distan
     CAISS_FUNCTION_BEGIN
 
     if (nullptr == HnswProc::hnsw_alg_ptr_) {
-        HnswProc::lock_.writeLock();
+        HnswProc::hnsw_lock_.writeLock();
         if (nullptr == HnswProc::hnsw_alg_ptr_) {
             HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, maxDataSize, normalize, maxIndexSize, maxNeighbor, efSearch, efConstruction);
         }
-        HnswProc::lock_.writeUnlock();
+        HnswProc::hnsw_lock_.writeUnlock();
     }
 
     CAISS_FUNCTION_END
@@ -390,12 +431,12 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distan
     CAISS_FUNCTION_BEGIN
 
     if (nullptr == HnswProc::hnsw_alg_ptr_) {
-        HnswProc::lock_.writeLock();
+        HnswProc::hnsw_lock_.writeLock();
         if (nullptr == HnswProc::hnsw_alg_ptr_) {
             // 这里是static函数信息，只能通过传递值下来的方式实现
             HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, modelPath);
         }
-        HnswProc::lock_.writeUnlock();
+        HnswProc::hnsw_lock_.writeUnlock();
     }
 
     CAISS_FUNCTION_END
@@ -405,9 +446,9 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distan
 CAISS_RET_TYPE HnswProc::destroyHnswSingleton() {
     CAISS_FUNCTION_BEGIN
 
-    HnswProc::lock_.writeLock();
+    HnswProc::hnsw_lock_.writeLock();
     CAISS_DELETE_PTR(HnswProc::hnsw_alg_ptr_);
-    HnswProc::lock_.writeUnlock();
+    HnswProc::hnsw_lock_.writeUnlock();
 
     CAISS_FUNCTION_END
 }
@@ -518,8 +559,8 @@ CAISS_RET_TYPE HnswProc::innerSearchResult(void *info, CAISS_SEARCH_TYPE searchT
 }
 
 
-CAISS_RET_TYPE HnswProc::checkModelEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
-                                          const vector<CaissDataNode> &datas, float &calcPrecision) {
+CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+                                                   const vector<CaissDataNode> &datas, float &calcPrecision) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -543,4 +584,5 @@ CAISS_RET_TYPE HnswProc::checkModelEnable(const float targetPrecision, const uns
 
     CAISS_FUNCTION_END
 }
+
 

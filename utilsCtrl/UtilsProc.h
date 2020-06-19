@@ -10,14 +10,16 @@
 class UtilsProc {
 public:
     explicit UtilsProc() {
-
     }
-    virtual CAISS_RET_TYPE init() = 0;
-    virtual CAISS_RET_TYPE deinit() = 0;
 
-protected:
     virtual ~UtilsProc() {
+    }
 
+    virtual CAISS_RET_TYPE init() {
+        return 0;
+    }
+    virtual CAISS_RET_TYPE deinit() {
+        return 0;
     }
 };
 

@@ -49,7 +49,6 @@ struct CaissResultDetail {
 #define CAISS_FUNCTION_CHECK_STATUS    \
     if (CAISS_RET_OK != ret)   \
     {    \
-        std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
         return ret; \
     }    \
 

@@ -5,8 +5,7 @@
 #ifndef CHUNELCAISS_THREADINCLUDE_H
 #define CHUNELCAISS_THREADINCLUDE_H
 
-// TODO 考虑读写锁写到放到utils类中去
-
-#include "rwLock/RWLock.h"
+#include "./rwLock/RWLock.h"
+#include "./threadPool/ThreadPool.h"
 
 #endif //CHUNELCAISS_THREADINCLUDE_H

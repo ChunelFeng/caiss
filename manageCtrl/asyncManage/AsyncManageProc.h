@@ -1,16 +1,17 @@
 //
-// Created by Chunel on 2020/5/24.
+// Created by Chunel on 2020/6/20.
+// 开启异步调用流程
 //
 
-#ifndef CHUNELCAISS_SYNCMANAGEPROC_H
-#define CHUNELCAISS_SYNCMANAGEPROC_H
+#ifndef CAISS_ASYNCMANAGEPROC_H
+#define CAISS_ASYNCMANAGEPROC_H
 
 #include "../manageProc.h"
 
-class SyncManageProc : public manageProc  {
+class AsyncManageProc : public manageProc {
 public:
-    explicit SyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType);
-    ~SyncManageProc() override ;
+    explicit AsyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType);
+    ~AsyncManageProc() override ;
 
     CAISS_RET_TYPE createHandle(void **handle) override ;    // 生成处理句柄
     CAISS_RET_TYPE destroyHandle(void *handle) override ;
@@ -30,10 +31,9 @@ public:
     CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
     CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
 
-protected:
-    AlgorithmProc* getInstance(void *handle);    // 同步方式下，通过传入的handle，返回具体的算法处理类
-    AlgorithmProc* createAlgoProc();
+private:
+    ThreadPool* pool_ptr_;
 };
 
 
-#endif //CHUNELCAISS_SYNCMANAGEPROC_H
+#endif //CAISS_ASYNCMANAGEPROC_H

@@ -85,7 +85,6 @@ AlgorithmProc *SyncManageProc::createAlgoProc() {
  */
 SyncManageProc::SyncManageProc(const unsigned int maxSize, CAISS_ALGO_TYPE algoType)
                               : manageProc(maxSize, algoType) {
-    this->max_size_ = maxSize;
     for(unsigned int i = 0; i < maxSize; i++) {
         AlgorithmProc* proc = createAlgoProc();
         if (nullptr != proc) {
@@ -104,7 +103,6 @@ SyncManageProc::~SyncManageProc() {
         CAISS_DELETE_PTR(j.second);
     }
 
-    this->max_size_ = 0;
 }
 
 

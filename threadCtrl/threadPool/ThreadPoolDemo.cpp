@@ -18,14 +18,14 @@ void func2(int i) {
 
 
 int main() {
-    ThreadPool pool(1);
+    ThreadPool pool(3);
     pool.start();
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 100; i++) {
         pool.appendTask([] { return func2(2); });
     }
 
-    this_thread::sleep_for(chrono::milliseconds(10));
+    this_thread::sleep_for(chrono::milliseconds(1000));
     pool.stop();
 
     return 0;

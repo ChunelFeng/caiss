@@ -32,8 +32,8 @@ public:
         }
     }
 
-    ThreadPool(const ThreadPool&) = delete;
-    ThreadPool& operator= (const ThreadPool& pool) = delete;
+//    ThreadPool(const ThreadPool&) = delete;
+//    ThreadPool& operator= (const ThreadPool& pool) = delete;
 
     void start();
     void stop();

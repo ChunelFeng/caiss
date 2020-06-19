@@ -19,7 +19,7 @@
     #define STDCALL
 #endif
 
-#define CAISS_VERSION       ("1.0.0")
+#define CAISS_VERSION       ("1.1.0")
 
 #include <vector>
 
@@ -31,6 +31,7 @@ using CAISS_BOOL = int;
 using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
 using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
 
+/* 自定义用于计算距离的函数 */
 typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* param);
 
 /* 函数返回值定义 */
@@ -84,7 +85,7 @@ enum CAISS_DISTANCE_TYPE {
     CAISS_DISTANCE_INNER = 2,    // 内积距离
     CAISS_DISTANCE_JACCARD = 3,    // 杰卡德距离
 
-    CAISS_DISTANCE_EDITION = 99,    // 自定义距离（注：距离需要较小的值，表示较为接近）
+    CAISS_DISTANCE_EDITION = 99,    // 自定义距离（注：设定自定义距离时，必须是较小的值，表示较为接近）
 };
 
 enum CAISS_ALGO_TYPE {

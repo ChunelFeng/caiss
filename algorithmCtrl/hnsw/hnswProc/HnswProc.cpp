@@ -191,6 +191,7 @@ CAISS_RET_TYPE HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSE
     CAISS_FUNCTION_CHECK_STATUS
 
     this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
+    this->last_search_type_ = CAISS_SEARCH_DEFAULT;
     CAISS_FUNCTION_END
 }
 
@@ -385,9 +386,7 @@ CAISS_RET_TYPE HnswProc::searchInLruCache(const char *word, const CAISS_SEARCH_T
         if (!result.empty()) {
             isGet = CAISS_TRUE;    // 如果有值，直接给result赋值
             this->result_ = std::move(result);
-            cout << "find word in cache - " << word << endl;
         } else {
-            cout << "not find word in cache - " << word << endl;
             isGet = CAISS_FALSE;
         }
     } else {

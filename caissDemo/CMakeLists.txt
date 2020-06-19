@@ -4,10 +4,12 @@ project(CaissDemo)
 set(CMAKE_CXX_STANDARD 14)
 
 
-set(SOURCE_FILES CaissLib.cpp CaissLibDemo.cpp
+set(SOURCE_FILES ../caissLib/CaissLib.cpp CaissDemo.cpp
         ../threadCtrl/rwLock/RWLock.cpp
         ../manageCtrl/syncManage/SyncManageProc.cpp
         ../algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
-        ../utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp)
+        ../utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
+        caissSimpleDemo/CaissSimple.cpp
+        caissMultiThreadDemo/CaissMutliThread.cpp)
 
 add_executable(CaissDemo ${SOURCE_FILES})

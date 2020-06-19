@@ -22,12 +22,15 @@ include_directories(${MY_BOOST_PATH}/libs)
 
 # 以下是编译dll对应的内容
 add_library(Caiss SHARED manageCtrl/syncManage/SyncManageProc.cpp
+        manageCtrl/asyncManage/AsyncManageProc.cpp
         caissLib/CaissLib.cpp
         algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         threadCtrl/rwLock/RWLock.cpp
-        threadCtrl/rwLock/RWLockDemo.cpp
-        threadCtrl/threadPool/ThreadPool.cpp)
+        threadCtrl/threadPool/ThreadPool.cpp
+        caissDemo/caissSimpleDemo/CaissSimple.cpp
+        caissDemo/caissMultiThreadDemo/CaissMutliThread.cpp
+        caissDemo/CaissDemo.cpp)
 
 # 添加对应依赖的内容
 add_subdirectory(threadCtrl/rwLock)
@@ -35,4 +38,4 @@ add_subdirectory(threadCtrl/threadPool)
 add_subdirectory(algorithmCtrl/hnsw/hnswProc)
 add_subdirectory(manageCtrl/)
 add_subdirectory(manageCtrl/syncManage)
-add_subdirectory(caissLib)
+add_subdirectory(caissDemo)

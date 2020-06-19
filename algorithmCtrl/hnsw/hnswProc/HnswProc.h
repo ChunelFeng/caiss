@@ -55,7 +55,6 @@ protected:
 
     // 静态成员变量
 private:
-
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize, const unsigned int maxIndexSize=64,
                                               const unsigned int maxNeighbor=32, const unsigned int efSearch=100, const unsigned int efConstruction=100);
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, const std::string &modelPath);

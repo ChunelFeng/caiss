@@ -5,6 +5,10 @@
 #ifndef CAISS_CAISSSIMPLE_H
 #define CAISS_CAISSSIMPLE_H
 
+#include "../CaissDemoInclude.h"
+
+
+
 int train();
 int search();
 int insert();

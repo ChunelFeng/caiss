@@ -6,33 +6,53 @@
 #ifndef CAISS_ASYNCMANAGEPROC_H
 #define CAISS_ASYNCMANAGEPROC_H
 
-#include "../manageProc.h"
+#include "../ManageProc.h"
 
-class AsyncManageProc : public manageProc {
+class AsyncManageProc : public ManageProc {
 public:
-    explicit AsyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType);
-    ~AsyncManageProc() override ;
+    explicit AsyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType) : ManageProc(maxSize, algoType) {
+        createThreadPoolSingleton(maxSize);
+    }
 
-    CAISS_RET_TYPE createHandle(void **handle) override ;    // 生成处理句柄
-    CAISS_RET_TYPE destroyHandle(void *handle) override ;
+    virtual ~AsyncManageProc() override {
+        // @notice 不可以在析构函数里，调用成员函数？
+        destroyThreadPoolSingleton();
+    }
 
-    CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
-                        unsigned int dim, const char *modelPath, CAISS_DIST_FUNC distFunc) override ;
-
-    CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+    virtual CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
                          unsigned int maxIndexSize, float precision, unsigned int fastRank,
                          unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                          unsigned int showSpan) override ;
 
-    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
-    CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) override ;
-    CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;
+    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
+    virtual CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) override ;
+    virtual CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;
 
-    CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
-    CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
 
-private:
-    ThreadPool* pool_ptr_;
+public:
+    static void createThreadPoolSingleton(unsigned int maxSize) {
+        if (nullptr == pool_) {
+            pool_lock_.writeLock();
+            if (nullptr == pool_) {
+                pool_ = new ThreadPool(maxSize);
+            }
+            pool_lock_.writeUnlock();
+        }
+
+        return;
+    }
+
+    static ThreadPool* getThreadPoolSingleton() {
+        return pool_;
+    }
+
+    static void destroyThreadPoolSingleton() {
+        CAISS_DELETE_PTR(pool_)
+    }
+
+public:
+    static ThreadPool* pool_;
+    static RWLock pool_lock_;
 };
 
 

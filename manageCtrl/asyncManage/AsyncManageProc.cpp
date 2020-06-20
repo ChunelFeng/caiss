@@ -4,55 +4,48 @@
 
 #include "AsyncManageProc.h"
 
-AsyncManageProc::AsyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType) : manageProc(maxSize, algoType) {
-    this->pool_ptr_  = new ThreadPool(maxSize);
-}
+ThreadPool* AsyncManageProc::pool_ = nullptr;
+RWLock AsyncManageProc::pool_lock_;
 
-AsyncManageProc::~AsyncManageProc() {
-    CAISS_DELETE_PTR(this->pool_ptr_);
-}
 
-CAISS_RET_TYPE AsyncManageProc::createHandle(void **handle) {
-    CAISS_FUNCTION_BEGIN
-
-    CAISS_FUNCTION_END
-}
-
-CAISS_RET_TYPE AsyncManageProc::destroyHandle(void *handle) {
-    CAISS_FUNCTION_END
-}
-
-CAISS_RET_TYPE AsyncManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim,
-                                     const char *modelPath, CAISS_DIST_FUNC distFunc) {
-    CAISS_FUNCTION_END
-}
-
-CAISS_RET_TYPE
-AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
                        unsigned int maxIndexSize, float precision, unsigned int fastRank, unsigned int realRank,
                        unsigned int step, unsigned int maxEpoch, unsigned int showSpan) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    auto pool = getThreadPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(pool)
+
+    // 绑定训练的流程到线程池中去
+    pool->appendTask(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
+            fastRank, realRank, step, maxEpoch, showSpan));
+
     CAISS_FUNCTION_END
 }
 
+
 CAISS_RET_TYPE AsyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    auto pool = getThreadPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(pool)
+    pool->appendTask(std::bind(&AlgorithmProc::search, algo, info, searchType, topK));    // 将信息放到线程池中去计算
+
     CAISS_FUNCTION_END
 }
+
 
 CAISS_RET_TYPE AsyncManageProc::getResultSize(void *handle, unsigned int &size) {
     CAISS_FUNCTION_END
 }
 
+
 CAISS_RET_TYPE AsyncManageProc::getResult(void *handle, char *result, unsigned int size) {
     CAISS_FUNCTION_END
 }
-
-CAISS_RET_TYPE
-AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
-    CAISS_FUNCTION_END
-}
-
-CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
-    CAISS_FUNCTION_END
-}
-
-

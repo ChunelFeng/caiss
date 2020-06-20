@@ -13,7 +13,7 @@
 using namespace std;
 
 // 静态成员变量使用前，先初始化
-HierarchicalNSW<CAISS_FLOAT>*  HnswProc::hnsw_alg_ptr_ = nullptr;
+HierarchicalNSW<CAISS_FLOAT>* HnswProc::hnsw_alg_ptr_ = nullptr;
 RWLock HnswProc::hnsw_lock_;
 
 inline static bool isAnnSuffix(const char *modelPath) {

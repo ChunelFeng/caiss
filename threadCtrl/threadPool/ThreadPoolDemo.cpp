@@ -8,12 +8,19 @@
 
 using namespace std;
 
-void func() {
+int func() {
     cout << " working void func ..." << endl;
+    return 0;
 }
 
-void func2(int i) {
+int func2(int i) {
     cout << " working int func..." << endl;
+    return 0;
+}
+
+int func3(int i, int j, int k) {
+    cout << "func 3" << endl;
+    return 0;
 }
 
 
@@ -22,7 +29,8 @@ int main() {
     pool.start();
 
     for (int i = 0; i < 100; i++) {
-        pool.appendTask([] { return func2(2); });
+        pool.appendTask(std::bind(func3, 2,3,1));
+        //pool.appendTask(test);
     }
 
     this_thread::sleep_for(chrono::milliseconds(1000));

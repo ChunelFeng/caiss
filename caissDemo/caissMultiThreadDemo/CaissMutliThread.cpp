@@ -5,6 +5,7 @@
 #include <thread>
 #include "../CaissDemoInclude.h"
 
+
 int multiThreadTrain() {
     CAISS_FUNCTION_BEGIN
     // 注：训练不支持多线程功能

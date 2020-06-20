@@ -6,6 +6,7 @@
 #define CAISS_CAISSDEMOINCLUDE_H
 
 #include <string>
+#include "../utilsCtrl/UtilsInclude.h"
 #include "../caissLib/CaissLib.h"
 #include "caissSimpleDemo/CaissSimple.h"
 #include "caissMultiThreadDemo/CaissMultiThread.h"

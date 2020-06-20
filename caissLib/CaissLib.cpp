@@ -1,9 +1,27 @@
 #include "CaissLib.h"
-#include "../manageCtrl/manageInclude.h"
+#include "../manageCtrl/ManageInclude.h"
 
-static manageProc* g_manage = nullptr;
+static ManageProc* g_manage = nullptr;
 static CAISS_BOOL g_init = CAISS_FALSE;
 static RWLock g_lock;
+
+static ManageProc* createManage(const unsigned int maxSize,
+                                const CAISS_ALGO_TYPE algoType,
+                                const CAISS_MANAGE_TYPE mangeType) {
+    ManageProc* manage = nullptr;
+    switch (mangeType) {
+        case CAISS_MANAGE_SYNC:
+            manage = new SyncManageProc(maxSize, algoType);
+            break;
+        case CAISS_MANAGE_ASYNC:
+            manage = new AsyncManageProc(maxSize, algoType);
+            break;
+        default:
+            break;
+    }
+
+    return manage;
+}
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSize,
                                                        const CAISS_ALGO_TYPE algoType,
@@ -12,7 +30,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSiz
     if (nullptr == g_manage) {
         g_lock.writeLock();
         if (nullptr == g_manage) {
-            g_manage = new SyncManageProc(maxSize, algoType);    // 暂时只做同步的版本
+            g_manage = createManage(maxSize, algoType, manageType);
             g_init = CAISS_TRUE;    // 通过init参数，来确定环境是否初始化。如果初始化了，则不需要进行
         }
         g_lock.writeUnlock();

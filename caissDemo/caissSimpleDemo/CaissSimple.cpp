@@ -73,6 +73,9 @@ int insert() {
 
     // 插入后，再次查询，会查到新插入的词语
     // 是否将新插入的信息，记录在模型中，取决于是否调用CAISS_Save函数
+    //ret = CAISS_Save(handle);
+    //CAISS_FUNCTION_CHECK_STATUS
+
     ret = CAISS_Search(handle, (void *)word.c_str(), search_type_, top_k_);
     CAISS_FUNCTION_CHECK_STATUS
 

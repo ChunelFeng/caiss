@@ -28,6 +28,7 @@ add_library(Caiss SHARED manageCtrl/syncManage/SyncManageProc.cpp
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         threadCtrl/rwLock/RWLock.cpp
         threadCtrl/threadPool/ThreadPool.cpp
+        manageCtrl/ManageProc.cpp
         caissDemo/caissSimpleDemo/CaissSimple.cpp
         caissDemo/caissMultiThreadDemo/CaissMutliThread.cpp
         caissDemo/CaissDemo.cpp)
@@ -36,6 +37,4 @@ add_library(Caiss SHARED manageCtrl/syncManage/SyncManageProc.cpp
 add_subdirectory(threadCtrl/rwLock)
 add_subdirectory(threadCtrl/threadPool)
 add_subdirectory(algorithmCtrl/hnsw/hnswProc)
-add_subdirectory(manageCtrl/)
-add_subdirectory(manageCtrl/syncManage)
 add_subdirectory(caissDemo)

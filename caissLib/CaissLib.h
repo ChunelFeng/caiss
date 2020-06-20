@@ -2,7 +2,6 @@
 #define _CHUNEL_CAISS_LIBRARY_H_
 
 #include "CaissLibDefine.h"
-#include "../algorithmCtrl/AlgorithmInclude.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -125,7 +124,7 @@ extern "C" {
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Save(void *handle,
-            const char *modelPath);
+            const char *modelPath = nullptr);
 
     /**
      * 销毁句柄信息

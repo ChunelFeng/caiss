@@ -18,7 +18,7 @@ using namespace std;
 
 
 class ThreadPool {
-    using THREAD_FUNCTION = function<void()>;
+    using THREAD_FUNCTION = std::function<int()>;
 
 public:
     explicit ThreadPool(unsigned int num) :
@@ -28,7 +28,7 @@ public:
 
     ~ThreadPool() {
         if (running_) {
-            stop();
+            this->stop();
         }
     }
 

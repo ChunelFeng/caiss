@@ -13,8 +13,8 @@ int main() {
     CAISS_FUNCTION_CHECK_STATUS
 
     //ret = train();
-    //ret = search();
-    ret = insert();
+    ret = search();
+    //ret = insert();
     return 0;
 }
 

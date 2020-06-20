@@ -14,7 +14,7 @@
 
 #define max_thread_num_ (4)
 #define algo_type_ (CAISS_ALGO_HNSW)
-#define manage_type_ (CAISS_MANAGE_SYNC)
+#define manage_type_ (CAISS_MANAGE_ASYNC)
 #define mode_ (CAISS_MODE_PROCESS)
 #define dist_type_ (CAISS_DISTANCE_INNER)
 #define dim_ (768)

@@ -22,6 +22,11 @@ int demo_train() {
                               precision_, fast_rank_, real_rank_, step_, max_epoch_, show_span_);
     CAISS_FUNCTION_CHECK_STATUS
 
+    this_thread::sleep_for(chrono::milliseconds(1000*30));
+
+    ret = CAISS_destroyHandle(handle);
+    CAISS_FUNCTION_CHECK_STATUS
+
     CAISS_FUNCTION_END
 }
 
@@ -38,7 +43,6 @@ int demo_search() {
     ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    this_thread::sleep_for(chrono::milliseconds(1000));
     unsigned int size = 0;
     ret = CAISS_getResultSize(handle, size);
     CAISS_FUNCTION_CHECK_STATUS

@@ -220,6 +220,10 @@ CAISS_RET_TYPE HnswProc::getResultSize(unsigned int &size) {
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
 
     size = this->result_.size();
+    if (size == 0) {
+        ret = CAISS_RET_UNFINISHED;
+    }
+    CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
 }
@@ -232,6 +236,8 @@ CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
 
     memset(result, 0, size);
     memcpy(result, this->result_.data(), this->result_.size());
+
+    //this->result_.clear();    // todo 考虑是否需要加入，暂定不加
 
     CAISS_FUNCTION_END
 }

@@ -15,7 +15,6 @@ public:
     }
 
     virtual ~AsyncManageProc() override {
-        // @notice 不可以在析构函数里，调用成员函数？
         destroyThreadPoolSingleton();
     }
 

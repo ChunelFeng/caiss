@@ -35,6 +35,7 @@ using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
 typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* dim);
 
 /* 函数返回值定义 */
+#define CAISS_RET_UNFINISHED    (2)     // 流程暂未完成
 #define CAISS_RET_WARNING       (1)     // 流程告警
 #define CAISS_RET_OK            (0)     // 流程正常
 #define CAISS_RET_ERR           (-1)    // 流程异常
@@ -49,7 +50,7 @@ typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* di
 #define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
 #define CAISS_RET_NO_WORD       (-11)   // 词库中无对应词语问题
 
-#define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持
+#define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 
 
 

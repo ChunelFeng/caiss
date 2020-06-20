@@ -5,7 +5,7 @@
 #ifndef CAISS_CAISSMULTITHREAD_H
 #define CAISS_CAISSMULTITHREAD_H
 
-int multiThreadTrain();
-int multiThreadSearch();
+int demo_multiThreadTrain();
+int demo_asyncMultiThreadSearch();
 
 #endif //CAISS_CAISSMULTITHREAD_H

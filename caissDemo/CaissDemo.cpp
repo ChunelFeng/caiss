@@ -12,9 +12,12 @@ int main() {
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    //ret = train();
-    ret = demo_search();
-    //ret = insert();
+    //ret = demo_train();
+    //ret = demo_search();
+    //ret = demo_insert();
+    ret = demo_asyncMultiThreadSearch();
+    CAISS_FUNCTION_CHECK_STATUS
+
     return 0;
 }
 

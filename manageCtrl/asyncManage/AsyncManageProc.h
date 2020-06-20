@@ -35,6 +35,7 @@ public:
             pool_lock_.writeLock();
             if (nullptr == pool_) {
                 pool_ = new ThreadPool(maxSize);
+                pool_->start();
             }
             pool_lock_.writeUnlock();
         }

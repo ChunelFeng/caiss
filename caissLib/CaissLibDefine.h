@@ -32,22 +32,26 @@ using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
 using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
 
 /* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* param);
+typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* dim);
 
 /* 函数返回值定义 */
-#define CAISS_RET_WARNING    (1)     // 流程告警
-#define CAISS_RET_OK         (0)     // 流程正常
-#define CAISS_RET_ERR        (-1)    // 流程异常
-#define CAISS_RET_RES        (-2)    // 资源问题
-#define CAISS_RET_MODE       (-3)    // 模式选择问题
-#define CAISS_RET_PATH       (-4)    // 路径问题
-#define CAISS_RET_JSON       (-5)    // json解析问题
-#define CAISS_RET_PARAM      (-6)    // 参数问题
-#define CAISS_RET_HANDLE     (-7)    // 句柄申请问题
-#define CAISS_RET_DIM        (-8)    // 维度问题
-#define CAISS_RET_MODEL_SIZE (-9)    // 模型尺寸限制问题
-#define CAISS_RET_WORD_SIZE  (-10)   // 词语长度限制问题
-#define CAISS_RET_NO_WORD    (-11)   // 词库中无对应词语问题
+#define CAISS_RET_WARNING       (1)     // 流程告警
+#define CAISS_RET_OK            (0)     // 流程正常
+#define CAISS_RET_ERR           (-1)    // 流程异常
+#define CAISS_RET_RES           (-2)    // 资源问题
+#define CAISS_RET_MODE          (-3)    // 模式选择问题
+#define CAISS_RET_PATH          (-4)    // 路径问题
+#define CAISS_RET_JSON          (-5)    // json解析问题
+#define CAISS_RET_PARAM         (-6)    // 参数问题
+#define CAISS_RET_HANDLE        (-7)    // 句柄申请问题
+#define CAISS_RET_DIM           (-8)    // 维度问题
+#define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
+#define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
+#define CAISS_RET_NO_WORD       (-11)   // 词库中无对应词语问题
+
+#define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持
+
+
 
 #define CAISS_TRUE       (1)
 #define CAISS_FALSE      (0)

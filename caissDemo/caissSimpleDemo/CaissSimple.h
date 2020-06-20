@@ -9,8 +9,8 @@
 
 
 
-int train();
-int search();
-int insert();
+int demo_train();
+int demo_search();
+int demo_insert();
 
 #endif //CAISS_CAISSSIMPLE_H

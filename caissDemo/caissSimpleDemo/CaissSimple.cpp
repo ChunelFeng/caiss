@@ -2,10 +2,13 @@
 // Created by Chunel on 2020/6/20.
 //
 
+
+#include <chrono>
+#include <thread>
 #include "../CaissDemoInclude.h"
 
 
-int train() {
+int demo_train() {
     CAISS_FUNCTION_BEGIN
 
     void *handle = nullptr;
@@ -22,7 +25,7 @@ int train() {
     CAISS_FUNCTION_END
 }
 
-int search() {
+int demo_search() {
     CAISS_FUNCTION_BEGIN
 
     void *handle = nullptr;
@@ -35,6 +38,7 @@ int search() {
     ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_);
     CAISS_FUNCTION_CHECK_STATUS
 
+    this_thread::sleep_for(chrono::milliseconds(1000));
     unsigned int size = 0;
     ret = CAISS_getResultSize(handle, size);
     CAISS_FUNCTION_CHECK_STATUS
@@ -52,7 +56,7 @@ int search() {
     CAISS_FUNCTION_END
 }
 
-int insert() {
+int demo_insert() {
     CAISS_FUNCTION_BEGIN
 
     void *handle = nullptr;

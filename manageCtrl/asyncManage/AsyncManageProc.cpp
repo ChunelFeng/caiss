@@ -42,10 +42,26 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TY
 
 
 CAISS_RET_TYPE AsyncManageProc::getResultSize(void *handle, unsigned int &size) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    ret = algo->getResultSize(size);
+    CAISS_FUNCTION_CHECK_STATUS
+
     CAISS_FUNCTION_END
 }
 
 
 CAISS_RET_TYPE AsyncManageProc::getResult(void *handle, char *result, unsigned int size) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    ret = algo->getResult(result, size);
+    CAISS_FUNCTION_CHECK_STATUS
+
     CAISS_FUNCTION_END
 }

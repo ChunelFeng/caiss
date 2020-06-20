@@ -12,7 +12,7 @@
 #include "caissMultiThreadDemo/CaissMultiThread.h"
 
 
-#define max_thread_num_ (4)
+#define max_thread_num_ (1)
 #define algo_type_ (CAISS_ALGO_HNSW)
 #define manage_type_ (CAISS_MANAGE_ASYNC)
 #define mode_ (CAISS_MODE_PROCESS)

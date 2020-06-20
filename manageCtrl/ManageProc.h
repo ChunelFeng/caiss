@@ -33,17 +33,19 @@ public:
                                  unsigned int maxIndexSize, float precision, unsigned int fastRank,
                                  unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                                  unsigned int showSpan) {
-        return 0;
+        CAISS_FUNCTION_NO_SUPPORT
     }
 
     virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
-        return 0;
+        CAISS_FUNCTION_NO_SUPPORT
     }
+
     virtual CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) {
-        return 0;
+        CAISS_FUNCTION_NO_SUPPORT
     }
+
     virtual CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) {
-        return 0;
+        CAISS_FUNCTION_NO_SUPPORT
     }
 
 

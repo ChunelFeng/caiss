@@ -52,6 +52,9 @@ struct CaissResultDetail {
         return ret; \
     }    \
 
+#define CAISS_FUNCTION_NO_SUPPORT    \
+    return CAISS_RET_NO_SUPPORT;    \
+
 #define CAISS_FUCNTION_SHOW_RESULT    \
     std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
 

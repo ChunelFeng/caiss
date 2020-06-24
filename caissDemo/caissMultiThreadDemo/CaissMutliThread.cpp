@@ -39,7 +39,7 @@ void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& dist
         }
         cout << "====" << p <<endl;
     } else {
-        cout << "*******************" << endl;
+        cout << "*";
     }
 
     return;

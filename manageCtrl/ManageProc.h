@@ -28,6 +28,7 @@ public:
     // label 是数据标签，index表示数据第几个信息
     virtual CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType);
 
+
     /* 以下几个函数，同步和异步需要区分实现 */
     virtual CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
                                  unsigned int maxIndexSize, float precision, unsigned int fastRank,
@@ -36,7 +37,8 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
+                                  CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 

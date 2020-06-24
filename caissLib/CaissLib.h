@@ -1,3 +1,31 @@
+/**************************************************************
+* 当前版本：1.1.0
+* 作    者: Chunel
+*　　　　　　　　┏┓　 ┏┓+ +
+*　　　　　　　┏┛┻━━━┛┻┓ + +
+*　　　　　　　┃　　　　　　　┃
+*　　　　　　　┃　　　━　　　┃ ++ + + +
+*　　　　　　 ████━████ ┃+
+*　　　　　　　┃　　　　　　　┃ +
+*　　　　　　　┃　　　┻　　　┃
+*　　　　　　　┃　　　　　　　┃ + +
+*　　　　　　　┗━┓　　　┏━┛
+*　　　　　　　　　┃　　　┃
+*　　　　　　　　　┃　　　┃ + + + +
+*　　　　　　　　　┃　　　┃　　　　Code is far away from bug with the animal protecting
+*　　　　　　　　　┃　　　┃ + 　　　　神兽保佑,代码无bug
+*　　　　　　　　　┃　　　┃
+*　　　　　　　　　┃　　　┃　　+
+*　　　　　　　　　┃　 　 ┗━━━┓++
+*　　　　　　　　　┃ 　　　　　　　┣┓
+*　　　　　　　　　┃ 　　　　　　　┏┛
+*　　　　　　　　　┗┓┓┏━┳┓┏┛ + + + +
+*　　　　　　　　　　┃┫┫　┃┫┫
+*　　　　　　　　　　┗┻┛　┗┻┛+ + + +
+*
+* ━━━━━━感觉萌萌哒━━━━━━
+**************************************************************/
+
 #ifndef _CHUNEL_CAISS_LIBRARY_H_
 #define _CHUNEL_CAISS_LIBRARY_H_
 
@@ -70,18 +98,24 @@ extern "C" {
             const unsigned int maxEpoch,
             const unsigned int showSpan);
 
+
     /**
      * 查询功能
      * @param handle 句柄信息
      * @param info 待查询的信息
      * @param searchType 查询信息的类型（详见CaissLibDefine.h文件）
      * @param topK 返回最近的topK个信息
+     * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
+     * @param cbParams 回调函数中，传入的参数信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
             void *info,
             const CAISS_SEARCH_TYPE searchType,
-            const unsigned int topK);
+            const unsigned int topK,
+            const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+            const void *cbParams = nullptr);
+
 
     /**
      * 获取结果字符串长度

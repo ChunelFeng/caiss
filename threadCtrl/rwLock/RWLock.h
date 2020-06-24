@@ -8,6 +8,7 @@
 #include <mutex>
 
 class RWLock {
+/* 其实可以考虑，在外面封装一层Ctrl，在作用域内自动销毁锁 */
 public:
     RWLock();
     ~RWLock();

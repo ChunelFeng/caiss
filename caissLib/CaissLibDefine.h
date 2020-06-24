@@ -5,23 +5,26 @@
 #ifndef _CHUNEL_CAISS_DEFINE_H_
 #define _CHUNEL_CAISS_DEFINE_H_
 
-#ifndef CAISS_LIB_API
-    #if defined(_CAISS_EXPORTS_)
-        #define CAISS_LIB_API __declspec(dllexport)
-    #else
-        #define CAISS_LIB_API __declspec(dllimport)
-    #endif
-#endif
+#define CAISS_VERSION       ("1.2.0")
 
 #ifdef WIN32
     #define STDCALL __stdcall
+    #ifndef CAISS_LIB_API
+        #if defined(_CAISS_EXPORTS_)
+            #define CAISS_LIB_API __declspec(dllexport)
+        #else
+            #define CAISS_LIB_API __declspec(dllimport)
+        #endif
+    #endif
 #else
     #define STDCALL
+    #define CAISS_LIB_API
 #endif
 
-#define CAISS_VERSION       ("1.1.0")
 
 #include <vector>
+#include <list>
+#include <string>
 
 using CAISS_RET_TYPE = int;
 using CAISS_UINT = unsigned int;
@@ -30,9 +33,13 @@ using CAISS_BOOL = int;
 
 using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
 using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
+using CAISS_VECTOR_STRING = std::vector<std::string>;
+using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
+using CAISS_LIST_STRING = std::list<std::string>;
 
 /* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* dim);
+typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, void* dim);
+typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params);
 
 /* 函数返回值定义 */
 #define CAISS_RET_UNFINISHED    (2)     // 流程暂未完成
@@ -51,7 +58,6 @@ typedef CAISS_FLOAT (STDCALL * CAISS_DIST_FUNC)(void *vec1, void *vec2, void* di
 #define CAISS_RET_NO_WORD       (-11)   // 词库中无对应词语问题
 
 #define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
-
 
 
 #define CAISS_TRUE       (1)

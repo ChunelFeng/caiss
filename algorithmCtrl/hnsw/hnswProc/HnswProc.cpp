@@ -121,7 +121,11 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 }
 
 
-CAISS_RET_TYPE HnswProc::search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK) {
+CAISS_RET_TYPE HnswProc::search(void *info,
+                                const CAISS_SEARCH_TYPE searchType,
+                                const unsigned int topK,
+                                const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                const void *cbParams = nullptr) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -148,6 +152,10 @@ CAISS_RET_TYPE HnswProc::search(void *info, const CAISS_SEARCH_TYPE searchType, 
     this->last_search_type_ = searchType;
     if (searchType == CAISS_SEARCH_WORD || searchType == CAISS_LOOP_WORD) {
         this->lru_cache_.put(std::string((char *)info), this->result_);
+    }
+
+    if (nullptr != searchCBFunc) {
+        searchCBFunc(this->result_words_, this->result_distance_, cbParams);    // 可以看看params如何传递下来比较好一点
     }
 
     CAISS_FUNCTION_END
@@ -236,8 +244,6 @@ CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
 
     memset(result, 0, size);
     memcpy(result, this->result_.data(), this->result_.size());
-
-    //this->result_.clear();    // todo 考虑是否需要加入，暂定不加
 
     CAISS_FUNCTION_END
 }
@@ -589,5 +595,7 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
 
     CAISS_FUNCTION_END
 }
+
+
 
 

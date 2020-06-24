@@ -23,10 +23,7 @@ public:
                          unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                          unsigned int showSpan) override ;
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) override ;
-    virtual CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) override ;
-    virtual CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) override ;
-
+    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
 
 public:
     static void createThreadPoolSingleton(unsigned int maxSize) {
@@ -53,6 +50,8 @@ public:
 public:
     static ThreadPool* pool_;
     static RWLock pool_lock_;
+
+
 };
 
 

@@ -22,12 +22,16 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
     // 绑定训练的流程到线程池中去
     pool->appendTask(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
             fastRank, realRank, step, maxEpoch, showSpan));
-
     CAISS_FUNCTION_END
 }
 
 
-CAISS_RET_TYPE AsyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+CAISS_RET_TYPE AsyncManageProc::search(void *handle,
+                                       void *info,
+                                       CAISS_SEARCH_TYPE searchType,
+                                       unsigned int topK,
+                                       const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                       const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -35,33 +39,8 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TY
 
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
-    pool->appendTask(std::bind(&AlgorithmProc::search, algo, info, searchType, topK));    // 将信息放到线程池中去计算
+    pool->appendTask(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams));    // 将信息放到线程池中去计算
 
     CAISS_FUNCTION_END
 }
 
-
-CAISS_RET_TYPE AsyncManageProc::getResultSize(void *handle, unsigned int &size) {
-    CAISS_FUNCTION_BEGIN
-
-    AlgorithmProc *algo = getInstance(handle);
-    CAISS_ASSERT_NOT_NULL(algo)
-
-    ret = algo->getResultSize(size);
-    CAISS_FUNCTION_CHECK_STATUS
-
-    CAISS_FUNCTION_END
-}
-
-
-CAISS_RET_TYPE AsyncManageProc::getResult(void *handle, char *result, unsigned int size) {
-    CAISS_FUNCTION_BEGIN
-
-    AlgorithmProc *algo = getInstance(handle);
-    CAISS_ASSERT_NOT_NULL(algo)
-
-    ret = algo->getResult(result, size);
-    CAISS_FUNCTION_CHECK_STATUS
-
-    CAISS_FUNCTION_END
-}

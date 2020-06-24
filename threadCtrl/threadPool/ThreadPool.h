@@ -13,6 +13,7 @@
 #include <functional>
 #include <vector>
 #include <queue>
+#include "../rwLock/RWLock.h"
 
 using namespace std;
 
@@ -32,8 +33,8 @@ public:
         }
     }
 
-//    ThreadPool(const ThreadPool&) = delete;
-//    ThreadPool& operator= (const ThreadPool& pool) = delete;
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator= (const ThreadPool& pool) = delete;
 
     void start();
     void stop();
@@ -49,6 +50,7 @@ private:
     unsigned int thread_num_;
     vector<thread> threads_;    // 线程数组
     queue<THREAD_FUNCTION> tasks_;    // 任务队列
+    RWLock work_lock_;
 };
 
 

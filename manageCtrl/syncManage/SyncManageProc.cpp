@@ -6,7 +6,6 @@
 #include "SyncManageProc.h"
 
 
-
 CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
     CAISS_FUNCTION_BEGIN
 
@@ -33,7 +32,7 @@ CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsig
 }
 
 
-CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK) {
+CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -41,7 +40,7 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();
-    ret = proc->search(info, searchType, topK);
+    ret = proc->search(info, searchType, topK, searchCBFunc, cbParams);
     this->lock_.readUnlock();
 
     CAISS_FUNCTION_CHECK_STATUS

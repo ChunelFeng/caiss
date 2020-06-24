@@ -79,9 +79,11 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
                                                   void *info,
                                                   const CAISS_SEARCH_TYPE searchType,
-                                                  const unsigned int topK) {
+                                                  const unsigned int topK,
+                                                  const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                                  const void *cbParams) {
     CAISS_ASSERT_ENVIRONMENT_INIT
-    return g_manage->search(handle, info, searchType, topK);
+    return g_manage->search(handle, info, searchType, topK, searchCBFunc, cbParams);
 }
 
 

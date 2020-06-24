@@ -4,16 +4,28 @@
 
 #include <thread>
 #include <chrono>
-#include <list>
 #include <fstream>
+#include <functional>
+#include <windows.h>
+#include <dbghelp.h>
+#include <windef.h>
 #include "../CaissDemoInclude.h"
+
+void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
+    for (auto& a : words) {
+        cout << a + "," ;
+    }
+    cout << "" << endl;
+    return;
+}
 
 
 
 int func(void *handle, int i) {
 
     cout << "handle : " << handle << " enter function" << endl;
-    std::ofstream wt("./log/" + std::to_string(i) + ".log", std::ios_base::out);
+    //std::function<void(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params)> cbFunc = searchCallbackFunc;
+    //std::ofstream wt("./log/" + std::to_string(i) + ".log", std::ios_base::out);
 
     while (true) {
         CAISS_FUNCTION_BEGIN
@@ -23,28 +35,10 @@ int func(void *handle, int i) {
         int pp = rand() % 10 + i;
 
         cout << "enter search function ... word : " << words[pp] << endl;
-        ret = CAISS_Search(handle, (void *)(words[pp]).c_str(), search_type_, top_k_);
+        ret = CAISS_Search(handle, (void *)(words[pp]).c_str(), search_type_, top_k_, searchCallbackFunc);
 
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(1000 * i));
         CAISS_FUNCTION_CHECK_STATUS
-
-        unsigned int size = 0;
-        while (1) {
-            ret = CAISS_getResultSize(handle, size);
-            if (CAISS_RET_OK == ret) {
-                break;
-            }
-            this_thread::sleep_for(chrono::milliseconds(100));
-        }
-
-        char *result = new char[size + 1];
-        memset(result, 0, size + 1);
-        ret = CAISS_getResult(handle, result, size);
-        CAISS_FUNCTION_CHECK_STATUS
-        string tmp = words[pp] + "----" + result + "\n";
-        //std::cout << handle << "----" << words[i] << "----" << result << std::endl;
-        wt << tmp << endl;
-        delete [] result;
     }
 
     cout << "handle " << handle << " leave funciont" << endl;

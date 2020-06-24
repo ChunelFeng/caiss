@@ -24,21 +24,21 @@ public:
     virtual ~HnswProc();
 
     CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType,
-                        const unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc);
+                        const unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc) override;
 
     // train_mode
     CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
                          const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
                          const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
-                         const unsigned int showSpan);
+                         const unsigned int showSpan) override;
 
     // process_mode
-    CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK);
-    CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType);
-    CAISS_RET_TYPE save(const char *modelPath);    // 默认写成是当前模型的
-    CAISS_RET_TYPE getResultSize(unsigned int& size);
-    CAISS_RET_TYPE getResult(char *result, unsigned int size);
-    CAISS_RET_TYPE ignore(const char *label);    // todo 暂未完成功能
+    CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
+    CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) override;
+    CAISS_RET_TYPE save(const char *modelPath) override;    // 默认写成是当前模型的
+    CAISS_RET_TYPE getResultSize(unsigned int& size) override;
+    CAISS_RET_TYPE getResult(char *result, unsigned int size) override;
+    CAISS_RET_TYPE ignore(const char *label) override;    // todo 暂未完成功能
 
 
 protected:

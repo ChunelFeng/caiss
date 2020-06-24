@@ -55,7 +55,9 @@ void ThreadPool::work() {
         }
 
         if (curTask) {
+            work_lock_.writeLock();    // 其中的任务是需要互斥进行的
             curTask();
+            work_lock_.writeUnlock();
         }
     }
 }

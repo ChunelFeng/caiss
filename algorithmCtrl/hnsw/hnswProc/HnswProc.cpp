@@ -133,6 +133,8 @@ CAISS_RET_TYPE HnswProc::search(void *info,
 
     /* 将信息清空 */
     this->result_.clear();
+    this->result_words_.clear();
+    this->result_distance_.clear();
 
     CAISS_BOOL isGet = CAISS_FALSE;
     if (CAISS_SEARCH_WORD == searchType || CAISS_LOOP_WORD == searchType) {
@@ -141,21 +143,22 @@ CAISS_RET_TYPE HnswProc::search(void *info,
     }
 
     if (CAISS_FALSE == isGet) {    // 如果在cache中没找到，将之前查询的距离和单词都删除
-        this->result_words_.clear();
-        this->result_distance_.clear();
-        ret = innerSearchResult(info, searchType, topK);
+        ret = innerSearchResult(info, searchType, topK);    // 这里会将words和distance重新赋值
+    } else {
+        // 如果找到了，则根据result的信息，给result_words_和result_distance_信息赋值
+        ret = RapidJsonProc::parseResult(this->result_, this->result_words_, this->result_distance_);
     }
 
     CAISS_FUNCTION_CHECK_STATUS
+
+    if (nullptr != searchCBFunc) {
+        searchCBFunc(this->result_words_, this->result_distance_, cbParams);    // 可以看看params如何传递下来比较好一点
+    }
 
     this->last_topK_ = topK;    // 查询完毕之后，记录当前的topK信息
     this->last_search_type_ = searchType;
     if (searchType == CAISS_SEARCH_WORD || searchType == CAISS_LOOP_WORD) {
         this->lru_cache_.put(std::string((char *)info), this->result_);
-    }
-
-    if (nullptr != searchCBFunc) {
-        searchCBFunc(this->result_words_, this->result_distance_, cbParams);    // 可以看看params如何传递下来比较好一点
     }
 
     CAISS_FUNCTION_END

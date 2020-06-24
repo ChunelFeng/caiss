@@ -32,7 +32,7 @@ CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsig
 }
 
 
-CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
+CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

@@ -11,15 +11,41 @@
 #include <windef.h>
 #include "../CaissDemoInclude.h"
 
-void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
-    for (auto& a : words) {
-        cout << a + "," ;
-    }
-    cout << "" << endl;
-    return;
+void __attribute__((stdcall)) ApplicationCrashHandler(LPCWSTR lpstrDumpFilePathName, EXCEPTION_POINTERS *pException)
+{
+    // 创建Dump文件
+    //
+    HANDLE hDumpFile = CreateFile(reinterpret_cast<LPCSTR>(lpstrDumpFilePathName), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    // Dump信息
+    //
+    MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+    dumpInfo.ExceptionPointers = pException;
+    dumpInfo.ThreadId = GetCurrentThreadId();
+    dumpInfo.ClientPointers = TRUE;
+
+    CloseHandle(hDumpFile);
 }
 
 
+void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
+
+
+    char *p = (char *)params;
+    if (words.front() != std::string(p)) {
+
+        for (auto& a : words) {
+            cout << a + "," ;
+        }
+        cout << "====" << p <<endl;
+    } else {
+        cout << "*******************" << endl;
+    }
+
+    return;
+}
+
+vector<string> words = {"hello", "world", "test", "coder", "yes", "no", "thank", "boy", "cow", "computer"};
 
 int func(void *handle, int i) {
 
@@ -30,14 +56,13 @@ int func(void *handle, int i) {
     while (true) {
         CAISS_FUNCTION_BEGIN
 
-        vector<string> words = {"hello", "world", "test", "coder", "yes", "no", "thank", "boy", "cow", "computer"};
 
-        int pp = rand() % 10 + i;
+        int pp = ((int)rand() + i)%10;
 
-        cout << "enter search function ... word : " << words[pp] << endl;
-        ret = CAISS_Search(handle, (void *)(words[pp]).c_str(), search_type_, top_k_, searchCallbackFunc);
+        //cout << "enter search function ... word : " << words[pp] << endl;
+        ret = CAISS_Search(handle, (void *)(words[pp]).c_str(), search_type_, top_k_, searchCallbackFunc, words[pp].c_str());
 
-        this_thread::sleep_for(chrono::milliseconds(1000 * i));
+        this_thread::sleep_for(chrono::milliseconds(1));
         CAISS_FUNCTION_CHECK_STATUS
     }
 
@@ -54,6 +79,8 @@ int demo_multiThreadTrain() {
 
 int demo_asyncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
+
+    SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);
 
     void *handle = nullptr;
     vector<void *> hdls;

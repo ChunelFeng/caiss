@@ -38,6 +38,6 @@ add_library(Caiss SHARED manageCtrl/syncManage/SyncManageProc.cpp
         caissDemo/CaissDemo.cpp)
 
 # 添加对应依赖的内容
-add_subdirectory(threadCtrl/rwLock)
-add_subdirectory(threadCtrl/threadPool)
-add_subdirectory(caissDemo)
+#add_subdirectory(threadCtrl/rwLock)
+#add_subdirectory(threadCtrl/threadPool)
+#add_subdirectory(caissDemo)

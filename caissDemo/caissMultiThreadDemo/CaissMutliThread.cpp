@@ -4,12 +4,13 @@
 //
 
 #include <thread>
+#include <time.h>
 #include <functional>
 #include <future>
 #include "../CaissDemoInclude.h"
 
 const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-const static int SEARCH_TIMES = 100;
+const static int SEARCH_TIMES = 100000;
 
 void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
     cout << "query word is : " << (char *)params;    // params是回调函数中传入的信息
@@ -41,10 +42,10 @@ int demo_asyncMultiThreadSearch() {
 
     int times = SEARCH_TIMES;
     while (times--) {
-        for (auto& hdl : hdlsVec) {
-            int i = (int)rand() % (int)WORDS.size();
+        for (int i = 0; i < hdlsVec.size(); i++) {
+            int num = (int)(rand() * i) % (int)WORDS.size();
             /* 在异步模式下，train，search等函数，不阻塞。但是会随着 */
-            ret = CAISS_Search(hdl, (void *)(WORDS[i]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[i].c_str());
+            ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[num].c_str());
             CAISS_FUNCTION_CHECK_STATUS
         }
     }
@@ -52,7 +53,7 @@ int demo_asyncMultiThreadSearch() {
     int stop = 0;
     cin >> stop;    // 外部等待所有计算结束后，再结束流程
 
-    for (auto t : hdlsVec) {
+    for (auto &t : hdlsVec) {
         ret = CAISS_destroyHandle(t);
         CAISS_FUNCTION_CHECK_STATUS
     }
@@ -71,16 +72,16 @@ int syncSearch(void *handle) {
         ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_);
         CAISS_FUNCTION_CHECK_STATUS
 
-        unsigned int size = 0;
-        ret = CAISS_getResultSize(handle, size);
-        CAISS_FUNCTION_CHECK_STATUS
-
-        char *result = new char[size + 1];
-        memset(result, 0, size + 1);
-        ret = CAISS_getResult(handle, result, size);
-        CAISS_FUNCTION_CHECK_STATUS
-        std::cout << result << std::endl;
-        delete [] result;
+//        unsigned int size = 0;
+//        ret = CAISS_getResultSize(handle, size);
+//        CAISS_FUNCTION_CHECK_STATUS
+//
+//        char *result = new char[size + 1];
+//        memset(result, 0, size + 1);
+//        ret = CAISS_getResult(handle, result, size);
+//        CAISS_FUNCTION_CHECK_STATUS
+//        std::cout << result << std::endl;
+//        delete [] result;
     }
 
     CAISS_FUNCTION_END
@@ -103,7 +104,10 @@ int demo_syncMultiThreadSearch() {
         hdlsVec.push_back(handle);    // 多个handle组成的vector
         ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);
         CAISS_FUNCTION_CHECK_STATUS
+    }
 
+    auto start = clock();
+    for (auto &handle : hdlsVec) {
         std::future<int> fut = std::async(std::launch::async, syncSearch, handle);     // 在同步模式下，上层开辟线程去做多次查询的功能
         futVec.push_back(std::move(fut));
     }
@@ -112,6 +116,8 @@ int demo_syncMultiThreadSearch() {
         ret = fut.get();
         CAISS_FUNCTION_CHECK_STATUS
     }
+
+    printf("[%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start));
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_destroyHandle(handle);

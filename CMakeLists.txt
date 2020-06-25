@@ -8,11 +8,15 @@ aux_source_directory(. DIRSRCS)
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CAISS_EXPORTS_)
 
-# 设置在windows上可以正常运行
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
 # 设置当前的boost路径(必填)
-set (MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
+IF (WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # 设置在windows上可以正常运行
+    set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
+ELSEIF(APPLE)
+    set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
+ELSEIF(UNIX)
+    set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
+ENDIF()
 
 #添加头文件搜索路径
 include_directories(${MY_BOOST_PATH})
@@ -36,5 +40,4 @@ add_library(Caiss SHARED manageCtrl/syncManage/SyncManageProc.cpp
 # 添加对应依赖的内容
 add_subdirectory(threadCtrl/rwLock)
 add_subdirectory(threadCtrl/threadPool)
-add_subdirectory(algorithmCtrl/hnsw/hnswProc)
 add_subdirectory(caissDemo)

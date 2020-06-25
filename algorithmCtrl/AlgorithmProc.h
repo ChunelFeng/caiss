@@ -124,8 +124,6 @@ protected:
      * @param isGet
      * @return
      */
-    virtual CAISS_RET_TYPE searchInLruCache(const char *word, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, CAISS_BOOL &isGet) = 0;
-
     CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
         if (CAISS_FALSE == this->normalize_) {
             return CAISS_RET_OK;    // 如果不需要归一化，直接返回

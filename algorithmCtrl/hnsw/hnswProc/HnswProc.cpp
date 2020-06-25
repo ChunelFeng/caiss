@@ -227,10 +227,6 @@ CAISS_RET_TYPE HnswProc::getResultSize(unsigned int &size) {
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
 
     size = this->result_.size();
-    if (size == 0) {
-        ret = CAISS_RET_UNFINISHED;
-    }
-    CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
 }
@@ -583,7 +579,7 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
         float fastFarDistance = fastResult.top().first;
         float realFarDistance = realResult.top().first;
 
-        if (abs(fastFarDistance - realFarDistance) < 0.00001f) {    // 这里近似小于
+        if (abs(fastFarDistance - realFarDistance) < 0.000002f) {    // 这里近似小于
             suitableTimes++;
         }
     }

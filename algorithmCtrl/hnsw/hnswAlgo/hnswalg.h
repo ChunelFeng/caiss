@@ -69,8 +69,8 @@ namespace hnswlib {
 
             normalize_ = normalize;
             per_index_size_ = index_size;
-            index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);    // 分配空间，保存具体index信息
-            memset(index_ptr_, max_elements_ * per_index_size_, 0);
+            index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);    // 分配空间，保存具体index信息，训练的时候加载的方法
+            memset(index_ptr_, 0, max_elements_ * per_index_size_);
         }
 
         struct CompareByFirst {
@@ -88,7 +88,7 @@ namespace hnswlib {
             }
 
             if (index_ptr_) {
-                delete index_ptr_;
+                free(index_ptr_);    // 是free，因为是malloc出来的内容
                 index_ptr_ = nullptr;
             }
 
@@ -139,7 +139,7 @@ namespace hnswlib {
         std::unordered_map<labeltype, tableint> label_lookup_;
         std::default_random_engine level_generator_;
 
-        char *index_ptr_;
+        char *index_ptr_;    // 用于存放所有单词的地方
         unsigned int per_index_size_;
         BOOST_BIMAP index_lookup_;
 
@@ -534,7 +534,6 @@ namespace hnswlib {
 
             writeBinaryPOD(output, per_index_size_);
             output.write(index_ptr_, cur_element_count_ * per_index_size_);    // 写的时候，是cur_element_count_的信息
-
             output.write(data_level0_memory_, cur_element_count_ * size_data_per_element_);
 
             for (size_t i = 0; i < cur_element_count_; i++) {
@@ -591,12 +590,15 @@ namespace hnswlib {
             index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
             memset(index_ptr_, 0, max_elements_ * per_index_size_);
 
+            // 获取每个词语的最大长度
             input.read(index_ptr_,  cur_element_count_ * per_index_size_);
+            char *word = (char *)malloc(per_index_size_);
+            memset(word, 0, per_index_size_);
             for (int i = 0; i < cur_element_count_; ++i) {
-                char info[per_index_size_] = {0};
-                memcpy(info, index_ptr_ + i * per_index_size_, per_index_size_);
-                index_lookup_.insert(BOOST_BIMAP::value_type(i, std::string(info)));
+                memcpy(word, index_ptr_ + i * per_index_size_, per_index_size_);
+                index_lookup_.insert(BOOST_BIMAP::value_type(i, std::string(word)));
             }
+            free(word);
 
             data_size_ = s->get_data_size();
             fstdistfunc_ = s->get_dist_func();

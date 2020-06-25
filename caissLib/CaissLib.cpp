@@ -5,16 +5,16 @@ static ManageProc* g_manage = nullptr;
 static CAISS_BOOL g_init = CAISS_FALSE;
 static RWLock g_lock;
 
-static ManageProc* createManage(const unsigned int maxSize,
+static ManageProc* createManage(const unsigned int maxThreadSize,
                                 const CAISS_ALGO_TYPE algoType,
                                 const CAISS_MANAGE_TYPE mangeType) {
     ManageProc* manage = nullptr;
     switch (mangeType) {
         case CAISS_MANAGE_SYNC:
-            manage = new SyncManageProc(maxSize, algoType);
+            manage = new SyncManageProc(maxThreadSize, algoType);
             break;
         case CAISS_MANAGE_ASYNC:
-            manage = new AsyncManageProc(maxSize, algoType);
+            manage = new AsyncManageProc(maxThreadSize, algoType);
             break;
         default:
             break;
@@ -23,14 +23,14 @@ static ManageProc* createManage(const unsigned int maxSize,
     return manage;
 }
 
-CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxSize,
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(unsigned int maxThreadSize,
                                                        const CAISS_ALGO_TYPE algoType,
                                                        const CAISS_MANAGE_TYPE manageType) {
     CAISS_FUNCTION_BEGIN
     if (nullptr == g_manage) {
         g_lock.writeLock();
         if (nullptr == g_manage) {
-            g_manage = createManage(maxSize, algoType, manageType);
+            g_manage = createManage(maxThreadSize, algoType, manageType);
             g_init = CAISS_TRUE;    // 通过init参数，来确定环境是否初始化。如果初始化了，则不需要进行
         }
         g_lock.writeUnlock();

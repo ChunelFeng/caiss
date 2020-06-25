@@ -1,4 +1,4 @@
-# <center> Caiss库使用说明 </center>
+# <center> Caiss库说明文档 </center>
 
 ## 1. 简介
 
@@ -15,20 +15,37 @@
 ## 2. 相关信息定义
 
 ```cpp
-#define CAISS_RET_WARNING    (1)     // 流程告警
-#define CAISS_RET_OK         (0)     // 流程正常
-#define CAISS_RET_ERR        (-1)    // 流程异常
-#define CAISS_RET_RES        (-2)    // 资源问题
-#define CAISS_RET_MODE       (-3)    // 模式选择问题
-#define CAISS_RET_PATH       (-4)    // 路径问题
-#define CAISS_RET_JSON       (-5)    // json解析问题
-#define CAISS_RET_PARAM      (-6)    // 参数问题
-#define CAISS_RET_HANDLE     (-7)    // 句柄申请问题
-#define CAISS_RET_DIM        (-8)    // 维度问题
-#define CAISS_RET_MODEL_SIZE (-9)    // 模型尺寸限制问题
-#define CAISS_RET_WORD_SIZE  (-10)   // 词语长度限制问题
-#define CAISS_RET_NO_WORD    (-11)   // 词库中无对应词语问题
+/* 类型定义 */
+using CAISS_RET_TYPE = int;
+using CAISS_UINT = unsigned int;
+using CAISS_FLOAT = float;
+using CAISS_BOOL = int;
+using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
+using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
+using CAISS_VECTOR_STRING = std::vector<std::string>;
+using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
+using CAISS_LIST_STRING = std::list<std::string>;
 
+/* 自定义用于计算距离的函数 */
+typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, const void* params);
+/* 查询到结果后，触发的回调函数 */
+typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params);
+
+/* 函数返回值定义 */
+#define CAISS_RET_WARNING       (1)     // 流程告警
+#define CAISS_RET_OK            (0)     // 流程正常
+#define CAISS_RET_ERR           (-1)    // 流程异常
+#define CAISS_RET_RES           (-2)    // 资源问题
+#define CAISS_RET_MODE          (-3)    // 模式选择问题
+#define CAISS_RET_PATH          (-4)    // 路径问题
+#define CAISS_RET_JSON          (-5)    // json解析问题
+#define CAISS_RET_PARAM         (-6)    // 参数问题
+#define CAISS_RET_HANDLE        (-7)    // 句柄申请问题
+#define CAISS_RET_DIM           (-8)    // 维度问题
+#define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
+#define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
+#define CAISS_RET_NO_WORD       (-11)   // 词库中无对应词语问题
+#define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 ```
 
 ## 3. 相关接口定义
@@ -37,12 +54,12 @@
 
     /**
      * 初始化环境信息
-     * @param maxSize 支持的最大并发数
+     * @param maxThreadSize 支持的最大并发数
      * @param algoType 算法类型（详见CaissLibDefine.h文件）
      * @param manageType 并发类型（详见CaissLibDefine.h文件）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_Environment(unsigned int maxSize,
+    CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
             const CAISS_ALGO_TYPE algoType,
             const CAISS_MANAGE_TYPE manageType);
 
@@ -51,7 +68,7 @@
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
+    CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
 
     /**
      * 初始化信息
@@ -63,7 +80,7 @@
      * @param distFunc 距离计算函数（仅针对自定义距离计算生效）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_Init(void *handle,
+    CAISS_RET_TYPE CAISS_Init(void *handle,
             const CAISS_MODE mode,
             const CAISS_DISTANCE_TYPE distanceType,
             const unsigned int dim,
@@ -84,9 +101,9 @@
      * @param maxEpoch 最大迭代轮数 （maxEpoch轮后，准确率仍不满足要求，则停止训练，返回警告信息）
      * @param showSpan 信息打印行数
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
-     * @notice 训练文件格式，参考说明文档
+     * @notice 训练文件格式，参考doc中的*.txt文件
      */
-   CAISS_RET_TYPE CAISS_Train(void *handle,
+    CAISS_RET_TYPE CAISS_Train(void *handle,
             const char *dataPath,
             const unsigned int maxDataSize,
             const CAISS_BOOL normalize,
@@ -104,12 +121,16 @@
      * @param info 待查询的信息
      * @param searchType 查询信息的类型（详见CaissLibDefine.h文件）
      * @param topK 返回最近的topK个信息
+     * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
+     * @param cbParams 回调函数中，传入的参数信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_Search(void *handle,
+    CAISS_RET_TYPE CAISS_Search(void *handle,
             void *info,
             const CAISS_SEARCH_TYPE searchType,
-            const unsigned int topK);
+            const unsigned int topK,
+            const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+            const void *cbParams = nullptr);
 
     /**
      * 获取结果字符串长度
@@ -117,7 +138,7 @@
      * @param size 结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_getResultSize(void *handle,
+    CAISS_RET_TYPE CAISS_getResultSize(void *handle,
             unsigned int &size);
 
     /**
@@ -127,7 +148,7 @@
      * @param size 对应结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_getResult(void *handle,
+    CAISS_RET_TYPE CAISS_getResult(void *handle,
             char *result,
             unsigned int size);
 
@@ -140,7 +161,7 @@
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
      */
-   CAISS_RET_TYPE CAISS_Insert(void *handle,
+    CAISS_RET_TYPE CAISS_Insert(void *handle,
             CAISS_FLOAT *node,
             const char *label,
             CAISS_INSERT_TYPE insertType);
@@ -151,22 +172,27 @@
      * @param modelPath 模型保存路径（默认值是覆盖当前模型）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_Save(void *handle,
-            char *modelPath);
+    CAISS_RET_TYPE CAISS_Save(void *handle,
+            const char *modelPath = nullptr);
 
     /**
      * 销毁句柄信息
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-   CAISS_RET_TYPE CAISS_destroyHandle(void *handle);
-
+    CAISS_RET_TYPE CAISS_destroyHandle(void *handle);
 
 ```
 
 ## 4. 使用Demo
 
 ```cpp
+/*
+* 更多使用样例，请参考caissDemo文件夹中内容。
+* 使用过程中，请对每个CAISS_*函数的返回值进行判断和处理。
+* doc文件夹中，提供了demo_2500words_768dim.txt文件。
+* 如果需要训练新的查询模型，请根据此文件的样式，生成新的词向量文件。
+*/
 
 #include "CaissLib.h"
 #include <iostream>
@@ -175,12 +201,12 @@
 
 using namespace std;
 
-static const unsigned int max_thread_num_ = 1;
+static const unsigned int max_thread_num_ = 1;    // 线程数量
 static const CAISS_ALGO_TYPE algo_type_ = CAISS_ALGO_HNSW;
 static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
-static const unsigned int dim_ = 768;
+static const unsigned int dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static std::string info_ = "hello";
@@ -188,10 +214,10 @@ static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
 static const string data_path_ = "demo_2500words_768dim.txt";
-static const unsigned int max_data_size_ = 5000;
-static const CAISS_BOOL normalize_ = CAISS_TRUE;
+static const unsigned int max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
+static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
 static const unsigned int max_index_size_ = 64;
-static const float precision_ = 0.95;
+static const float precision_ = 0.95;               // 模型精确度
 static const unsigned int fast_rank_ = 5;
 static const unsigned int real_rank_ = 5;
 static const unsigned int step_ = 1;
@@ -251,7 +277,10 @@ int main() {
 
 ```
 
+
+
 ## 5. 补充说明
+
 * 训练文本样式，请参考文档中的内容
 * 训练功能仅支持单线程。查询和插入功能，支持多线程并发
 * 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
@@ -260,10 +289,12 @@ int main() {
 ## 6. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 
-* 新建，第一个功能版本。实现训练、查询、插入、保存等功能
+* 新建，第一个功能版本
+* 实现训练、查询、插入、保存等功能
 
 [2020.06.25 - v1.1.0 - Chunel]
 * 新增多线程功能
 * 新增缓存机制
 * 提供简单的demo供参考使用
 * 提供简单的训练样本和模型
+* 兼容苹果系统

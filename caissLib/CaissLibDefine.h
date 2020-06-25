@@ -38,11 +38,11 @@ using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
 using CAISS_LIST_STRING = std::list<std::string>;
 
 /* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, void* dim);
+typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, const void* params);
+/* 查询到结果后，触发的回调函数 */
 typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params);
 
 /* 函数返回值定义 */
-#define CAISS_RET_UNFINISHED    (2)     // 流程暂未完成
 #define CAISS_RET_WARNING       (1)     // 流程告警
 #define CAISS_RET_OK            (0)     // 流程正常
 #define CAISS_RET_ERR           (-1)    // 流程异常

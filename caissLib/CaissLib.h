@@ -1,5 +1,5 @@
 /**************************************************************
-* 当前版本：1.1.0
+* 当前版本：1.2.0
 * 作    者: Chunel
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
@@ -37,12 +37,12 @@ extern "C" {
 
     /**
      * 初始化环境信息
-     * @param maxSize 支持的最大并发数
+     * @param maxThreadSize 支持的最大并发数
      * @param algoType 算法类型（详见CaissLibDefine.h文件）
      * @param manageType 并发类型（详见CaissLibDefine.h文件）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(unsigned int maxSize,
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(unsigned int maxThreadSize,
             const CAISS_ALGO_TYPE algoType,
             const CAISS_MANAGE_TYPE manageType);
 

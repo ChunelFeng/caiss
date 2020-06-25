@@ -3,7 +3,6 @@
 // 包含同步调用和异步调用的多线程demo
 //
 
-#include <thread>
 #include <time.h>
 #include <functional>
 #include <future>
@@ -72,16 +71,16 @@ int syncSearch(void *handle) {
         ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_);
         CAISS_FUNCTION_CHECK_STATUS
 
-//        unsigned int size = 0;
-//        ret = CAISS_getResultSize(handle, size);
-//        CAISS_FUNCTION_CHECK_STATUS
-//
-//        char *result = new char[size + 1];
-//        memset(result, 0, size + 1);
-//        ret = CAISS_getResult(handle, result, size);
-//        CAISS_FUNCTION_CHECK_STATUS
-//        std::cout << result << std::endl;
-//        delete [] result;
+        unsigned int size = 0;
+        ret = CAISS_getResultSize(handle, size);
+        CAISS_FUNCTION_CHECK_STATUS
+
+        char *result = new char[size + 1];
+        memset(result, 0, size + 1);
+        ret = CAISS_getResult(handle, result, size);
+        CAISS_FUNCTION_CHECK_STATUS
+        std::cout << result << std::endl;
+        delete [] result;
     }
 
     CAISS_FUNCTION_END
@@ -117,7 +116,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    printf("[%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start));
+    printf("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start));
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_destroyHandle(handle);

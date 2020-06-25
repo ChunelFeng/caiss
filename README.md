@@ -8,10 +8,9 @@
 * 标签信息和向量的分离，导致标定和查询需要在不同的步骤中完成。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等互联网巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK（注：编译依赖boost1.67.0或以上版本），支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
+&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等互联网巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK（注：编译依赖boost-1.67.0或以上版本），支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
 
-* &ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)，希望可以在大家的研究和生产过程中，发挥积极的作用。
-
+&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)，希望可以在大家的研究和生产过程中，发挥积极的作用。
 
 ## 2. 相关信息定义
 
@@ -176,20 +175,20 @@
 
 using namespace std;
 
-static const unsigned int max_thread_num_ = 4;
+static const unsigned int max_thread_num_ = 1;
 static const CAISS_ALGO_TYPE algo_type_ = CAISS_ALGO_HNSW;
 static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;
-static const char *model_path_ = "libDemo.caiss";
+static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static std::string info_ = "hello";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
-static const string data_path_ = "bert_71290words_768dim.txt";
-static const unsigned int max_data_size_ = 100000;
+static const string data_path_ = "demo_2500words_768dim.txt";
+static const unsigned int max_data_size_ = 5000;
 static const CAISS_BOOL normalize_ = CAISS_TRUE;
 static const unsigned int max_index_size_ = 64;
 static const float precision_ = 0.95;
@@ -250,18 +249,21 @@ int main() {
     return 0;
 }
 
-
 ```
 
 ## 5. 补充说明
 * 训练文本样式，请参考文档中的内容
-
 * 训练功能仅支持单线程。查询和插入功能，支持多线程并发
 * 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
-
-
+* doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件以及对应的模型文件（.caiss文件），仅作为本库的测试样例使用，无任何效果上的保证。如果需要完整的词向量文件，请自行训练，或者联系随时微信：Chunel_Fung
 
 ## 6. 版本信息
-[2020.06.15 - v1.0.0 - Chunel] 
-新建，第一个功能版本
 
+[2020.06.15 - v1.0.0 - Chunel] 
+* 新建，第一个功能版本。实现训练、查询、插入、保存等功能
+
+[2020.06.25 - v1.1.0 - Chunel]
+* 新增多线程功能
+* 新增缓存机制
+* 提供简单的demo供参考使用
+* 提供简单的训练样本和模型

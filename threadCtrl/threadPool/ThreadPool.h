@@ -13,10 +13,8 @@
 #include <functional>
 #include <vector>
 #include <queue>
-#include "../rwLock/RWLock.h"
 
 using namespace std;
-
 
 class ThreadPool {
     using THREAD_FUNCTION = std::function<int()>;
@@ -45,12 +43,12 @@ protected:
 
 private:
     atomic_bool running_;
-    mutex mtx_;
+    mutex pool_mtx_;
     condition_variable cond_;
     unsigned int thread_num_;
     vector<thread> threads_;    // 线程数组
     queue<THREAD_FUNCTION> tasks_;    // 任务队列
-    RWLock work_lock_;
+    mutex task_mtx_;    // 任务执行的时候，加锁的处理
 };
 
 

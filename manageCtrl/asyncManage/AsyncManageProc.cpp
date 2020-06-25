@@ -44,3 +44,31 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
     CAISS_FUNCTION_END
 }
 
+
+CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
+    CAISS_FUNCTION_BEGIN
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    auto pool = getThreadPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(pool)
+    pool->appendTask(std::bind(&AlgorithmProc::save, algo, modelPath));
+
+    CAISS_FUNCTION_END
+}
+
+
+// label 是数据标签，index表示数据第几个信息
+CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    auto pool = getThreadPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(pool)
+
+    pool->appendTask(std::bind(&AlgorithmProc::insert, algo, node, label, insertType));
+
+    CAISS_FUNCTION_END
+}

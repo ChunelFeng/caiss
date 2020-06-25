@@ -11,7 +11,7 @@ add_definitions(-D_CAISS_EXPORTS_)
 # 设置在windows上可以正常运行
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
-# 设置当前的boost路径
+# 设置当前的boost路径(必填)
 set (MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 
 #添加头文件搜索路径

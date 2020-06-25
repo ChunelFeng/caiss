@@ -24,11 +24,6 @@ public:
     virtual CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
                                 CAISS_DIST_FUNC distFunc);
 
-    virtual CAISS_RET_TYPE save(void *handle, const char *modelPath);
-    // label 是数据标签，index表示数据第几个信息
-    virtual CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType);
-
-
     /* 以下几个函数，同步和异步需要区分实现 */
     virtual CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
                                  unsigned int maxIndexSize, float precision, unsigned int fastRank,
@@ -50,10 +45,20 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
+    virtual CAISS_RET_TYPE save(void *handle, const char *modelPath) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
+
+    // label 是数据标签，index表示数据第几个信息
+    virtual CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
+
+
 
 protected:
     virtual AlgorithmProc* getInstance(void *handle);
-    virtual AlgorithmProc* createAlgoProc();
+    AlgorithmProc* createAlgoProc();
 
 
 protected:

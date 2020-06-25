@@ -67,3 +67,35 @@ CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const u
     CAISS_FUNCTION_END
 }
 
+
+CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();
+    ret = proc->save(modelPath);
+    this->lock_.writeUnlock();
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END
+}
+
+
+CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+    CAISS_FUNCTION_BEGIN
+
+    /* 插入逻辑设计到写锁，还是使用同步的方式进行 */
+    AlgorithmProc *proc = this->getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();
+    ret = proc->insert(node, label, insertType);
+    this->lock_.writeUnlock();
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END
+}
+
+

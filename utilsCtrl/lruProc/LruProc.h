@@ -27,7 +27,9 @@ public:
         this->capacity_ = DEFAULT_CAPACITY;
     };
 
-    ~LruProc() override = default;
+    ~LruProc() {
+        this->clear();
+    }
 
     string get(const string& word) {
         string result;

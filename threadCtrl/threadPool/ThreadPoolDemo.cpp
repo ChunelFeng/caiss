@@ -9,17 +9,17 @@
 using namespace std;
 
 int func() {
-    cout << " working void func ..." << endl;
+    cout << " working void ansycSearch ..." << endl;
     return 0;
 }
 
 int func2(int i) {
-    cout << " working int func..." << endl;
+    cout << " working int ansycSearch..." << endl;
     return 0;
 }
 
 int func3(int i, int j, int k) {
-    cout << "func 3" << endl;
+    cout << "ansycSearch 3" << endl;
     return 0;
 }
 

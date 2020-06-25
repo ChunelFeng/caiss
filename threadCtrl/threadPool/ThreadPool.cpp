@@ -16,7 +16,7 @@ void ThreadPool::start() {
 
 void ThreadPool::stop() {
     {
-        unique_lock<mutex> lock(mtx_);
+        unique_lock<mutex> lock(pool_mtx_);
         running_ = false;
         cond_.notify_all();    // 唤起所有线程
     }
@@ -30,7 +30,7 @@ void ThreadPool::stop() {
 
 void ThreadPool::appendTask(const THREAD_FUNCTION& task) {
     if (running_) {
-        unique_lock<mutex> lock(mtx_);
+        unique_lock<mutex> lock(pool_mtx_);
         tasks_.push(task);
         cond_.notify_one();
     }
@@ -45,7 +45,7 @@ void ThreadPool::work() {
     while (running_) {
         THREAD_FUNCTION curTask = nullptr;
         {
-            unique_lock<mutex> lock(mtx_);
+            unique_lock<mutex> lock(pool_mtx_);
             if (running_ && !tasks_.empty()) {
                 curTask = tasks_.front();
                 tasks_.pop();
@@ -55,9 +55,8 @@ void ThreadPool::work() {
         }
 
         if (curTask) {
-            work_lock_.writeLock();    // 其中的任务是需要互斥进行的
+            unique_lock<mutex> lock(task_mtx_);
             curTask();
-            work_lock_.writeUnlock();
         }
     }
 }

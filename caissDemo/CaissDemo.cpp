@@ -2,9 +2,7 @@
 // Created by Chunel on 2020/6/14.
 //
 
-
 #include "CaissDemoInclude.h"
-
 
 int main() {
     int ret = 0;
@@ -15,7 +13,8 @@ int main() {
     //ret = demo_train();
     //ret = demo_search();
     //ret = demo_insert();
-    ret = demo_asyncMultiThreadSearch();
+    //ret = demo_asyncMultiThreadSearch();
+    ret = demo_syncMultiThreadSearch();
     CAISS_FUNCTION_CHECK_STATUS
 
     return 0;

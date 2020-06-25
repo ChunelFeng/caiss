@@ -1,109 +1,120 @@
 //
 // Created by Chunel on 2020/6/20.
+// 包含同步调用和异步调用的多线程demo
 //
 
 #include <thread>
-#include <chrono>
-#include <fstream>
 #include <functional>
-#include <windows.h>
-#include <dbghelp.h>
-#include <windef.h>
+#include <future>
 #include "../CaissDemoInclude.h"
 
-void __attribute__((stdcall)) ApplicationCrashHandler(LPCWSTR lpstrDumpFilePathName, EXCEPTION_POINTERS *pException)
-{
-    // 创建Dump文件
-    //
-    HANDLE hDumpFile = CreateFile(reinterpret_cast<LPCSTR>(lpstrDumpFilePathName), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    // Dump信息
-    //
-    MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
-    dumpInfo.ExceptionPointers = pException;
-    dumpInfo.ThreadId = GetCurrentThreadId();
-    dumpInfo.ClientPointers = TRUE;
-
-    CloseHandle(hDumpFile);
-}
-
+const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
+const static int SEARCH_TIMES = 100;
 
 void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
+    cout << "query word is : " << (char *)params;    // params是回调函数中传入的信息
+    cout << ", search result words is : ";
 
-
-    char *p = (char *)params;
-    if (words.front() != std::string(p)) {
-
-        for (auto& a : words) {
-            cout << a + "," ;
-        }
-        cout << "====" << p <<endl;
-    } else {
-        cout << "*";
+    for (const auto& word : words) {
+        cout << word << " ";
     }
-
-    return;
-}
-
-vector<string> words = {"hello", "world", "test", "coder", "yes", "no", "thank", "boy", "cow", "computer"};
-
-int func(void *handle, int i) {
-
-    cout << "handle : " << handle << " enter function" << endl;
-    //std::function<void(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params)> cbFunc = searchCallbackFunc;
-    //std::ofstream wt("./log/" + std::to_string(i) + ".log", std::ios_base::out);
-
-    while (true) {
-        CAISS_FUNCTION_BEGIN
-
-
-        int pp = ((int)rand() + i)%10;
-
-        //cout << "enter search function ... word : " << words[pp] << endl;
-        ret = CAISS_Search(handle, (void *)(words[pp]).c_str(), search_type_, top_k_, searchCallbackFunc, words[pp].c_str());
-
-        this_thread::sleep_for(chrono::milliseconds(1));
-        CAISS_FUNCTION_CHECK_STATUS
-    }
-
-    cout << "handle " << handle << " leave funciont" << endl;
-    return 0;
+    cout << "" << endl;
 }
 
 
-int demo_multiThreadTrain() {
-    CAISS_FUNCTION_BEGIN
-    // 注：训练不支持多线程功能
-    CAISS_FUNCTION_END
-}
-
+/**
+ * 异步多线程处理
+ * @return
+ */
 int demo_asyncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
 
-    SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);
-
-    void *handle = nullptr;
-    vector<void *> hdls;
+    vector<void *> hdlsVec;
     for (int i = 0; i < max_thread_num_ ; i++) {
+        void *handle = nullptr;
         ret = CAISS_CreateHandle(&handle);
         CAISS_FUNCTION_CHECK_STATUS
-        hdls.push_back(handle);
+        hdlsVec.push_back(handle);    // 多个handle组成的vector
         ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-
-    vector<thread> thds;
-    for (int i = 0; i < hdls.size(); i++) {
-        thds.push_back(thread(func, hdls[i], i));
+    int times = SEARCH_TIMES;
+    while (times--) {
+        for (auto& hdl : hdlsVec) {
+            int i = (int)rand() % (int)WORDS.size();
+            /* 在异步模式下，train，search等函数，不阻塞。但是会随着 */
+            ret = CAISS_Search(hdl, (void *)(WORDS[i]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[i].c_str());
+            CAISS_FUNCTION_CHECK_STATUS
+        }
     }
 
-    for (int i = 0; i < hdls.size(); i++) {
-        thds[i].join();
-    }
+    int stop = 0;
+    cin >> stop;    // 外部等待所有计算结束后，再结束流程
 
-    for (auto t : hdls) {
+    for (auto t : hdlsVec) {
         ret = CAISS_destroyHandle(t);
+        CAISS_FUNCTION_CHECK_STATUS
+    }
+
+    CAISS_FUNCTION_END
+}
+
+
+int syncSearch(void *handle) {
+    CAISS_FUNCTION_BEGIN
+    int times = SEARCH_TIMES;
+    while (times--) {
+        // 查询10000次，结束之后正常退出
+        // 由于样本原因，可能会出现，输入的词语在模型中无法查到的问题。这种情况会返回非0的值
+        int i = (int)rand() % (int)WORDS.size();
+        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_);
+        CAISS_FUNCTION_CHECK_STATUS
+
+        unsigned int size = 0;
+        ret = CAISS_getResultSize(handle, size);
+        CAISS_FUNCTION_CHECK_STATUS
+
+        char *result = new char[size + 1];
+        memset(result, 0, size + 1);
+        ret = CAISS_getResult(handle, result, size);
+        CAISS_FUNCTION_CHECK_STATUS
+        std::cout << result << std::endl;
+        delete [] result;
+    }
+
+    CAISS_FUNCTION_END
+}
+
+
+/**
+ * 同步查询功能，上层开多个线程，每个线程使用不同的句柄来进行查询
+ * @return
+ */
+int demo_syncMultiThreadSearch() {
+    CAISS_FUNCTION_BEGIN
+
+    vector<void *> hdlsVec;
+    vector<std::future<int>> futVec;
+    for (int i = 0; i < max_thread_num_ ; i++) {
+        void *handle = nullptr;
+        ret = CAISS_CreateHandle(&handle);
+        CAISS_FUNCTION_CHECK_STATUS
+        hdlsVec.push_back(handle);    // 多个handle组成的vector
+        ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);
+        CAISS_FUNCTION_CHECK_STATUS
+
+        std::future<int> fut = std::async(std::launch::async, syncSearch, handle);     // 在同步模式下，上层开辟线程去做多次查询的功能
+        futVec.push_back(std::move(fut));
+    }
+
+    for (auto &fut : futVec) {
+        ret = fut.get();
+        CAISS_FUNCTION_CHECK_STATUS
+    }
+
+    for (auto &handle : hdlsVec) {
+        ret = CAISS_destroyHandle(handle);
         CAISS_FUNCTION_CHECK_STATUS
     }
 

@@ -142,14 +142,10 @@ CAISS_RET_TYPE HnswProc::search(void *info,
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    if (CAISS_FALSE == isGet) {    // 如果在cache中没找到，将之前查询的距离和单词都删除
-        ret = innerSearchResult(info, searchType, topK);    // 这里会将words和distance重新赋值
-    } else {
-        // 如果找到了，则根据result的信息，给result_words_和result_distance_信息赋值
-        ret = RapidJsonProc::parseResult(this->result_, this->result_words_, this->result_distance_);
+    if (!isGet) {    // 如果没有在cache中获取到信息
+        ret = innerSearchResult(info, searchType, topK);
+        CAISS_FUNCTION_CHECK_STATUS
     }
-
-    CAISS_FUNCTION_CHECK_STATUS
 
     if (nullptr != searchCBFunc) {
         searchCBFunc(this->result_words_, this->result_distance_, cbParams);    // 可以看看params如何传递下来比较好一点
@@ -396,16 +392,16 @@ CAISS_RET_TYPE HnswProc::searchInLruCache(const char *word, const CAISS_SEARCH_T
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(word)
 
+    isGet = CAISS_FALSE;
     if (topK == last_topK_ && searchType == last_search_type_) {    // 查询的还是上次的topK，并且查詢的方式还是一致的话
         std::string&& result = lru_cache_.get(std::string(word));
         if (!result.empty()) {
-            isGet = CAISS_TRUE;    // 如果有值，直接给result赋值
             this->result_ = std::move(result);
-        } else {
-            isGet = CAISS_FALSE;
+            ret = RapidJsonProc::parseResult(this->result_, this->result_words_, this->result_distance_);
+            CAISS_FUNCTION_CHECK_STATUS
+            isGet = CAISS_TRUE;    // 如果有值，直接给result赋值
         }
     } else {
-        isGet = CAISS_FALSE;
         lru_cache_.clear();    // 如果topK有变动，或者有信息插入的话，清空缓存信息
     }
 

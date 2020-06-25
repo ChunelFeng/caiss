@@ -9,7 +9,7 @@
 
 #include "../caissLib/CaissLibDefine.h"
 
-/* todo 这里有可能会被用到，考虑一下如何使用更友好一点 */
+
 using FuncCreateHandle = std::function<CAISS_RET_TYPE(void **handle)>;
 using FuncDestroyHandle = std::function<CAISS_RET_TYPE(void *handle)>;
 using FuncInit = std::function<CAISS_RET_TYPE(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,

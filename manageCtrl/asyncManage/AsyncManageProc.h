@@ -18,12 +18,17 @@ public:
         destroyThreadPoolSingleton();
     }
 
-    virtual CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+    CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
                          unsigned int maxIndexSize, float precision, unsigned int fastRank,
                          unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                          unsigned int showSpan) override ;
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
+    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
+
+    CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
+
+    // label 是数据标签，index表示数据第几个信息
+    CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
 
 public:
     static void createThreadPoolSingleton(unsigned int maxSize) {

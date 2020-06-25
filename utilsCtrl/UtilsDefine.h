@@ -49,7 +49,7 @@ struct CaissResultDetail {
 #define CAISS_FUNCTION_CHECK_STATUS    \
     if (CAISS_RET_OK != ret)   \
     {    \
-        return ret; \
+        return ret;  \
     }    \
 
 #define CAISS_FUNCTION_NO_SUPPORT    \

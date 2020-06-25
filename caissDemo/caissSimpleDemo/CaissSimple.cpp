@@ -3,9 +3,8 @@
 //
 
 
-#include <chrono>
-#include <thread>
 #include "../CaissDemoInclude.h"
+
 
 
 int demo_train() {
@@ -21,8 +20,6 @@ int demo_train() {
     ret = CAISS_Train(handle, data_path_, max_data_size_, normalize_, max_index_size_,
                               precision_, fast_rank_, real_rank_, step_, max_epoch_, show_span_);
     CAISS_FUNCTION_CHECK_STATUS
-
-    this_thread::sleep_for(chrono::milliseconds(1000*30));
 
     ret = CAISS_destroyHandle(handle);
     CAISS_FUNCTION_CHECK_STATUS

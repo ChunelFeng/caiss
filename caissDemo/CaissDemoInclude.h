@@ -20,7 +20,7 @@
 #define dim_ (768)
 #define model_path_ ("../../doc/demo_2500words_768dim.caiss")
 #define dist_func_ (nullptr)
-#define info_ ("hello")
+#define info_ ("zero")
 #define search_type_ (CAISS_SEARCH_WORD)
 #define top_k_ (5)
 

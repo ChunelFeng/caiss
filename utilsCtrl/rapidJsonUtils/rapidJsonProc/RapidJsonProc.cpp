@@ -85,9 +85,11 @@ RapidJsonProc::buildSearchResult(const std::list<CaissResultDetail> &details, CA
     for (const CaissResultDetail& detail : details) {
         rapidjson::Value obj(rapidjson::kObjectType);
 
-        float distance = (detail.distance < 0.00001 && detail.distance > -0.00001) ? (0.0f) : detail.distance;
-        obj.AddMember("distance", StringRef(std::to_string(distance).c_str()), alloc);
-        obj.AddMember("index", StringRef(std::to_string(detail.index).c_str()), alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)
+        Value val(Type::kObjectType);
+        val.SetFloat((detail.distance < 0.00001 && detail.distance > -0.00001) ? (0.0f) : detail.distance);
+        obj.AddMember("distance", val, alloc);
+        val.SetInt(detail.index);
+        obj.AddMember("index", val, alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)
         obj.AddMember("label", StringRef(detail.label.c_str()), alloc);    // 这里的label，表示单词信息
 //        rapidjson::Value node(rapidjson::kArrayType);    // 输出向量的具体内容，暂时不需要了
 //        for (auto j : detail.node) {

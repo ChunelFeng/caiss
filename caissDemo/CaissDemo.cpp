@@ -11,10 +11,10 @@ int main() {
     CAISS_FUNCTION_CHECK_STATUS
 
     //ret = demo_train();
-    //ret = demo_search();
+    ret = demo_search();
     //ret = demo_insert();
     //ret = demo_asyncMultiThreadSearch();
-    ret = demo_syncMultiThreadSearch();
+    //ret = demo_syncMultiThreadSearch();
     CAISS_FUNCTION_CHECK_STATUS
 
     return 0;

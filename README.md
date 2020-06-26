@@ -313,8 +313,8 @@ int main() {
 
 * 本人在Windows，Linux（Ubuntu-1604）和Mac(v-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
 * Linux命令行模式下，进入CMakeList.txt同级目录，输入：
-  $ cmake .
-  $ make
+  $ cmake .  
+  $ make  
   即可完成编译（前提：环境中支持cmake命令）。
 
 

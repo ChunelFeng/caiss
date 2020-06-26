@@ -74,7 +74,9 @@ RapidJsonProc::buildSearchResult(const std::list<CaissResultDetail> &details, CA
 
     Document::AllocatorType& alloc = dom.GetAllocator();
     dom.AddMember("version", CAISS_VERSION, alloc);
-    dom.AddMember("size", StringRef(std::to_string((int)details.size()).c_str()), alloc);
+    Value val(Type::kObjectType);
+    val.SetInt((int)details.size());
+    dom.AddMember("size", val, alloc);
 
     std::string distType = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
     dom.AddMember("distance_type", StringRef(distType.c_str()), alloc);
@@ -85,7 +87,6 @@ RapidJsonProc::buildSearchResult(const std::list<CaissResultDetail> &details, CA
     for (const CaissResultDetail& detail : details) {
         rapidjson::Value obj(rapidjson::kObjectType);
 
-        Value val(Type::kObjectType);
         val.SetFloat((detail.distance < 0.00001 && detail.distance > -0.00001) ? (0.0f) : detail.distance);
         obj.AddMember("distance", val, alloc);
         val.SetInt(detail.index);

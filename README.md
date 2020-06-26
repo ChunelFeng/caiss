@@ -281,38 +281,50 @@ int main() {
 
 ## 5. 输出内容
 
-* 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不用操作操作系统电脑之间生成的模型文件，不能混用。
-* 查询结果输出，如下所示，为标准json格式。
+* 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不用操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
+* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[water,wine,mud,food,soup]这5个词语，具体结果信息如下：
 
-**{
+```json
+{
     "version":"1.2.0",
-    "size":"3",
+    "size":5,
     "distance_type":"inner",
     "search_type":"ann_search",
     "details":[
         {
             "distance":0,
-            "index":139,
-            "label":"work"
+            "index":287,
+            "label":"water"
         },
         {
-            "distance":0.1063694953918457,
-            "index":741,
-            "label":"working"
+            "distance":0.07434636354446411,
+            "index":3102,
+            "label":"wine"
         },
         {
-            "distance":0.12415504455566406,
-            "index":2229,
-            "label":"job"
-        }]
-}**
-
+            "distance":0.10038524866104126,
+            "index":6950,
+            "label":"mud"
+        },
+        {
+            "distance":0.10039275884628296,
+            "index":641,
+            "label":"food"
+        },
+        {
+            "distance":0.10307157039642334,
+            "index":7153,
+            "label":"soup"
+        }
+    ]
+}
+```
 
 
 ## 6. 编译说明
 
-* 本人在Windows，Linux（Ubuntu-1604）和Mac(v-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
-* Linux命令行模式下，进入CMakeList.txt同级目录，输入：   
+* 本人在Windows（win10），Linux（Ubuntu-1604）和Mac(macos-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
+* Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
   $ cmake .  
   $ make  
   即可完成编译（前提：环境中支持cmake命令）。

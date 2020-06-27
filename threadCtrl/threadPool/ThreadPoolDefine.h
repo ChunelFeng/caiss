@@ -8,23 +8,20 @@
 #include "../rwLock/RWLock.h"
 
 struct ThreadTaskInfo {
-    ThreadTaskInfo(std::function<int()> func, void *manage, RWLockType lockType) {
+    ThreadTaskInfo(std::function<int()> func, RWLock *rwLock) {
         this->taskFunc = func;
-        this->taskManage = manage;    // 传入其中的管理类，为了实现在pool中进行信息加锁
-        this->lockType = lockType;
+        this->rwLock = rwLock;    // 传入其中的管理类，为了实现在pool中进行信息加锁
     }
 
     ThreadTaskInfo() {
         this->taskFunc = nullptr;
-        this->taskManage = nullptr;
-        this->lockType = WRITE_LOCK_TYPE;    // 用于初始化的状态
+        this->rwLock = nullptr;
     }
 
     ThreadTaskInfo& operator= (const ThreadTaskInfo& info) {
         /* 实现赋值构造函数 */
         this->taskFunc = info.taskFunc;
-        this->taskManage = info.taskManage;
-        this->lockType = info.lockType;
+        this->rwLock = info.rwLock;
 
         return *this;
     }
@@ -32,13 +29,11 @@ struct ThreadTaskInfo {
     ThreadTaskInfo (const ThreadTaskInfo& info) {
         /* 实现拷贝构造函数 */
         this->taskFunc = info.taskFunc;
-        this->taskManage = info.taskManage;
-        this->lockType = info.lockType;
+        this->rwLock = info.rwLock;
     }
 
     std::function<int()> taskFunc;
-    void* taskManage;
-    RWLockType lockType;
+    RWLock* rwLock;
 };
 
 

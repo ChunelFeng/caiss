@@ -55,11 +55,11 @@ void ThreadPool::work() {
             }
         }
 
-        if (curTask.taskFunc && curTask.taskManage && DEFAULT_LOCK_TYPE != curTask.lockType) {
-            auto* manage = (AsyncManageProc*)curTask.taskManage;
-            manage->doLock(curTask.lockType);    // 根据传入的类型，进行加解锁操作
+        if (curTask.taskFunc && curTask.rwLock) {
+            auto* lck = (RWLock*)curTask.rwLock;
+            lck->writeLock();    // 这里必须用write-lock，是因为需要确保，同一个算法句柄，不会被两个线程进入两次
             curTask.taskFunc();
-            manage->doUnlock(curTask.lockType);
+            lck->writeUnlock();
         }
     }
 }

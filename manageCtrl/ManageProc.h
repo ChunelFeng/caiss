@@ -12,7 +12,7 @@
 #include "../threadCtrl/ThreadInclude.h"
 #include "../algorithmCtrl/AlgorithmInclude.h"
 
-using ManageCtrl = std::map<void*, AlgorithmProc*> ;
+using ManageCtrl = std::map<void*, AlgorithmProc*>;
 
 class ManageProc {
 public:
@@ -67,6 +67,8 @@ protected:
     virtual AlgorithmProc* getInstance(void *handle);
     AlgorithmProc* createAlgoProc();
 
+    RWLock* getRWLock(AlgorithmProc  *proc);    // 需要添加到异步里才用得到
+
 
 protected:
     ManageCtrl free_manage_;    // 没有被用过的句柄管理类
@@ -74,6 +76,8 @@ protected:
     RWLock lock_;
     CAISS_ALGO_TYPE algo_type_;
     unsigned int max_size_;
+
+
 };
 
 

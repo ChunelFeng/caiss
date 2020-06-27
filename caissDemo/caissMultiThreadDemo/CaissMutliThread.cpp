@@ -15,14 +15,9 @@ const static vector<string> WORDS = {"111", "211", "311", "411", "511", "611", "
 static atomic<int> cnt(0);
 static int cnt2 = 0;
 void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
-//    if(words.size() == 0) {
-//        printf("words size is 0 \n");
-//        return;
-//    }
-//
-//    for (const auto& word : words) {
-//        cout << word << " ";
-//    }
+    for (const auto& word : words) {
+        cout << word << " ";
+    }
     cout << " [" << cnt2++ << "]" << endl;
 }
 

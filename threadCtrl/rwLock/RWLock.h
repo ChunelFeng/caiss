@@ -7,6 +7,12 @@
 
 #include <mutex>
 
+enum RWLockType {
+    DEFAULT_LOCK_TYPE = 0,    // 用于初始化，无动作发生
+    READ_LOCK_TYPE = 1,
+    WRITE_LOCK_TYPE = 2,
+};
+
 class RWLock {
 /* 其实可以考虑，在外面封装一层Ctrl，在作用域内自动销毁锁 */
 public:

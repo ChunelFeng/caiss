@@ -8,17 +8,22 @@
 #include <future>
 #include "../CaissDemoInclude.h"
 
-const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-const static int SEARCH_TIMES = 100000;
+//const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
 
+const static vector<string> WORDS = {"111", "211", "311", "411", "511", "611", "711", "811", "911", "1011", "1111", "1211", "1311", "1411", "1511", "1611"};
+
+static atomic<int> cnt(0);
+static int cnt2 = 0;
 void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
-    cout << "query word is : " << (char *)params;    // params是回调函数中传入的信息
-    cout << ", search result words is : ";
-
-    for (const auto& word : words) {
-        cout << word << " ";
-    }
-    cout << "" << endl;
+//    if(words.size() == 0) {
+//        printf("words size is 0 \n");
+//        return;
+//    }
+//
+//    for (const auto& word : words) {
+//        cout << word << " ";
+//    }
+    cout << " [" << cnt2++ << "]" << endl;
 }
 
 
@@ -28,6 +33,7 @@ void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& dist
  */
 int demo_asyncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
+    printf("[caiss] enter demo_asyncMultiThreadSearch function ... \n");
 
     vector<void *> hdlsVec;
     for (int i = 0; i < max_thread_num_ ; i++) {
@@ -42,14 +48,17 @@ int demo_asyncMultiThreadSearch() {
     int times = SEARCH_TIMES;
     while (times--) {
         for (int i = 0; i < hdlsVec.size(); i++) {
-            int num = (int)(rand() * i) % (int)WORDS.size();
+            int num = (int)(rand() + i) % (int)WORDS.size();
             /* 在异步模式下，train，search等函数，不阻塞。但是会随着 */
-            ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[num].c_str());
+            //ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_);
+
+            ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, (void *)&i);
             CAISS_FUNCTION_CHECK_STATUS
         }
     }
 
     int stop = 0;
+    cout << "[caiss] input finished ..." << endl;
     cin >> stop;    // 外部等待所有计算结束后，再结束流程
 
     for (auto &t : hdlsVec) {
@@ -68,7 +77,7 @@ int syncSearch(void *handle) {
         // 查询10000次，结束之后正常退出
         // 由于样本原因，可能会出现，输入的词语在模型中无法查到的问题。这种情况会返回非0的值
         int i = (int)rand() % (int)WORDS.size();
-        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_);
+        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, searchCallbackFunc, nullptr);
         CAISS_FUNCTION_CHECK_STATUS
 
         unsigned int size = 0;
@@ -116,7 +125,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    printf("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start));
+    printf("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_destroyHandle(handle);

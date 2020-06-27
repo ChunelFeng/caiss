@@ -17,7 +17,7 @@ using namespace hnswlib;
 class HnswProc : public AlgorithmProc {
 
 public:
-    std::list<std::string>                 result_words_;    // todo 这里需要给删除，今后再删
+    std::list<std::string>                 result_words_;
     std::list<CAISS_FLOAT>                 result_distance_;    // 查找到的距离
 
     explicit HnswProc();

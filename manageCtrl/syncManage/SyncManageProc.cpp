@@ -39,7 +39,7 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
     CAISS_ASSERT_NOT_NULL(proc)
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
-    this->lock_.readLock();
+    this->lock_.readLock();    // 在同步的时候，这个lock实际上就锁住proc这个信息了
     ret = proc->search(info, searchType, topK, searchCBFunc, cbParams);
     this->lock_.readUnlock();
 

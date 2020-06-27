@@ -14,10 +14,11 @@
 #include <vector>
 #include <queue>
 
+#include "ThreadPoolDefine.h"
+
 using namespace std;
 
 class ThreadPool {
-    using THREAD_FUNCTION = std::function<int()>;
 
 public:
     explicit ThreadPool(unsigned int num) :
@@ -36,7 +37,7 @@ public:
 
     void start();
     void stop();
-    void appendTask(const THREAD_FUNCTION& task);
+    void appendTask(const ThreadTaskInfo& task);
 
 protected:
     void work();
@@ -47,8 +48,7 @@ private:
     condition_variable cond_;
     unsigned int thread_num_;
     vector<thread> threads_;    // 线程数组
-    queue<THREAD_FUNCTION> tasks_;    // 任务队列
-    mutex task_mtx_;    // 任务执行的时候，加锁的处理
+    queue<ThreadTaskInfo> tasks_;    // 任务队列
 };
 
 

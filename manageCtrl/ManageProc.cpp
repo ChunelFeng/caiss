@@ -83,6 +83,30 @@ CAISS_RET_TYPE ManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TY
     CAISS_FUNCTION_END
 }
 
+/**
+ * 传入锁的类型，在ThreadPool中实现加锁和解锁
+ * @param action
+ */
+void ManageProc::doLock(RWLockType action) {
+    switch (action) {
+        case DEFAULT_LOCK_TYPE: break;
+        case READ_LOCK_TYPE: this->lock_.readLock(); break;
+        case WRITE_LOCK_TYPE: this->lock_.writeLock(); break;
+        default:
+            break;
+    }
+}
+
+void ManageProc::doUnlock(RWLockType action) {
+    switch (action) {
+        case DEFAULT_LOCK_TYPE: break;
+        case READ_LOCK_TYPE: this->lock_.readUnlock(); break;
+        case WRITE_LOCK_TYPE: this->lock_.writeUnlock(); break;
+        default:
+            break;
+    }
+}
+
 
 /* 以下是内部的函数 */
 AlgorithmProc* ManageProc::getInstance(void *handle) {

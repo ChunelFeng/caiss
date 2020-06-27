@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "ThreadPool.h"
+#include "../../manageCtrl/ManageInclude.h"
 
 using namespace std;
 
@@ -28,7 +29,7 @@ void ThreadPool::stop() {
     }
 }
 
-void ThreadPool::appendTask(const THREAD_FUNCTION& task) {
+void ThreadPool::appendTask(const ThreadTaskInfo& task) {
     if (running_) {
         unique_lock<mutex> lock(pool_mtx_);
         tasks_.push(task);
@@ -43,7 +44,7 @@ void ThreadPool::appendTask(const THREAD_FUNCTION& task) {
  */
 void ThreadPool::work() {
     while (running_) {
-        THREAD_FUNCTION curTask = nullptr;
+        ThreadTaskInfo curTask;
         {
             unique_lock<mutex> lock(pool_mtx_);
             if (running_ && !tasks_.empty()) {
@@ -54,9 +55,11 @@ void ThreadPool::work() {
             }
         }
 
-        if (curTask) {
-            unique_lock<mutex> lock(task_mtx_);
-            curTask();
+        if (curTask.taskFunc && curTask.taskManage && DEFAULT_LOCK_TYPE != curTask.lockType) {
+            auto* manage = (AsyncManageProc*)curTask.taskManage;
+            manage->doLock(curTask.lockType);    // 根据传入的类型，进行加解锁操作
+            curTask.taskFunc();
+            manage->doUnlock(curTask.lockType);
         }
     }
 }

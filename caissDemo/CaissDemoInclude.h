@@ -12,29 +12,32 @@
 #include "caissMultiThreadDemo/CaissMultiThread.h"
 
 
-#define max_thread_num_ (1)
+static int SEARCH_TIMES = 100;
+#define max_thread_num_ (4)
+#define manage_type_ (CAISS_MANAGE_ASYNC)
+
 #define algo_type_ (CAISS_ALGO_HNSW)
-#define manage_type_ (CAISS_MANAGE_SYNC)
 #define mode_ (CAISS_MODE_PROCESS)
 #define dist_type_ (CAISS_DISTANCE_INNER)
 #define dim_ (768)
-#define model_path_ ("../../doc/demo_2500words_768dim.caiss")
+//#define model_path_ ("../../doc/demo_2500words_768dim.caiss")
+#define model_path_ ("../../../models/random-500000words-768dim.caiss")
 #define dist_func_ (nullptr)
 #define info_ ("work")
-#define search_type_ (CAISS_SEARCH_WORD)
+#define search_type_ (CAISS_LOOP_WORD)
 #define top_k_ (5)
 
-#define data_path_ ("../../doc/demo_2500words_768dim.txt")
-#define max_data_size_ (5000)    // 不小于文本最大行数。建议设定为文本行数的2倍，方便今后插入信息。
+#define data_path_ ("../../../models/random-500000words-768dim.txt")
+//#define data_path_ ("../../doc/demo_2500words_768dim.txt")
+#define max_data_size_ (600000)    // 不小于文本最大行数。建议设定为文本行数的1.5倍~2倍，方便今后插入信息。
 #define normalize_ (CAISS_TRUE)
 #define max_index_size_ (64)
 #define precision_ (0.95)
 #define fast_rank_ (5)
 #define real_rank_ (5)
 #define step_ (1)
-#define max_epoch_ (3)
+#define max_epoch_ (1)
 #define show_span_ (1000)
-
 
 
 #endif //CAISS_CAISSDEMOINCLUDE_H

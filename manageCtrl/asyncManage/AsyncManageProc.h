@@ -56,7 +56,6 @@ public:
     static ThreadPool* pool_;
     static RWLock pool_lock_;
 
-
 };
 
 

@@ -133,12 +133,11 @@ CAISS_RET_TYPE HnswProc::search(void *info,
 
     /* 将信息清空 */
     this->result_.clear();
-    this->result_words_.clear();
+    this->result_words_.clear();    // todo 可能出现的一种情况，就是thd2走到这里到时候，thd1正好刚刚在下面刚刚给dist赋值
     this->result_distance_.clear();
-
     CAISS_BOOL isGet = CAISS_FALSE;
     if (CAISS_SEARCH_WORD == searchType || CAISS_LOOP_WORD == searchType) {
-        ret = searchInLruCache((const char *) info, searchType, topK, isGet);    // 如果查询的是单词，则先进入cache中获取
+        ret = searchInLruCache((const char *)info, searchType, topK, isGet);    // 如果查询的是单词，则先进入cache中获取
         CAISS_FUNCTION_CHECK_STATUS
     }
 
@@ -392,7 +391,7 @@ CAISS_RET_TYPE HnswProc::searchInLruCache(const char *word, const CAISS_SEARCH_T
     if (topK == last_topK_ && searchType == last_search_type_) {    // 查询的还是上次的topK，并且查詢的方式还是一致的话
         std::string&& result = lru_cache_.get(std::string(word));
         if (!result.empty()) {
-            this->result_ = std::move(result);
+            this->result_ = (result);
             ret = RapidJsonProc::parseResult(this->result_, this->result_words_, this->result_distance_);
             CAISS_FUNCTION_CHECK_STATUS
             isGet = CAISS_TRUE;    // 如果有值，直接给result赋值

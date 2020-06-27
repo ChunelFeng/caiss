@@ -20,8 +20,9 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
     CAISS_ASSERT_NOT_NULL(pool)
 
     // 绑定训练的流程到线程池中去
-    pool->appendTask(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
-            fastRank, realRank, step, maxEpoch, showSpan));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
+                                  fastRank, realRank, step, maxEpoch, showSpan), this, WRITE_LOCK_TYPE);
+    pool->appendTask(task);
     CAISS_FUNCTION_END
 }
 
@@ -39,7 +40,9 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
 
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
-    pool->appendTask(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams));    // 将信息放到线程池中去计算
+    // 查询需要上的锁，属于读锁的性质，其他应该都要上写锁
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams), this, READ_LOCK_TYPE);
+    pool->appendTask(task);    // 将信息放到线程池中去计算
 
     CAISS_FUNCTION_END
 }
@@ -52,7 +55,8 @@ CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
 
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
-    pool->appendTask(std::bind(&AlgorithmProc::save, algo, modelPath));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::save, algo, modelPath), this, WRITE_LOCK_TYPE);
+    pool->appendTask(task);
 
     CAISS_FUNCTION_END
 }
@@ -68,7 +72,8 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
 
-    pool->appendTask(std::bind(&AlgorithmProc::insert, algo, node, label, insertType));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, label, insertType), this, WRITE_LOCK_TYPE);
+    pool->appendTask(task);
 
     CAISS_FUNCTION_END
 }

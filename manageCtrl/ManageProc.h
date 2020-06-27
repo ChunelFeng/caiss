@@ -55,6 +55,13 @@ public:
     }
 
 
+    /**
+     * 为了方便外部使用读写锁进行操作。主要是针对ThreadPool类实现的功能
+     * @param action
+     */
+    void doLock(RWLockType type);
+    void doUnlock(RWLockType type);
+
 
 protected:
     virtual AlgorithmProc* getInstance(void *handle);

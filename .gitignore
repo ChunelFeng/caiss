@@ -3,6 +3,5 @@
 /.idea/
 /doc/bert_71290words_768dim.txt
 /doc/libDemo.caiss
-/doc/bert_71290words_768dim.caiss
-/doc/demo_2500words_768dim.caiss
 /caissDemo/
+/doc/*.caiss

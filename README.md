@@ -15,11 +15,13 @@
 ## 2. 相关信息定义
 
 ```cpp
-/* 类型定义 */
+/* 数据类型定义 */
 using CAISS_RET_TYPE = int;
+using CAISS_VOID = void;
 using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;
 using CAISS_BOOL = int;
+
 using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
 using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
 using CAISS_VECTOR_STRING = std::vector<std::string>;
@@ -27,11 +29,12 @@ using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
 using CAISS_LIST_STRING = std::list<std::string>;
 
 /* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, const void* params);
+typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec2, const CAISS_VOID *params);
 /* 查询到结果后，触发的回调函数 */
-typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params);
+typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const CAISS_VOID *params);
 
 /* 函数返回值定义 */
+#define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题
 #define CAISS_RET_WARNING       (1)     // 流程告警
 #define CAISS_RET_OK            (0)     // 流程正常
 #define CAISS_RET_ERR           (-1)    // 流程异常
@@ -44,7 +47,6 @@ typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LI
 #define CAISS_RET_DIM           (-8)    // 维度问题
 #define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
 #define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
-#define CAISS_RET_NO_WORD       (-11)   // 词库中无对应词语问题
 #define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 ```
 
@@ -194,10 +196,9 @@ typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LI
 * 如果需要训练新的查询模型，请根据此文件的样式，生成新的词向量文件。
 */
 
-#include "CaissLib.h"
 #include <iostream>
 #include <string>
-
+#include "CaissLib.h"
 
 using namespace std;
 
@@ -323,7 +324,7 @@ int main() {
 
 ## 6. 编译说明
 
-* 本人在Windows（win10），Linux（Ubuntu-1604）和Mac(macos-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
+* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
   $ cmake .  
   $ make  
@@ -354,3 +355,8 @@ int main() {
 * 提供简单的demo供参考使用
 * 提供简单的训练样本和模型
 * 兼容mac和Linux系统
+
+[2020.06.29 - v1.2.1 - Chunel]
+
+* 异步并发模式优化
+* 将CAISS_RET_NO_WORD值从-11修改为2，表示警告，而非异常

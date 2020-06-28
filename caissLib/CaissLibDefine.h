@@ -26,6 +26,7 @@
 #include <list>
 #include <string>
 
+/* 数据类型定义 */
 using CAISS_RET_TYPE = int;
 using CAISS_VOID = void;
 using CAISS_UINT = unsigned int;
@@ -57,7 +58,6 @@ typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CA
 #define CAISS_RET_DIM           (-8)    // 维度问题
 #define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
 #define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
-
 #define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 
 

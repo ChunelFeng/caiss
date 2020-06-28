@@ -3,22 +3,20 @@
 // 包含同步调用和异步调用的多线程demo
 //
 
-#include <time.h>
+
 #include <functional>
 #include <future>
 #include "../CaissDemoInclude.h"
 
-//const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
+const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
+static int SEARCH_TIMES = 100;
 
-const static vector<string> WORDS = {"111", "211", "311", "411", "511", "611", "711", "811", "911", "1011", "1111", "1211", "1311", "1411", "1511", "1611"};
-
-static atomic<int> cnt(0);
-static int cnt2 = 0;
 void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
+    cout << "The query word is [" << (char *)params << "], and the match words may be : ";
     for (const auto& word : words) {
         cout << word << " ";
     }
-    cout << " [" << cnt2++ << "]" << endl;
+    cout << "" << endl;
 }
 
 
@@ -44,16 +42,12 @@ int demo_asyncMultiThreadSearch() {
     while (times--) {
         for (int i = 0; i < hdlsVec.size(); i++) {
             int num = (int)(rand() + i) % (int)WORDS.size();
-            /* 在异步模式下，train，search等函数，不阻塞。但是会随着 */
-            //ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_);
-
-            ret = CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, (void *)&i);
-            CAISS_FUNCTION_CHECK_STATUS
+            /* 在异步模式下，train，search等函数，不阻塞。但进程结束时，会自动结束所有未完成的任务 */
+            CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[num].c_str());
         }
     }
 
     int stop = 0;
-    cout << "[caiss] input finished ..." << endl;
     cin >> stop;    // 外部等待所有计算结束后，再结束流程
 
     for (auto &t : hdlsVec) {
@@ -97,6 +91,7 @@ int syncSearch(void *handle) {
  */
 int demo_syncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
+    printf("[caiss] enter demo_syncMultiThreadSearch function ... \n");
 
     vector<void *> hdlsVec;
     vector<std::future<int>> futVec;

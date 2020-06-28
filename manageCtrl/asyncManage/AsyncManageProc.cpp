@@ -21,7 +21,7 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
 
     // 绑定训练的流程到线程池中去
     ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
-                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo));
+                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo), true);
     pool->appendTask(task);
     CAISS_FUNCTION_END
 }
@@ -41,7 +41,7 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
     // 查询需要上的锁，属于读锁的性质，其他应该都要上写锁
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams), this->getRWLock(algo));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams), this->getRWLock(algo), false);
     pool->appendTask(task);    // 将信息放到线程池中去计算
 
     CAISS_FUNCTION_END
@@ -55,7 +55,7 @@ CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
 
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::save, algo, modelPath), this->getRWLock(algo));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::save, algo, modelPath), this->getRWLock(algo), true);
     pool->appendTask(task);
 
     CAISS_FUNCTION_END
@@ -72,14 +72,14 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
 
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, label, insertType), this->getRWLock(algo));
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, label, insertType), this->getRWLock(algo), true);
     pool->appendTask(task);
 
     CAISS_FUNCTION_END
 }
 
 
-RWLock* AsyncManageProc::getRWLock(AlgorithmProc * handle) {
+RWLock* AsyncManageProc::getRWLock(AlgorithmProc *handle) {
     RWLock *lock = nullptr;
     if (this->lock_ctrl_.find(handle) != this->lock_ctrl_.end()) {
         lock = this->lock_ctrl_.find(handle)->second;

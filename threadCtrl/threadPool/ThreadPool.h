@@ -49,6 +49,7 @@ private:
     unsigned int thread_num_;
     vector<thread> threads_;    // 线程数组
     queue<ThreadTaskInfo> tasks_;    // 任务队列
+    RWLock func_lock_;    // 用于执行函数的全局锁
 };
 
 

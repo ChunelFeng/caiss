@@ -65,9 +65,8 @@ public:
 
 protected:
     virtual AlgorithmProc* getInstance(void *handle);
+    virtual RWLock* getRWLock(AlgorithmProc  *proc);
     AlgorithmProc* createAlgoProc();
-
-    RWLock* getRWLock(AlgorithmProc  *proc);    // 需要添加到异步里才用得到
 
 
 protected:

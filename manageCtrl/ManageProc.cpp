@@ -119,6 +119,12 @@ AlgorithmProc* ManageProc::getInstance(void *handle) {
     return proc;
 }
 
+
+RWLock* ManageProc::getRWLock(AlgorithmProc *proc) {
+    return nullptr;    // 仅在异步调用的时候，会被涉及到
+}
+
+
 AlgorithmProc* ManageProc::createAlgoProc() {
     AlgorithmProc *proc = nullptr;
     switch (this->algo_type_) {

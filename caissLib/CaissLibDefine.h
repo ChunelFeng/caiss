@@ -5,7 +5,7 @@
 #ifndef _CHUNEL_CAISS_DEFINE_H_
 #define _CHUNEL_CAISS_DEFINE_H_
 
-#define CAISS_VERSION       ("1.2.0")
+#define CAISS_VERSION       ("1.2.1")
 
 #ifdef WIN32
     #define STDCALL __stdcall
@@ -27,6 +27,7 @@
 #include <string>
 
 using CAISS_RET_TYPE = int;
+using CAISS_VOID = void;
 using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;
 using CAISS_BOOL = int;
@@ -38,9 +39,9 @@ using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
 using CAISS_LIST_STRING = std::list<std::string>;
 
 /* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(void *vec1, void *vec2, const void* params);
+typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec2, const CAISS_VOID *params);
 /* 查询到结果后，触发的回调函数 */
-typedef void (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params);
+typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const CAISS_VOID *params);
 
 /* 函数返回值定义 */
 #define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题

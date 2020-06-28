@@ -16,11 +16,17 @@ public:
     explicit AsyncManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType) : ManageProc(maxSize, algoType) {
         createThreadPoolSingleton(maxSize);
         // 在这里，需要给每个句柄分配锁资源
-        //RWLock* curLock = new RWLock();
-        //this->lock_ctrl_.insert(std::make_pair<>(proc, curLock));    // 想法是，如果
+        for (auto& cur : free_manage_) {
+            auto* lck = new RWLock();
+            this->lock_ctrl_.insert(std::make_pair<>(cur.second, lck));
+        }
     }
 
     ~AsyncManageProc() override {
+        for (auto& cur : lock_ctrl_) {
+            CAISS_DELETE_PTR(cur.second);
+        }
+
         destroyThreadPoolSingleton();
     }
 
@@ -36,7 +42,7 @@ public:
     // label 是数据标签，index表示数据第几个信息
     CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
 
-    RWLock* getRWLock(AlgorithmProc * handle);
+    RWLock* getRWLock(AlgorithmProc * handle) override ;
 
 public:
     static void createThreadPoolSingleton(unsigned int maxSize) {

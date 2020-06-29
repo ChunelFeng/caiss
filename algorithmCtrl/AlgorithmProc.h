@@ -3,8 +3,8 @@
 // 所有算法类的基类信息
 //
 
-#ifndef CHUNELCAISS_ALGORITHMPROC_H
-#define CHUNELCAISS_ALGORITHMPROC_H
+#ifndef CAISS_ALGORITHMPROC_H
+#define CAISS_ALGORITHMPROC_H
 
 
 #include <string>

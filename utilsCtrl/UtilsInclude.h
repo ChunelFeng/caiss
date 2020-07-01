@@ -12,6 +12,7 @@
 #include "./UtilsDefine.h"
 #include "./rapidJsonUtils/rapidJsonProc/RapidJsonProc.h"
 #include "./lruProc/LruProc.h"
+#include "./trieProc/TrieProc.h"
 
 
 

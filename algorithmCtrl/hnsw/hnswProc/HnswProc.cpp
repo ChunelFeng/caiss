@@ -681,4 +681,3 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
 
 
 
-

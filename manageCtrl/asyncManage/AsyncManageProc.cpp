@@ -31,6 +31,7 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
                                        void *info,
                                        CAISS_SEARCH_TYPE searchType,
                                        unsigned int topK,
+                                       const unsigned int filterEditDistance,
                                        const CAISS_SEARCH_CALLBACK searchCBFunc,
                                        const void *cbParams) {
     CAISS_FUNCTION_BEGIN
@@ -41,7 +42,7 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
     auto pool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(pool)
     // 查询需要上的锁，属于读锁的性质，其他应该都要上写锁
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, searchCBFunc, cbParams), this->getRWLock(algo), false);
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, info, searchType, topK, filterEditDistance, searchCBFunc, cbParams), this->getRWLock(algo), false);
     pool->appendTask(task);    // 将信息放到线程池中去计算
 
     CAISS_FUNCTION_END
@@ -80,6 +81,10 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
 
 
 RWLock* AsyncManageProc::getRWLock(AlgorithmProc *handle) {
+    if (!handle) {
+        return nullptr;    // 理论传入的handle不会为空
+    }
+
     RWLock *lock = nullptr;
     if (this->lock_ctrl_.find(handle) != this->lock_ctrl_.end()) {
         lock = this->lock_ctrl_.find(handle)->second;

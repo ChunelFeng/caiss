@@ -32,7 +32,7 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
+    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const unsigned int filterEditDistance,
                                   CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }

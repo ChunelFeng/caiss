@@ -32,7 +32,8 @@ CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsig
 }
 
 
-CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
+CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
+        const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -40,7 +41,7 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
 
     // 查询的时候，使用读锁即可；插入的时候，需要使用写锁
     this->lock_.readLock();    // 在同步的时候，这个lock实际上就锁住proc这个信息了
-    ret = proc->search(info, searchType, topK, searchCBFunc, cbParams);
+    ret = proc->search(info, searchType, topK, filterEditDistance, searchCBFunc, cbParams);
     this->lock_.readUnlock();
 
     CAISS_FUNCTION_CHECK_STATUS

@@ -35,7 +35,7 @@ public:
                          unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                          unsigned int showSpan) override ;
 
-    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
+    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
 
     CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
 

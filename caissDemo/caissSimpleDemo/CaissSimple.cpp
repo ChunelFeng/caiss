@@ -37,7 +37,7 @@ int demo_search() {
     ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_);
+    ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_, filter_edit_distance_);
     CAISS_FUNCTION_CHECK_STATUS
 
     unsigned int size = 0;

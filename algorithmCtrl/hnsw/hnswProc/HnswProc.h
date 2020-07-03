@@ -13,6 +13,7 @@
 #include <./boost/bimap/bimap.hpp>
 
 using namespace hnswlib;
+using HNSW_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>;
 
 class HnswProc : public AlgorithmProc {
 
@@ -21,19 +22,19 @@ public:
     std::list<CAISS_FLOAT>                 result_distance_;    // 查找到的距离
 
     explicit HnswProc();
-    virtual ~HnswProc();
+    ~HnswProc() override;
 
-    CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType,
-                        const unsigned int dim, const char *modelPath, const CAISS_DIST_FUNC distFunc) override;
+    CAISS_RET_TYPE init(CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
+                        unsigned int dim, const char *modelPath, CAISS_DIST_FUNC distFunc) override;
 
     // train_mode
-    CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                         const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                         const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
-                         const unsigned int showSpan) override;
+    CAISS_RET_TYPE train(const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+                         unsigned int maxIndexSize, float precision, unsigned int fastRank,
+                         unsigned int realRank, unsigned int step, unsigned int maxEpoch,
+                         unsigned int showSpan) override;
 
     // process_mode
-    CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
+    CAISS_RET_TYPE search(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
     CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) override;
     CAISS_RET_TYPE save(const char *modelPath) override;    // 默认写成是当前模型的
     CAISS_RET_TYPE getResultSize(unsigned int& size) override;
@@ -44,22 +45,28 @@ public:
 protected:
     CAISS_RET_TYPE reset();
     CAISS_RET_TYPE loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
-    CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan);
-    CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, const CAISS_SEARCH_TYPE searchType,
-                               std::priority_queue<std::pair<CAISS_FLOAT, labeltype>> &predResult);
+    CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas, unsigned int showSpan);
+    CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, CAISS_SEARCH_TYPE searchType,
+                               HNSW_RET_TYPE &predResult);
     CAISS_RET_TYPE loadModel(const char *modelPath);
     CAISS_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
-    CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, const unsigned int topK);
-    CAISS_RET_TYPE searchInLruCache(const char *word, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, CAISS_BOOL &isGet);
+    CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
+                                    unsigned int filterEditDistance);
+    CAISS_RET_TYPE searchInLruCache(const char *word, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_BOOL &isGet);
+    CAISS_RET_TYPE filterByRules(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
+                                 unsigned int filterEditDistance);
+    CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
+                                        unsigned int filterEditDistance);
+
 
 
     // 静态成员变量
 private:
-    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize, const unsigned int maxIndexSize=64,
-                                              const unsigned int maxNeighbor=32, const unsigned int efSearch=100, const unsigned int efConstruction=100);
+    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize, unsigned int maxIndexSize=64,
+                                              unsigned int maxNeighbor=32, unsigned int efSearch=100, unsigned int efConstruction=100);
     static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, const std::string &modelPath);
     static CAISS_RET_TYPE destroyHnswSingleton();
-    static CAISS_RET_TYPE checkModelPrecisionEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+    static CAISS_RET_TYPE checkModelPrecisionEnable(float targetPrecision, unsigned int fastRank, unsigned int realRank,
                                                     const std::vector<CaissDataNode> &datas, float &calcPrecision);
 
     static HierarchicalNSW<CAISS_FLOAT>* getHnswSingleton();

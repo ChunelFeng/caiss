@@ -1,5 +1,5 @@
 /**************************************************************
-* 当前版本：1.2.0
+* 当前版本：1.3.0
 * 作    者: Chunel
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
@@ -42,7 +42,7 @@ extern "C" {
      * @param manageType 并发类型（详见CaissLibDefine.h文件）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(unsigned int maxThreadSize,
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxThreadSize,
             const CAISS_ALGO_TYPE algoType,
             const CAISS_MANAGE_TYPE manageType);
 
@@ -84,7 +84,7 @@ extern "C" {
      * @param maxEpoch 最大迭代轮数 （maxEpoch轮后，准确率仍不满足要求，则停止训练，返回警告信息）
      * @param showSpan 信息打印行数
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
-     * @notice 训练文件格式，参考说明文档
+     * @notice 训练文件格式，参考doc文件夹下内容
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
             const char *dataPath,
@@ -105,14 +105,20 @@ extern "C" {
      * @param info 待查询的信息
      * @param searchType 查询信息的类型（详见CaissLibDefine.h文件）
      * @param topK 返回最近的topK个信息
+     * @param filterEditDistance 需要过滤的最小词语编辑距离（仅针对根据单词查询的情况下生效，-1表示不过滤，0表示过滤跟）
      * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
      * @param cbParams 回调函数中，传入的参数信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
+     * @notice filterEditDistance仅针对根据单词过滤的情况下生效。
+     *         =-1表示不过滤；=0表示过滤跟当前词语完全相同的；
+     *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
+     *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
             void *info,
             const CAISS_SEARCH_TYPE searchType,
             const unsigned int topK,
+            const unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
             const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
             const void *cbParams = nullptr);
 

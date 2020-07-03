@@ -68,15 +68,16 @@ public:
 
     // process_mode
     /**
-     * 查询topK个距离query最近的结果
+     * 查询结果
      * @param info
      * @param searchType
      * @param topK
-     * @param searchFunc
+     * @param filterEditDistance
+     * @param searchCBFunc
      * @param cbParams
      * @return
      */
-    virtual CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) = 0;
+    virtual CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) = 0;
 
     /**
      * 插入结果信息

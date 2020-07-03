@@ -80,6 +80,10 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
 
 
 RWLock* AsyncManageProc::getRWLock(AlgorithmProc *handle) {
+    if (!handle) {
+        return nullptr;    // 理论传入的handle不会为空
+    }
+
     RWLock *lock = nullptr;
     if (this->lock_ctrl_.find(handle) != this->lock_ctrl_.end()) {
         lock = this->lock_ctrl_.find(handle)->second;

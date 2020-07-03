@@ -133,7 +133,7 @@ CAISS_RET_TYPE HnswProc::search(void *info,
 
     /* 将信息清空 */
     this->result_.clear();
-    this->result_words_.clear();    // todo 可能出现的一种情况，就是thd2走到这里到时候，thd1正好刚刚在下面刚刚给dist赋值
+    this->result_words_.clear();
     this->result_distance_.clear();
     CAISS_BOOL isGet = CAISS_FALSE;
     if (CAISS_SEARCH_WORD == searchType || CAISS_LOOP_WORD == searchType) {

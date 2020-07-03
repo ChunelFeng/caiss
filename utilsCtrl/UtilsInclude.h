@@ -13,6 +13,7 @@
 #include "./rapidJsonUtils/rapidJsonProc/RapidJsonProc.h"
 #include "./lruProc/LruProc.h"
 #include "./trieProc/TrieProc.h"
+#include "./editDistanceProc/EditDistanceProc.h"
 
 
 

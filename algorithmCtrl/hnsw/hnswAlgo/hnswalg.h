@@ -875,7 +875,7 @@ namespace hnswlib {
         };
 
 
-        std::priority_queue<std::pair<dist_t, labeltype >> forceLoop(const void *query_data, size_t topK) {
+        std::priority_queue<std::pair<dist_t, labeltype>> forceLoop(const void *query_data, size_t topK) {
             // 暴力查找最近的topK个信息
             std::priority_queue<std::pair<dist_t, labeltype>> results;
             for (unsigned int i = 0; i < cur_element_count_; ++i) {

@@ -43,7 +43,7 @@ int demo_asyncMultiThreadSearch() {
         for (int i = 0; i < hdlsVec.size(); i++) {
             int num = (int)(rand() + i) % (int)WORDS.size();
             /* 在异步模式下，train，search等函数，不阻塞。但进程结束时，会自动结束所有未完成的任务 */
-            CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, searchCallbackFunc, WORDS[num].c_str());
+            CAISS_Search(hdlsVec[i], (void *)(WORDS[num]).c_str(), search_type_, top_k_, filter_edit_distance_, searchCallbackFunc, WORDS[num].c_str());
         }
     }
 
@@ -66,7 +66,7 @@ int syncSearch(void *handle) {
         // 查询10000次，结束之后正常退出
         // 由于样本原因，可能会出现，输入的词语在模型中无法查到的问题。这种情况会返回非0的值
         int i = (int)rand() % (int)WORDS.size();
-        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, searchCallbackFunc, nullptr);
+        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, filter_edit_distance_, searchCallbackFunc, nullptr);
         CAISS_FUNCTION_CHECK_STATUS
 
         unsigned int size = 0;

@@ -21,7 +21,7 @@ public:
      * @param dist
      * @return
      */
-    static bool BeyondEditDistance(const string &fst, const string &snd, const int dist) {
+    static bool BeyondEditDistance(const string &fst, const string &snd, const unsigned int dist) {
         return (EditDistanceProc::calc(fst, snd) > dist);
     }
 
@@ -31,7 +31,7 @@ public:
      * @param snd
      * @return
      */
-    static int calc(const string &fst, const string &snd) {
+    static unsigned int calc(const string &fst, const string &snd) {
 
         string longStr = std::move(fst);
         string shortStr = std::move(snd);
@@ -63,7 +63,7 @@ public:
             vecBefore = vecCur;    // 记录上一条信息
         }
 
-        return vecCur.back();    // 返回最后一个数据
+        return (unsigned int)vecCur.back();    // 返回最后一个数据
     }
 
 

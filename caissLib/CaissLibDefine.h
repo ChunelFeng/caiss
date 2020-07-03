@@ -64,6 +64,7 @@ typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CA
 #define CAISS_TRUE       (1)
 #define CAISS_FALSE      (0)
 
+
 enum CAISS_MODE {
     CAISS_MODE_DEFAULT = 0,  // 无效模式
     CAISS_MODE_TRAIN = 1,    // 训练模式
@@ -105,6 +106,11 @@ enum CAISS_ALGO_TYPE {
     CAISS_ALGO_HNSW = 1,    // hnsw算法（准确度高，空间复杂度较大）
     CAISS_ALGO_NSG = 2    // nsg算法（准确度较高，空间复杂度小）
 };
+
+
+const static int CAISS_MIN_EDIT_DISTANCE = -1;    // 不根据编辑距离过滤
+const static int CAISS_DEFAULT_EDIT_DISTANCE = 0;    // 仅过滤编辑距离为0的（相同词语）
+const static int CAISS_MAX_EDIT_DISTANCE = 5;    // 最大编辑距离（超过则返回CAISS_RET_PARAM）
 
 
 #endif //_CHUNEL_CAISS_DEFINE_H_

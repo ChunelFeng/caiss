@@ -216,7 +216,7 @@ static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
-static std::string info_ = "hello";
+static const std::string info_ = "hello";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
@@ -366,4 +366,4 @@ int main() {
 
 [2020.07.03 - v1.3.0 - Chunel]
 * 新增根据编辑距离的过滤
-* 新增python版本
+* 新增python版本，提供基础查询功能

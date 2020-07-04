@@ -26,8 +26,8 @@
 * ━━━━━━感觉萌萌哒━━━━━━
 **************************************************************/
 
-#ifndef _CHUNEL_CAISS_LIBRARY_H_
-#define _CHUNEL_CAISS_LIBRARY_H_
+#ifndef _CAISS_LIBRARY_H_
+#define _CAISS_LIBRARY_H_
 
 #include "CaissLibDefine.h"
 
@@ -68,7 +68,7 @@ extern "C" {
             const CAISS_DISTANCE_TYPE distanceType,
             const unsigned int dim,
             const char *modelPath,
-            const CAISS_DIST_FUNC distFunc);
+            const CAISS_DIST_FUNC distFunc = nullptr);
 
     /**
      * 模型训练功能 （当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成）
@@ -91,12 +91,12 @@ extern "C" {
             const unsigned int maxDataSize,
             const CAISS_BOOL normalize,
             const unsigned int maxIndexSize,
-            const float precision,
-            const unsigned int fastRank,
-            const unsigned int realRank,
-            const unsigned int step,
-            const unsigned int maxEpoch,
-            const unsigned int showSpan);
+            const float precision = 0.95,
+            const unsigned int fastRank = 5,
+            const unsigned int realRank = 5,
+            const unsigned int step = 1,
+            const unsigned int maxEpoch = 5,
+            const unsigned int showSpan = 1000);
 
 
     /**
@@ -129,8 +129,8 @@ extern "C" {
      * @param size 结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_getResultSize(void *handle,
-            unsigned int &size);
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResultSize(void *handle,
+                                                             unsigned int &size);
 
     /**
      * 获取查询结果信息
@@ -139,9 +139,9 @@ extern "C" {
      * @param size 对应结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_getResult(void *handle,
-            char *result,
-            unsigned int size);
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResult(void *handle,
+                                                         char *result,
+                                                         unsigned int size);
 
     /**
      * 插入信息
@@ -171,7 +171,7 @@ extern "C" {
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_destroyHandle(void *handle);
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_DestroyHandle(void *handle);
 
 #ifdef __cplusplus
 }

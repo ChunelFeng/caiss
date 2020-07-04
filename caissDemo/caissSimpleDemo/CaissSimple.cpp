@@ -2,10 +2,7 @@
 // Created by Chunel on 2020/6/20.
 //
 
-
 #include "../CaissDemoInclude.h"
-
-
 
 int demo_train() {
     CAISS_FUNCTION_BEGIN
@@ -21,7 +18,7 @@ int demo_train() {
                               precision_, fast_rank_, real_rank_, step_, max_epoch_, show_span_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    ret = CAISS_destroyHandle(handle);
+    ret = CAISS_DestroyHandle(handle);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -41,17 +38,17 @@ int demo_search() {
     CAISS_FUNCTION_CHECK_STATUS
 
     unsigned int size = 0;
-    ret = CAISS_getResultSize(handle, size);
+    ret = CAISS_GetResultSize(handle, size);
     CAISS_FUNCTION_CHECK_STATUS
 
     char *result = new char[size + 1];
     memset(result, 0, size + 1);
-    ret = CAISS_getResult(handle, result, size);
+    ret = CAISS_GetResult(handle, result, size);
     CAISS_FUNCTION_CHECK_STATUS
     std::cout << result << std::endl;
     delete [] result;
 
-    ret = CAISS_destroyHandle(handle);
+    ret = CAISS_DestroyHandle(handle);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -85,17 +82,17 @@ int demo_insert() {
     CAISS_FUNCTION_CHECK_STATUS
 
     unsigned int size = 0;
-    ret = CAISS_getResultSize(handle, size);
+    ret = CAISS_GetResultSize(handle, size);
     CAISS_FUNCTION_CHECK_STATUS
 
     char *result = new char[size + 1];
     memset(result, 0, size + 1);
-    ret = CAISS_getResult(handle, result, size);
+    ret = CAISS_GetResult(handle, result, size);
     CAISS_FUNCTION_CHECK_STATUS
     std::cout << result << std::endl;
     delete [] result;
 
-    ret = CAISS_destroyHandle(handle);
+    ret = CAISS_DestroyHandle(handle);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END

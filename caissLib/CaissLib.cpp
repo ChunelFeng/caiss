@@ -75,7 +75,6 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
     return g_manage->train(handle, dataPath, maxDataSize, normalize, maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
 }
 
-
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
                                                   void *info,
                                                   const CAISS_SEARCH_TYPE searchType,
@@ -88,14 +87,14 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
 }
 
 
-CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_getResultSize(void *handle,
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResultSize(void *handle,
                                                          unsigned int &size) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->getResultSize(handle, size);
 }
 
 
-CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_getResult(void *handle,
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResult(void *handle,
                                                      char *result,
                                                      unsigned int size) {
     CAISS_ASSERT_ENVIRONMENT_INIT
@@ -119,7 +118,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Save(void *handle,
 }
 
 
-CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_destroyHandle(void *handle) {
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_DestroyHandle(void *handle) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->destroyHandle(handle);
 }

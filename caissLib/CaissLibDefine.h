@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/23.
 //
 
-#ifndef _CHUNEL_CAISS_DEFINE_H_
-#define _CHUNEL_CAISS_DEFINE_H_
+#ifndef _CAISS_LIBRARY_DEFINE_H_
+#define _CAISS_LIBRARY_DEFINE_H_
 
 #define CAISS_VERSION       ("1.3.0")
 
@@ -113,4 +113,4 @@ const static int CAISS_DEFAULT_EDIT_DISTANCE = 0;    // 仅过滤编辑距离为
 const static int CAISS_MAX_EDIT_DISTANCE = 5;    // 最大编辑距离（超过则返回CAISS_RET_PARAM）
 
 
-#endif //_CHUNEL_CAISS_DEFINE_H_
+#endif //_CAISS_LIBRARY_DEFINE_H_

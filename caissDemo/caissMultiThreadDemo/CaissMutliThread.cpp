@@ -51,7 +51,7 @@ int demo_asyncMultiThreadSearch() {
     cin >> stop;    // 外部等待所有计算结束后，再结束流程
 
     for (auto &t : hdlsVec) {
-        ret = CAISS_destroyHandle(t);
+        ret = CAISS_DestroyHandle(t);
         CAISS_FUNCTION_CHECK_STATUS
     }
 
@@ -70,12 +70,12 @@ int syncSearch(void *handle) {
         CAISS_FUNCTION_CHECK_STATUS
 
         unsigned int size = 0;
-        ret = CAISS_getResultSize(handle, size);
+        ret = CAISS_GetResultSize(handle, size);
         CAISS_FUNCTION_CHECK_STATUS
 
         char *result = new char[size + 1];
         memset(result, 0, size + 1);
-        ret = CAISS_getResult(handle, result, size);
+        ret = CAISS_GetResult(handle, result, size);
         CAISS_FUNCTION_CHECK_STATUS
         std::cout << result << std::endl;
         delete [] result;
@@ -118,7 +118,7 @@ int demo_syncMultiThreadSearch() {
     printf("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
-        ret = CAISS_destroyHandle(handle);
+        ret = CAISS_DestroyHandle(handle);
         CAISS_FUNCTION_CHECK_STATUS
     }
 

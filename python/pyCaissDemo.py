@@ -1,7 +1,7 @@
 from python.pyCaiss import *
 
-LIB_PATH = '/Users/chunel/Documents/code/cpp/caiss/python/libCaiss.dylib'
-MODEL_PATH = '/Users/chunel/Documents/code/cpp/models/bert_71290words_768dim.caiss'
+LIB_PATH = 'libCaiss.dylib'
+MODEL_PATH = 'bert_71290words_768dim.caiss'
 MAX_THREAD_SIZE = 1
 DIM = 768
 WORD = 'water'

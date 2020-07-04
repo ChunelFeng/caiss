@@ -55,8 +55,7 @@ public:
                     if (longStr[i-1] == shortStr[j-1]) {
                         vecCur[j] = vecBefore[j-1];
                     } else {
-                        int temp = std::min(vecBefore[j] + 1, vecCur[j-1] + 1);    // vecBefore是上一个信息
-                        vecCur[j] = std::min(temp, vecBefore[j-1] + 1);
+                        vecCur[j] = std::min(std::min(vecBefore[j], vecCur[j-1]), vecBefore[j-1]) + 1;
                     }
                 }
             }

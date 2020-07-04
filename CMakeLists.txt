@@ -37,7 +37,5 @@ add_library(Caiss SHARED
         manageCtrl/ManageProc.cpp)
 
 # 添加对应依赖的内容
-add_subdirectory(threadCtrl/rwLock)
-add_subdirectory(threadCtrl/threadPool)
 add_subdirectory(UtilsCtrl)
 add_subdirectory(caissDemo)

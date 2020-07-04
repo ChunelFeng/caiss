@@ -109,7 +109,7 @@ enum CAISS_ALGO_TYPE {
 
 
 const static int CAISS_MIN_EDIT_DISTANCE = -1;    // 不根据编辑距离过滤
-const static int CAISS_DEFAULT_EDIT_DISTANCE = 0;    // 仅过滤编辑距离为0的（相同词语）
+const static int CAISS_DEFAULT_EDIT_DISTANCE = 0;    // 仅过滤编辑距离为0的词语（相同词语）
 const static int CAISS_MAX_EDIT_DISTANCE = 5;    // 最大编辑距离（超过则返回CAISS_RET_PARAM）
 
 

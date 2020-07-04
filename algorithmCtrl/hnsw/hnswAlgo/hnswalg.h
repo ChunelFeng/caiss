@@ -129,8 +129,8 @@ namespace hnswlib {
         size_t offsetData_, offsetLevel0_;
 
         char *data_level0_memory_;
-        char **linkLists_;
-        std::vector<int> element_levels_;
+        char **linkLists_;    // linkLists_[i][*]中，是第i个node对应的的跳表中，对应的邻居点
+        std::vector<int> element_levels_;    // 是一个size=最大节点数的vector，每个值表示第i个节点，对应多少层
 
         size_t data_size_;
         size_t label_offset_;
@@ -272,7 +272,7 @@ namespace hnswlib {
 
                 tableint current_node_id = current_node_pair.second;
                 int *data = (int *) (data_level0_memory_ + current_node_id * size_data_per_element_ + offsetLevel0_);
-                int size = *data;    // size的值是dim，从第0层中，拿到数据信息
+                int size = *data;    // size的值是dim，从第0层中，拿到数据信息。偏移后，拿到的应该是表示这个node-id有多少个邻居点的
         #ifdef USE_SSE
                 _mm_prefetch((char *) (visited_array + *(data + 1)), _MM_HINT_T0);
                 _mm_prefetch((char *) (visited_array + *(data + 1) + 64), _MM_HINT_T0);
@@ -285,7 +285,7 @@ namespace hnswlib {
         #ifdef USE_SSE
                     _mm_prefetch((char *) (visited_array + *(data + j + 1)), _MM_HINT_T0);
                     _mm_prefetch(data_level0_memory_ + (*(data + j + 1)) * size_data_per_element_ + offsetData_,
-                                 _MM_HINT_T0);////////////
+                                 _MM_HINT_T0);
         #endif
                     if (!(visited_array[candidate_id] == visited_array_tag)) {
 
@@ -298,8 +298,7 @@ namespace hnswlib {
                             candidate_set.emplace(-dist, candidate_id);
         #ifdef USE_SSE
                             _mm_prefetch(data_level0_memory_ + candidate_set.top().second * size_data_per_element_ +
-                                         offsetLevel0_,///////////
-                                         _MM_HINT_T0);////////////////////////
+                                         offsetLevel0_, _MM_HINT_T0);
         #endif
 
                             top_candidates.emplace(dist, candidate_id);
@@ -565,7 +564,7 @@ namespace hnswlib {
 
             // get file size:
             input.seekg(0,input.end);
-            std::streampos total_filesize=input.tellg();    // 这里大小是668
+            std::streampos total_filesize=input.tellg();
             input.seekg(0,input.beg);
 
             readBinaryPOD(input, offsetLevel0_);
@@ -577,8 +576,8 @@ namespace hnswlib {
                 max_elements = max_elements_;
             max_elements_ = max_elements;
             readBinaryPOD(input, size_data_per_element_);
-            readBinaryPOD(input, label_offset_);
-            readBinaryPOD(input, offsetData_);
+            readBinaryPOD(input, label_offset_);     // label的偏移量
+            readBinaryPOD(input, offsetData_);    // 这里是260，表示数据的偏移量
             readBinaryPOD(input, maxlevel_);
             readBinaryPOD(input, enterpoint_node_);
 
@@ -598,7 +597,7 @@ namespace hnswlib {
             readBinaryPOD(input, placeholder_6_);
             readBinaryPOD(input, placeholder_7_);
 
-            readBinaryPOD(input, per_index_size_);
+            readBinaryPOD(input, per_index_size_);    // 每个单词最大size
 
             // 记住，这里是分配了max个信息，读取了cur的个数的信息
             index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
@@ -614,7 +613,7 @@ namespace hnswlib {
             }
             free(word);
 
-            data_size_ = s->get_data_size();
+            data_size_ = s->get_data_size();    // 这个是纯数据的大小，dim*size
             fstdistfunc_ = s->get_dist_func();
             dist_func_param_ = s->get_dist_func_param();
 
@@ -655,13 +654,13 @@ namespace hnswlib {
             if(old_index)
                 input.seekg(((max_elements_ - cur_element_count_) * size_data_per_element_), input.cur);
 
-            size_links_per_element_ = maxM_ * sizeof(tableint) + sizeof(linklistsizeint);    // maxM_是邻居个数
+            size_links_per_element_ = maxM_ * sizeof(tableint) + sizeof(linklistsizeint);    // maxM_是邻居个数，保存邻居节点，所需的最大长度，sizeof(tableint)和sizeof(linklistsizeint)都是4
             size_links_level0_ = maxM0_ * sizeof(tableint) + sizeof(linklistsizeint);
             std::vector<std::mutex>(max_elements).swap(link_list_locks_);
 
             visited_list_pool_ = new VisitedListPool(1, max_elements);
 
-            linkLists_ = (char **) malloc(sizeof(void *) * max_elements);
+            linkLists_ = (char **) malloc(sizeof(void *) * max_elements);    // 这个是跳表的数据
             element_levels_ = std::vector<int>(max_elements);
             revSize_ = 1.0 / mult_;
             //ef_ = 10;
@@ -671,12 +670,12 @@ namespace hnswlib {
                 unsigned int linkListSize;
                 readBinaryPOD(input, linkListSize);
                 if (linkListSize == 0) {
-                    element_levels_[i] = 0;
+                    element_levels_[i] = 0;    // 就说明i这个节点，没有跳表数据
                     linkLists_[i] = nullptr;
                 } else {
-                    element_levels_[i] = linkListSize / size_links_per_element_;
+                    element_levels_[i] = linkListSize / size_links_per_element_;    // element_levels_[i]是第i个元素有多少层
                     linkLists_[i] = (char *) malloc(linkListSize);
-                    input.read(linkLists_[i], linkListSize);
+                    input.read(linkLists_[i], linkListSize);    // 如果有信息的话，读入linkListSize个内容
                 }
             }
             input.close();
@@ -857,9 +856,9 @@ namespace hnswlib {
                     changed = false;
                     int *data;
                     data = (int *) (linkLists_[currObj] + (level - 1) * size_links_per_element_);
-                    int size = *data;
-                    tableint *datal = (tableint *) (data + 1);
-                    for (int i = 0; i < size; i++) {
+                    int size = *data;    // 这个size表示，currObj在当前level，有size个邻居
+                    tableint *datal = (tableint *) (data + 1);    // 其中，*data的[0]表示有多少个邻居，后面的数字，表示具体的邻居的index信息。
+                    for (int i = 0; i < size; i++) {    // 在level层中查到currObj的最邻近的点
                         tableint cand = datal[i];
                         if (cand < 0 || cand > max_elements_)
                             throw std::runtime_error("cand error");
@@ -867,7 +866,7 @@ namespace hnswlib {
 
                         if (d < curdist) {
                             curdist = d;
-                            currObj = cand;
+                            currObj = cand;    // 传下去的currObj就相当于是
                             changed = true;
                         }
                     }

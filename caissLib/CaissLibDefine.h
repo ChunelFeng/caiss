@@ -5,7 +5,7 @@
 #ifndef _CHUNEL_CAISS_DEFINE_H_
 #define _CHUNEL_CAISS_DEFINE_H_
 
-#define CAISS_VERSION       ("1.2.1")
+#define CAISS_VERSION       ("1.3.0")
 
 #ifdef WIN32
     #define STDCALL __stdcall

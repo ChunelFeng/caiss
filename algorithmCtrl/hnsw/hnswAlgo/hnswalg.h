@@ -57,7 +57,7 @@ namespace hnswlib {
 
             cur_element_count_ = 0;
 
-            visited_list_pool_ = new VisitedListPool(1, max_elements);
+            visited_list_pool_ = new VisitedListPool(1, max_elements);    // 这里是一个线程池，但是只开了一个线程。我在外面做线程了
             //initializations for special treatment of the first node
             enterpoint_node_ = -1;
             maxlevel_ = -1;
@@ -143,8 +143,14 @@ namespace hnswlib {
         unsigned int per_index_size_;
         BOOST_BIMAP index_lookup_;
 
+        /**
+         * 获取当前
+         * @param internal_id
+         * @return
+         */
         inline labeltype getExternalLabel(tableint internal_id) const {
             labeltype return_label;
+            // 这里的sizeof(labeltype)=8，相当于label_offset + labeltype = size_data_per_element_
             memcpy(&return_label,(data_level0_memory_ + internal_id * size_data_per_element_ + label_offset_), sizeof(labeltype));
             return return_label;
         }
@@ -232,8 +238,16 @@ namespace hnswlib {
             return top_candidates;
         }
 
+        /**
+         * 在最下面一层查询，返回k个最近的元素
+         * @param ep_id
+         * @param data_point
+         * @param ef
+         * @return
+         */
         std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst>
         searchBaseLayerST(tableint ep_id, const void *data_point, size_t ef) const {
+            // 其中ep-id表示，当前是第几个节点；data-point是查询点的矩阵信息
             VisitedList *vl = visited_list_pool_->getFreeVisitedList();
             vl_type *visited_array = vl->mass;
             vl_type visited_array_tag = vl->curV;
@@ -242,7 +256,7 @@ namespace hnswlib {
             std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst> candidate_set;
             dist_t dist = fstdistfunc_(data_point, getDataByInternalId(ep_id), dist_func_param_);
 
-            top_candidates.emplace(dist, ep_id);
+            top_candidates.emplace(dist, ep_id);    // 放入当前的节点和query点的距离
             candidate_set.emplace(-dist, ep_id);
             visited_array[ep_id] = visited_array_tag;
             dist_t lower_bound = dist;
@@ -251,14 +265,14 @@ namespace hnswlib {
 
                 std::pair<dist_t, tableint> current_node_pair = candidate_set.top();
 
-                if ((-current_node_pair.first) > lower_bound) {
+                if ((-current_node_pair.first) > lower_bound) {     // current_node_pair标记了距离和点的index信息
                     break;
                 }
                 candidate_set.pop();
 
                 tableint current_node_id = current_node_pair.second;
                 int *data = (int *) (data_level0_memory_ + current_node_id * size_data_per_element_ + offsetLevel0_);
-                int size = *data;
+                int size = *data;    // size的值是dim，从第0层中，拿到数据信息
         #ifdef USE_SSE
                 _mm_prefetch((char *) (visited_array + *(data + 1)), _MM_HINT_T0);
                 _mm_prefetch((char *) (visited_array + *(data + 1) + 64), _MM_HINT_T0);
@@ -834,8 +848,8 @@ namespace hnswlib {
         };
 
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
-            tableint currObj = enterpoint_node_;
-            dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);
+            tableint currObj = enterpoint_node_;    // 进入点，是一个随机值，相当于最上层的入口点
+            dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
             for (int level = maxlevel_; level > 0; level--) {
                 bool changed = true;
@@ -861,14 +875,14 @@ namespace hnswlib {
             }
 
             std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst> top_candidates = searchBaseLayerST(
-                    currObj, query_data, std::max(ef_,k));
+                    currObj, query_data, std::max(ef_,k));    // 在最低层查询信息
             std::priority_queue<std::pair<dist_t, labeltype> > results;
-            while (top_candidates.size() > k) {
+            while (top_candidates.size() > k) {    // 这里的top_candidates已经是最近的ef—search个节点了，但是只需要找k个点，所以把不需要的给pop掉
                 top_candidates.pop();
             }
             while (top_candidates.size() > 0) {
                 std::pair<dist_t, tableint> rez = top_candidates.top();
-                results.push(std::pair<dist_t, labeltype>(rez.first, getExternalLabel(rez.second)));
+                results.push(std::pair<dist_t, labeltype>(rez.first, getExternalLabel(rez.second)));    // rez.first是距离信息，rez.second是index对应的信息，这里，index和label相同。我们通过label去找word信息
                 top_candidates.pop();
             }
             return results;

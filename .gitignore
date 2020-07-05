@@ -7,3 +7,4 @@
 /doc/*.caiss
 /python/libCaiss.dylib
 /python/__pycache__/
+.DS_Store

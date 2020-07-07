@@ -17,7 +17,6 @@ ELSEIF(APPLE)
     link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp
     include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp  -lomp") # delete for avoid warning info
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp")
 ELSEIF(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread")    # set multi thread in Linux platform
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)

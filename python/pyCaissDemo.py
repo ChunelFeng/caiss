@@ -6,6 +6,7 @@ MAX_THREAD_SIZE = 1
 DIM = 768
 WORD = 'water'
 TOP_K = 5
+SEARCH_TYPE = CAISS_SEARCH_QUERY
 
 
 def demo():

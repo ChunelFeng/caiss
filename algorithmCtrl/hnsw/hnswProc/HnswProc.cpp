@@ -9,6 +9,10 @@
 #include <iomanip>
 #include "HnswProc.h"
 
+#ifdef _USE_OPENMP_
+    #include <omp.h>    // 如果有openmp加速
+#endif
+
 using namespace std;
 
 // 静态成员变量使用前，先初始化
@@ -142,9 +146,9 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 CAISS_RET_TYPE HnswProc::search(void *info,
                                 const CAISS_SEARCH_TYPE searchType,
                                 const unsigned int topK,
-                                const unsigned int filterEditDistance,
-                                const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                const void *cbParams) {
+                                const unsigned int filterEditDistance = 0,
+                                const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                const void *cbParams = nullptr) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -155,6 +159,7 @@ CAISS_RET_TYPE HnswProc::search(void *info,
     this->result_words_.clear();
     this->result_distance_.clear();
     CAISS_BOOL isGet = CAISS_FALSE;
+
     if (isWordSearchType(searchType)) {
         ret = searchInLruCache((const char *)info, searchType, topK, isGet);    // 如果查询的是单词，则先进入cache中获取
         CAISS_FUNCTION_CHECK_STATUS
@@ -660,15 +665,21 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
     CAISS_ASSERT_NOT_NULL(ptr)
 
     unsigned int suitableTimes = 0;
-    unsigned int calcTimes = min((int)datas.size(), 1000);    // 最多1000次比较
-    for (unsigned int i = 0; i < calcTimes; i++) {
-        auto fastResult = ptr->searchKnn((void *)datas[i].node.data(), fastRank);    // 记住，fastResult是倒叙的
-        auto realResult = ptr->forceLoop((void *)datas[i].node.data(), realRank);
-        float fastFarDistance = fastResult.top().first;
-        float realFarDistance = realResult.top().first;
+    unsigned int calcTimes = min((int)datas.size(), 10000);    // 最多1000次比较
 
-        if (abs(fastFarDistance - realFarDistance) < 0.000002f) {    // 这里近似小于
-            suitableTimes++;
+    {
+        #ifdef _USE_OPENMP_
+            #pragma omp parallel for num_threads(4) reduction(+:suitableTimes)
+        #endif
+        for (unsigned int i = 0; i < calcTimes; i++) {
+            auto fastResult = ptr->searchKnn((void *)datas[i].node.data(), fastRank);    // 记住，fastResult是倒叙的
+            auto realResult = ptr->forceLoop((void *)datas[i].node.data(), realRank);
+            float fastFarDistance = fastResult.top().first;
+            float realFarDistance = realResult.top().first;
+
+            if (abs(fastFarDistance - realFarDistance) < 0.000002f) {    // 这里近似小于
+                suitableTimes++;
+            }
         }
     }
 

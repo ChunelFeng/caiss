@@ -8,15 +8,23 @@ aux_source_directory(. DIRSRCS)
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CAISS_EXPORTS_)
 
+find_package(OpenMP)
+
+
 # 设置当前的boost路径(必填)
 IF (WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure .exe can work fine
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 ELSEIF(APPLE)
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
-    link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp
-    include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp  -lomp") # delete for avoid warning info
+    if (OPENMP_FOUND)
+        link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
+        include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp  -lomp")
+        add_definitions(-D_USE_OPENMP_)
+    else()
+        message("no openmp support")
+    endif()
 ELSEIF(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread")    # set multi thread in Linux platform
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)

@@ -21,8 +21,9 @@ def demo():
     if 0 != ret:
         return
 
-    result = caiss.sync_search(handle, WORD, CAISS_SEARCH_WORD, TOP_K, 0)
-    print(result)
+    ret, result = caiss.sync_search(handle, WORD, CAISS_SEARCH_WORD, TOP_K, 0)
+    if 0 == ret:
+        print(result)
 
     caiss.destroy(handle)
     return

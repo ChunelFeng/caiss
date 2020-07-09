@@ -31,6 +31,10 @@ void ThreadPool::stop() {
 void ThreadPool::appendTask(const ThreadTaskInfo& task) {
     if (running_) {
         unique_lock<mutex> lock(pool_mtx_);
+        if (!task.taskFunc || !task.rwLock) {
+            return;    // 如果传入的任务中，信息为空，则不进入消息队列
+        }
+
         tasks_.push(task);
         cond_.notify_one();
     }
@@ -54,14 +58,12 @@ void ThreadPool::work() {
             }
         }
 
-        if (curTask.taskFunc && curTask.rwLock) {
-            curTask.isUniq ? this->func_lock_.writeLock() : this->func_lock_.readLock();    // work函数是在不同的thread中运行的，不会出事的
-            auto *lck = (RWLock *) curTask.rwLock;
-            lck->writeLock();    // 这里必须用write-lock，是因为需要确保，同一个算法句柄，不会被两个线程进入两次
-            curTask.taskFunc();
-            lck->writeUnlock();
-            curTask.isUniq ? this->func_lock_.writeUnlock() : this->func_lock_.readUnlock();
-        }
+        curTask.isUniq ? this->func_lock_.writeLock() : this->func_lock_.readLock();    // work函数是在不同的thread中运行的，不会出事的
+        auto *lck = (RWLock *)curTask.rwLock;
+        lck->writeLock();    // 这里必须用write-lock，是因为需要确保，同一个算法句柄，不会被两个线程进入两次
+        curTask.taskFunc();
+        lck->writeUnlock();
+        curTask.isUniq ? this->func_lock_.writeUnlock() : this->func_lock_.readUnlock();
     }
 }
 

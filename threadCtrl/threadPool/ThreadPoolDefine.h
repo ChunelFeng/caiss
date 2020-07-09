@@ -29,7 +29,7 @@ struct ThreadTaskInfo {
         return *this;
     }
 
-    ThreadTaskInfo (const ThreadTaskInfo& info) {
+    ThreadTaskInfo(const ThreadTaskInfo& info) {
         /* 实现拷贝构造函数 */
         this->taskFunc = info.taskFunc;
         this->rwLock = info.rwLock;

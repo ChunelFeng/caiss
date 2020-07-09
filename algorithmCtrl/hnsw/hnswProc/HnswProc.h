@@ -55,7 +55,7 @@ protected:
     CAISS_RET_TYPE searchInLruCache(const char *word, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_BOOL &isGet);
     CAISS_RET_TYPE filterByRules(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
                                  unsigned int filterEditDistance);
-    CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
+    CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result,
                                         unsigned int filterEditDistance);
 
 

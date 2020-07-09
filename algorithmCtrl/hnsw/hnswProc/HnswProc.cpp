@@ -110,7 +110,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
     std::vector<CaissDataNode> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
 
-    printf("[caiss] start load datas from [%s]. \n", dataPath);
+    CAISS_PRINT("start load datas from [%s]. \n", dataPath);
     ret = loadDatas(dataPath, datas);
     CAISS_FUNCTION_CHECK_STATUS
 
@@ -119,19 +119,20 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 
     unsigned int epoch = 0;
     while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
-        printf("[caiss] start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
+        CAISS_PRINT("start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
         ret = trainModel(datas, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
-        printf("[caiss] model build finished, check model precision automatic, please wait for a moment... \n");
+        CAISS_PRINT("model build finished, check model precision automatic, please wait for a moment... \n");
+        //printf("[caiss] model build finished, check model precision automatic, please wait for a moment... \n");
 
         float calcPrecision = 0.0f;
         ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
-            printf("[caiss] train success, precision is [%0.4f] , model is saved to path [%s] \n", calcPrecision, this->model_path_.c_str());
+            CAISS_PRINT("train success, precision is [%0.4f] , model is saved to path [%s]. \n", calcPrecision, this->model_path_.c_str());
             break;
         } else if (CAISS_RET_WARNING == ret) {
             float span = precision - calcPrecision;
-            printf("[caiss] warning, the model's precision is not suitable, span = [%f], train again automatic. \n", span);
+            CAISS_PRINT("warning, the model's precision is not suitable, span = [%f], train again automatic. \n", span);
             params.update(span);
             destroyHnswSingleton();    // 销毁句柄信息，重新训练
             createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, params.neighborNums, params.efSearch, params.efConstructor);
@@ -447,7 +448,7 @@ HnswProc::filterByRules(void *info, const CAISS_SEARCH_TYPE searchType, HNSW_RET
     }
 
     // 今后可能有多种规则
-    ret = filterByEditDistance(info, searchType, result, topK, filterEditDistance);
+    ret = filterByEditDistance(info, searchType, result, filterEditDistance);
     CAISS_FUNCTION_CHECK_STATUS
 
     // 所有的情况都过滤完了之后，保证不会超过topK个
@@ -461,19 +462,14 @@ HnswProc::filterByRules(void *info, const CAISS_SEARCH_TYPE searchType, HNSW_RET
 
 CAISS_RET_TYPE
 HnswProc::filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result,
-                               unsigned int topK, unsigned int filterEditDistance) {
+                               unsigned int filterEditDistance) {
     CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(info)
 
-    if (!isWordSearchType(searchType)) {
-        return CAISS_RET_OK;    // 如果不是根据word查询，则不需要走这一步
-    }
-
-    if (CAISS_MIN_EDIT_DISTANCE == filterEditDistance) {
-        return CAISS_RET_OK;    // 值=-1，不需要根据编辑距离来过滤
-    }
-
-    if (CAISS_MAX_EDIT_DISTANCE < filterEditDistance) {
-        return CAISS_RET_PARAM;
+    if (!isWordSearchType(searchType)    // 如果不是根据word查询，则不需要走这一步
+        || (CAISS_MIN_EDIT_DISTANCE == filterEditDistance)    // 值=-1，不需要根据编辑距离来过滤
+        || (CAISS_MAX_EDIT_DISTANCE < filterEditDistance)) {
+        return CAISS_RET_OK;
     }
 
     auto ptr = HnswProc::getHnswSingleton();

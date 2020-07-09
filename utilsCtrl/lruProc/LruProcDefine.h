@@ -9,7 +9,7 @@
 #include <utility>
 using namespace std;
 
-const static unsigned int DEFAULT_CAPACITY = 1;
+const static unsigned int DEFAULT_CAPACITY = 5;
 
 struct LruNode {
     string word;    // 被查询的单词

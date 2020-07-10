@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <stdarg.h>
 
 struct CaissDataNode {
     /* 读取待训练的文件的时候，表示每行的信息的数据结构 */
@@ -24,10 +25,10 @@ struct CaissResultDetail {
 
 inline void CAISS_ECHO(const char *cmd, ...) {
     std::cout << "[caiss] ";
-    va_list args;           // 定义一个va_list类型的变量，用来储存单个参数
-    va_start(args, cmd);    // 使args指向可变参数的第一个参数
-    vprintf(cmd, args);     // 必须用vprintf等带V的
-    va_end(args);           // 结束可变参数的获取
+    va_list args;
+    va_start(args, cmd);
+    vprintf(cmd, args);
+    va_end(args);
     std::cout << "" << std::endl;
 }
 

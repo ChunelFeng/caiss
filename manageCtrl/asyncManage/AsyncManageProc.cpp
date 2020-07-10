@@ -51,6 +51,7 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
 
 CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
+
     AlgorithmProc *algo = getInstance(handle);
     CAISS_ASSERT_NOT_NULL(algo)
 
@@ -74,6 +75,22 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
     CAISS_ASSERT_NOT_NULL(pool)
 
     ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, label, insertType), this->getRWLock(algo), true);
+    pool->appendTask(task);
+
+    CAISS_FUNCTION_END
+}
+
+
+CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, bool isIgnore) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *algo = getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(algo)
+
+    auto pool = getThreadPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(pool)
+
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::ignore, algo, label, isIgnore), this->getRWLock(algo), true);
     pool->appendTask(task);
 
     CAISS_FUNCTION_END

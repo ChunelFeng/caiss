@@ -9,7 +9,7 @@ from bert_serving.server import BertServer
 from python.pyCaiss import *
 
 CAISS_LIB_PATH = r'./libCaiss.dylib'                    # caiss动态库所在路径
-CAISS_MODEL_PATH = r'./demo_2500words_768dim.caiss'  # caiss模型所在路径
+CAISS_MODEL_PATH = r'./demo_2500words_768dim.caiss'     # caiss模型所在路径
 BERT_MODEL_PATH = r'./uncased_L-12_H-768_A-12'          # bert模型所在路径
 
 MAX_THREAD_SIZE = 1    # caiss最大并发数量（推荐不超过cpu核数）
@@ -34,7 +34,7 @@ class CaissWordHandler(tornado.web.RequestHandler):
             self.write('this is not a word : [' + query_word + ']')
             return
         elif 0 != ret:
-            self.write('search failed for the reason of : ' + ret)
+            self.write('search failed for the reason of : [' + ret + ']')
             return
 
         result_dict = json.loads(result_str)
@@ -60,10 +60,7 @@ class CaissSentenceHandler(tornado.web.RequestHandler):
             self.write('please enter english sentence.')
             return
 
-        sent_list = []
-        sent_list.append(query_sent)
-
-        res = bert_client.encode(sent_list)
+        res = bert_client.encode([query_sent])
         res_vec = res[0].tolist()
 
         top_k = self.get_argument('top', '3')

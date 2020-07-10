@@ -26,9 +26,11 @@ public:
         this->last_search_type_ = CAISS_SEARCH_DEFAULT;
         this->last_topK_ = UINT_MAX;
         this->cur_mode_ = CAISS_MODE_DEFAULT;
+        getIgnoreTrie();
     }
 
     virtual ~AlgorithmProc() {
+        CAISS_DELETE_PTR(this->ignore_trie_ptr_);
     }
 
     AlgorithmProc(const AlgorithmProc&) = delete;
@@ -63,7 +65,8 @@ public:
      */
     virtual CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
                                  const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP, const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP,
+                                 const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
                                  const unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
@@ -77,7 +80,12 @@ public:
      * @param cbParams
      * @return
      */
-    virtual CAISS_RET_TYPE search(void *info, const CAISS_SEARCH_TYPE searchType, const unsigned int topK, const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) = 0;
+    virtual CAISS_RET_TYPE search(void *info,
+                                  const CAISS_SEARCH_TYPE searchType,
+                                  const unsigned int topK,
+                                  const unsigned int filterEditDistance = 0,
+                                  const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                  const void *cbParams = nullptr) = 0;
 
     /**
      * 插入结果信息
@@ -110,12 +118,14 @@ public:
      */
     virtual CAISS_RET_TYPE getResult(char *result, unsigned int size) = 0;
 
+
     /**
-     * 被忽略的节点
+     * 将某个节点放入忽略列表中，或者从忽略列表中取消
      * @param label
+     * @param isIgnore 放入忽略列表/从忽略列表中取出
      * @return
      */
-    virtual CAISS_RET_TYPE ignore(const char *label) = 0;
+    virtual CAISS_RET_TYPE ignore(const char *label, const bool isIgnore = true) = 0;
 
 
 protected:
@@ -157,6 +167,18 @@ protected:
         return 1 / x;
     }
 
+    static TrieProc* getIgnoreTrie() {
+        if (nullptr == AlgorithmProc::ignore_trie_ptr_) {
+            AlgorithmProc::trie_lock_.writeLock();
+            if (nullptr == AlgorithmProc::ignore_trie_ptr_) {
+                AlgorithmProc::ignore_trie_ptr_ = new TrieProc();
+            }
+            AlgorithmProc::trie_lock_.writeUnlock();
+        }
+
+        return AlgorithmProc::ignore_trie_ptr_;
+    }
+
 
 protected:
     std::string model_path_;
@@ -169,6 +191,9 @@ protected:
     LruProc lru_cache_;    // 最近N次的查询记录
     unsigned int last_topK_;    // 记录上一次的topK跟这一次的topK是否相同
     CAISS_SEARCH_TYPE last_search_type_;
+
+    static RWLock trie_lock_;
+    static TrieProc* ignore_trie_ptr_;    // 标识忽略的字典树
 };
 
-#endif //CHUNELCAISS_ALGORITHMPROC_H
+#endif //CAISS_ALGORITHMPROC_H

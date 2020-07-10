@@ -99,4 +99,18 @@ CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const cha
     CAISS_FUNCTION_END
 }
 
+CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, bool isIgnore) {
+    CAISS_FUNCTION_BEGIN
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(proc)
+
+    this->lock_.writeLock();    // 忽略label的功能，需要加写锁实现
+    ret = proc->ignore(label, isIgnore);
+    this->lock_.writeUnlock();
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END
+}
+
 

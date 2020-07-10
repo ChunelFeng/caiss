@@ -7,10 +7,9 @@
 
 #include "../CaissDemoInclude.h"
 
-
-
 int demo_train();
 int demo_search();
 int demo_insert();
+int demo_ignore();
 
 #endif //CAISS_CAISSSIMPLE_H

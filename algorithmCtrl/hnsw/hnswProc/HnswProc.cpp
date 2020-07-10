@@ -16,9 +16,11 @@
 using namespace std;
 
 // 静态成员变量使用前，先初始化
-HierarchicalNSW<CAISS_FLOAT>* HnswProc::hnsw_alg_ptr_ = nullptr;
-RWLock HnswProc::hnsw_lock_;
+HierarchicalNSW<CAISS_FLOAT>* HnswProc::hnsw_algo_ptr_ = nullptr;
+RWLock HnswProc::hnsw_algo_lock_;
 
+RWLock AlgorithmProc::trie_lock_;
+TrieProc* AlgorithmProc::ignore_trie_ptr_;
 
 inline static bool isAnnSuffix(const char *modelPath) {
     string path = string(modelPath);
@@ -110,7 +112,7 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
     std::vector<CaissDataNode> datas;
     datas.reserve(maxDataSize);    // 提前分配好内存信息
 
-    CAISS_PRINT("start load datas from [%s]. \n", dataPath);
+    CAISS_ECHO("start load datas from [%s].", dataPath);
     ret = loadDatas(dataPath, datas);
     CAISS_FUNCTION_CHECK_STATUS
 
@@ -119,20 +121,20 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 
     unsigned int epoch = 0;
     while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
-        CAISS_PRINT("start to train caiss model for [%d] in [%d] epochs. \n", ++epoch, maxEpoch);
+        CAISS_ECHO("start to train caiss model for [%d] in [%d] epochs.", ++epoch, maxEpoch);
         ret = trainModel(datas, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
-        CAISS_PRINT("model build finished, check model precision automatic, please wait for a moment... \n");
-        //printf("[caiss] model build finished, check model precision automatic, please wait for a moment... \n");
+        CAISS_ECHO("model build finished, check model precision automatic, please wait for a moment...");
 
         float calcPrecision = 0.0f;
         ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
-            CAISS_PRINT("train success, precision is [%0.4f] , model is saved to path [%s]. \n", calcPrecision, this->model_path_.c_str());
+            CAISS_ECHO("train success, precision is [%0.4f] , model is saved to path [%s].", calcPrecision,
+                       this->model_path_.c_str());
             break;
         } else if (CAISS_RET_WARNING == ret) {
             float span = precision - calcPrecision;
-            CAISS_PRINT("warning, the model's precision is not suitable, span = [%f], train again automatic. \n", span);
+            CAISS_ECHO("warning, the model's precision is not suitable, span = [%f], train again automatic.", span);
             params.update(span);
             destroyHnswSingleton();    // 销毁句柄信息，重新训练
             createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize, params.neighborNums, params.efSearch, params.efConstructor);
@@ -147,9 +149,9 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 CAISS_RET_TYPE HnswProc::search(void *info,
                                 const CAISS_SEARCH_TYPE searchType,
                                 const unsigned int topK,
-                                const unsigned int filterEditDistance = 0,
-                                const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                                const void *cbParams = nullptr) {
+                                const unsigned int filterEditDistance,
+                                const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -241,7 +243,8 @@ CAISS_RET_TYPE HnswProc::save(const char *modelPath) {
     }
 
     remove(path.c_str());    // 如果有的话，就删除
-    ptr->saveIndex(path);
+    list<string> ignoreList = AlgorithmProc::getIgnoreTrie()->getAllWords();
+    ptr->saveIndex(path, ignoreList);
 
     CAISS_FUNCTION_END
 }
@@ -269,11 +272,20 @@ CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
 }
 
 
-CAISS_RET_TYPE HnswProc::ignore(const char *label) {
+CAISS_RET_TYPE HnswProc::ignore(const char *label, const bool isIgnore) {
     CAISS_FUNCTION_BEGIN
-
     CAISS_ASSERT_NOT_NULL(label)
-    // todo 逻辑待实现
+    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行
+
+    string info = label;
+    if (isIgnore) {
+        AlgorithmProc::AlgorithmProc::getIgnoreTrie()->insert(info);    // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
+    } else {
+        AlgorithmProc::AlgorithmProc::getIgnoreTrie()->eraser(info);    // 对于外部的 not-ignore，相当于是在字典树中，
+    }
+
+    this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
+    this->last_search_type_ = CAISS_SEARCH_DEFAULT;
 
     CAISS_FUNCTION_END
 }
@@ -326,12 +338,12 @@ CAISS_RET_TYPE HnswProc::trainModel(std::vector<CaissDataNode> &datas, const uns
         CAISS_FUNCTION_CHECK_STATUS
 
         if (showSpan != 0 && i % showSpan == 0) {
-            printf("[caiss] train [%d] node, total size is [%d]. \n", i, (int)datas.size());
+            CAISS_ECHO("train [%d] node, total size is [%d].", i, (int)datas.size());
         }
     }
 
     remove(this->model_path_.c_str());
-    ptr->saveIndex(std::string(this->model_path_));
+    ptr->saveIndex(std::string(this->model_path_), std::list<string>());    // 训练的时候，传入的是空的ignore链表
     CAISS_FUNCTION_END
 }
 
@@ -451,6 +463,9 @@ HnswProc::filterByRules(void *info, const CAISS_SEARCH_TYPE searchType, HNSW_RET
     ret = filterByEditDistance(info, searchType, result, filterEditDistance);
     CAISS_FUNCTION_CHECK_STATUS
 
+    ret = filterByIgnoreTrie(result);
+    CAISS_FUNCTION_CHECK_STATUS
+
     // 所有的情况都过滤完了之后，保证不会超过topK个
     while (result.size() > topK) {
         result.pop();
@@ -467,9 +482,12 @@ HnswProc::filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RE
     CAISS_ASSERT_NOT_NULL(info)
 
     if (!isWordSearchType(searchType)    // 如果不是根据word查询，则不需要走这一步
-        || (CAISS_MIN_EDIT_DISTANCE == filterEditDistance)    // 值=-1，不需要根据编辑距离来过滤
-        || (CAISS_MAX_EDIT_DISTANCE < filterEditDistance)) {
+        || (CAISS_MIN_EDIT_DISTANCE == filterEditDistance)) {   // 值=-1，不需要根据编辑距离来过滤
         return CAISS_RET_OK;
+    }
+
+    if (CAISS_MAX_EDIT_DISTANCE < filterEditDistance) {
+        return CAISS_RET_PARAM;    // 如果值设置的太大了，则返回参数校验错误
     }
 
     auto ptr = HnswProc::getHnswSingleton();
@@ -493,6 +511,38 @@ HnswProc::filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RE
 
 
 /**
+ * 通过忽略trie来做过滤
+ * @param info
+ * @param searchType
+ * @param result
+ * @return
+ */
+CAISS_RET_TYPE HnswProc::filterByIgnoreTrie(HNSW_RET_TYPE &result) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(AlgorithmProc::getIgnoreTrie())
+
+    auto ptr = HnswProc::getHnswSingleton();
+    CAISS_ASSERT_NOT_NULL(ptr)
+
+    HNSW_RET_TYPE resultBackUp;
+
+    while (!result.empty()) {
+        auto cur = result.top();
+        result.pop();
+        string candWord = ptr->index_lookup_.left.find(cur.second)->second;
+        if (!AlgorithmProc::getIgnoreTrie()->find(candWord)) {
+            resultBackUp.push(cur);    // 如果这些词语，不在过滤trie树上，就添加进来
+        }
+    }
+
+    result = resultBackUp;
+
+    CAISS_FUNCTION_END
+}
+
+
+
+/**
  * 训练模型的时候，使用的构建方式（static成员函数）
  * @param distance_ptr
  * @param maxDataSize
@@ -503,12 +553,12 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distan
                                               const unsigned int maxIndexSize, const unsigned int maxNeighbor, const unsigned int efSearch, const unsigned int efConstruction) {
     CAISS_FUNCTION_BEGIN
 
-    if (nullptr == HnswProc::hnsw_alg_ptr_) {
-        HnswProc::hnsw_lock_.writeLock();
-        if (nullptr == HnswProc::hnsw_alg_ptr_) {
-            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, maxDataSize, normalize, maxIndexSize, maxNeighbor, efSearch, efConstruction);
+    if (nullptr == HnswProc::hnsw_algo_ptr_) {
+        HnswProc::hnsw_algo_lock_.writeLock();
+        if (nullptr == HnswProc::hnsw_algo_ptr_) {
+            HnswProc::hnsw_algo_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, maxDataSize, normalize, maxIndexSize, maxNeighbor, efSearch, efConstruction);
         }
-        HnswProc::hnsw_lock_.writeUnlock();
+        HnswProc::hnsw_algo_lock_.writeUnlock();
     }
 
     CAISS_FUNCTION_END
@@ -523,13 +573,13 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distan
 CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr, const std::string &modelPath) {
     CAISS_FUNCTION_BEGIN
 
-    if (nullptr == HnswProc::hnsw_alg_ptr_) {
-        HnswProc::hnsw_lock_.writeLock();
-        if (nullptr == HnswProc::hnsw_alg_ptr_) {
+    if (nullptr == HnswProc::hnsw_algo_ptr_) {
+        HnswProc::hnsw_algo_lock_.writeLock();
+        if (nullptr == HnswProc::hnsw_algo_ptr_) {
             // 这里是static函数信息，只能通过传递值下来的方式实现
-            HnswProc::hnsw_alg_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, modelPath);
+            HnswProc::hnsw_algo_ptr_ = new HierarchicalNSW<CAISS_FLOAT>(distance_ptr, modelPath, AlgorithmProc::getIgnoreTrie());
         }
-        HnswProc::hnsw_lock_.writeUnlock();
+        HnswProc::hnsw_algo_lock_.writeUnlock();
     }
 
     CAISS_FUNCTION_END
@@ -539,9 +589,9 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distan
 CAISS_RET_TYPE HnswProc::destroyHnswSingleton() {
     CAISS_FUNCTION_BEGIN
 
-    HnswProc::hnsw_lock_.writeLock();
-    CAISS_DELETE_PTR(HnswProc::hnsw_alg_ptr_);
-    HnswProc::hnsw_lock_.writeUnlock();
+    HnswProc::hnsw_algo_lock_.writeLock();
+    CAISS_DELETE_PTR(HnswProc::hnsw_algo_ptr_);
+    HnswProc::hnsw_algo_lock_.writeUnlock();
 
     CAISS_FUNCTION_END
 }
@@ -549,7 +599,7 @@ CAISS_RET_TYPE HnswProc::destroyHnswSingleton() {
 
 
 HierarchicalNSW<CAISS_FLOAT> *HnswProc::getHnswSingleton() {
-    return HnswProc::hnsw_alg_ptr_;
+    return HnswProc::hnsw_algo_ptr_;
 }
 
 

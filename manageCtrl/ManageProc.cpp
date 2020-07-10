@@ -121,7 +121,7 @@ AlgorithmProc* ManageProc::getInstance(void *handle) {
 
 
 RWLock* ManageProc::getRWLock(AlgorithmProc *proc) {
-    return nullptr;    // 仅在异步调用的时候，会被涉及到
+    return nullptr;    // 仅在异步调用的时候，会被涉及到。这里的实现，理论不会出现这种情况
 }
 
 

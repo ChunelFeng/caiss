@@ -13,6 +13,7 @@ set(SOURCE_FILES ../caissLib/CaissLib.cpp CaissDemo.cpp
         ../threadCtrl/threadPool/ThreadPool.cpp
         caissSimpleDemo/CaissSimple.cpp
         ../manageCtrl/ManageProc.cpp
-        caissMultiThreadDemo/CaissMutliThread.cpp)
+        caissMultiThreadDemo/CaissMutliThread.cpp
+        ../utilsCtrl/trieProc/TrieProc.cpp)
 
 add_executable(CaissDemo ${SOURCE_FILES})

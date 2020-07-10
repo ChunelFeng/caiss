@@ -96,7 +96,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResultSize(void *handle,
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResult(void *handle,
                                                      char *result,
-                                                     unsigned int size) {
+                                                     const unsigned int size) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->getResult(handle, result, size);
 }
@@ -108,6 +108,14 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Insert(void *handle,
                                                   CAISS_INSERT_TYPE insertType) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->insert(handle, node, label, insertType);
+}
+
+
+CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Ignore(void *handle,
+                                                  const char *label,
+                                                  const bool isIgnore) {
+    CAISS_ASSERT_ENVIRONMENT_INIT
+    return g_manage->ignore(handle, label, isIgnore);
 }
 
 

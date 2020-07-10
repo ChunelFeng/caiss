@@ -7,7 +7,7 @@
 
 #include <string>
 
-const static unsigned int MAX_TRIE_NUM = 26;
+const static unsigned int MAX_TRIE_NUM = 26;    // 仅针对小写字母
 
 struct TrieNode {
     explicit TrieNode(const std::string& path) {
@@ -19,7 +19,7 @@ struct TrieNode {
     }
 
     ~TrieNode() {
-        for (auto & i : children) {
+        for (auto& i : children) {
             if (i != nullptr) {
                 delete i ;
                 i  = nullptr;
@@ -28,7 +28,7 @@ struct TrieNode {
     }
 
     bool isEnd;
-    std::string path;
+    std::string path;    // 这个数据会增加数据的空间复杂度信息
     TrieNode* children[MAX_TRIE_NUM];
 };
 

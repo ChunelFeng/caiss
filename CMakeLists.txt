@@ -11,13 +11,14 @@ add_definitions(-D_CAISS_EXPORTS_)
 find_package(OpenMP)
 
 
-# 设置当前的boost路径(必填)
+# 设置当前的boost路径(MY_BOOST_PATH为必填)
 IF (WIN32)
-    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure .exe can work fine
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 ELSEIF(APPLE)
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
     if (OPENMP_FOUND)
+        message("openmp support")
         link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
         include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp  -lomp")
@@ -45,8 +46,10 @@ add_library(Caiss SHARED
         algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         threadCtrl/rwLock/RWLock.cpp
-        manageCtrl/ManageProc.cpp)
+        manageCtrl/ManageProc.cpp
+        utilsCtrl/trieProc/TrieProc.cpp
+        utilsCtrl/UtilsCtrlDemo.cpp)
 
 # 添加对应依赖的内容
-add_subdirectory(UtilsCtrl)
 add_subdirectory(caissDemo)
+add_subdirectory(utilsCtrl)

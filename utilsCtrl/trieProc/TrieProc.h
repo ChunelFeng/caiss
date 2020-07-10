@@ -7,92 +7,66 @@
 
 
 #include <string>
+#include <list>
 #include "../UtilsProc.h"
 #include "TrieProcDefine.h"
+#include "../../threadCtrl/ThreadInclude.h"
 
 using namespace std;
 
 class TrieProc : public UtilsProc {
 public:
     TrieProc() {
-        this->head_ = new TrieNode("");    // 总的头结点
+        this->head_ = nullptr;
+        getHeadNode();    // 构造的时候，将head_信息初始化
     }
 
     ~TrieProc() override {
-        this->clear();    // 切记，head_不能删除
+        clear();    // 切记，head_不能删除
     }
 
+    /**
+     * 插入信息
+     * @param word
+     */
+    void insert(const string& word);
 
-    void insert(const string& word) {
-        this->innerInsert(head_, word, 0);
-    }
+    /**
+     * 查询信息
+     * @param word
+     * @return
+     */
+    bool find(const string& word);
 
-    bool find(const string& word) {
-        return this->innerFind(head_, word, 0);
-    }
+    /**
+     * 清空信息
+     */
+    void clear();
 
-    void clear() {
-        this->innerClear(head_);
-    }
+    /**
+     * 忽略这个节点
+     * @param word
+     */
+    void eraser(const string& word);
+
+    /**
+     * 获取所有的节点信息
+     * @return
+     */
+    list<string> getAllWords();
+
 
 protected:
-
-    bool innerFind(TrieNode* node, const string& word, int index) {
-        if (nullptr == node) {
-            return false;
-        }
-
-        int i = word[index] - 'a';    // 第i个字母（a为第0个）
-        if (index == word.size()) {
-            return node->isEnd;    // 如果是达到长度了，则返回这个节点是不是单词
-        }
-
-        bool ret = false;
-        if (node->children[i]) {
-            ret = innerFind(node->children[i], word, ++index);
-        }
-
-        return ret;
-    }
-
-
-    void innerInsert(TrieNode* node, const string& word, int index) {
-        if (nullptr == node) {
-            return;
-        }
-
-        if (index == word.size()) {
-            node->isEnd = true;
-            return;
-        }
-
-        int i = word[index] - 'a';
-        ++index;
-        if (!node->children[i]) {
-            // 如果node为空的话
-            string curPath = word.substr(0, index);
-            node->children[i] = new TrieNode(curPath);
-        }
-
-        innerInsert(node->children[i], word, index);
-    }
-
-    void innerClear(TrieNode* node) {
-        if (nullptr == node) {
-            return;
-        }
-
-        for (auto &cur : node->children) {
-            if (cur) {
-                innerClear(cur);
-                delete cur;
-                cur = nullptr;
-            }
-        }
-    }
+    bool innerFind(TrieNode* node, const string& word, int index);
+    void innerInsert(TrieNode* node, const string& word, int index);
+    void innerClear(TrieNode* node);
+    TrieNode* getHeadNode();
+    void innerGetWord(TrieNode* node, list<string> &words);
+    void innerEraser(TrieNode *node, const string &word, int index, bool &isErased);
 
 private:
     TrieNode* head_;
+    RWLock lock_;
 };
 
 

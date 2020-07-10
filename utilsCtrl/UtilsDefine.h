@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/6/3.
 //
 
-#ifndef CHUNELCAISS_UTILSDEFINE_H
-#define CHUNELCAISS_UTILSDEFINE_H
+#ifndef CAISS_UTILSDEFINE_H
+#define CAISS_UTILSDEFINE_H
 
 #include <string>
 #include <vector>
@@ -22,12 +22,13 @@ struct CaissResultDetail {
 };
 
 
-inline void CAISS_PRINT(const char *cmd, ...) {
+inline void CAISS_ECHO(const char *cmd, ...) {
     std::cout << "[caiss] ";
     va_list args;           // 定义一个va_list类型的变量，用来储存单个参数
     va_start(args, cmd);    // 使args指向可变参数的第一个参数
     vprintf(cmd, args);     // 必须用vprintf等带V的
     va_end(args);           // 结束可变参数的获取
+    std::cout << "" << std::endl;
 }
 
 
@@ -56,6 +57,9 @@ inline void CAISS_PRINT(const char *cmd, ...) {
         return CAISS_RET_ERR;    \
     }    \
 
+#define CAISS_FUNCTION_SHOW_RESULT    \
+    std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
+
 #define CAISS_FUNCTION_CHECK_STATUS    \
     if (CAISS_RET_OK != ret)   \
     {    \
@@ -65,8 +69,6 @@ inline void CAISS_PRINT(const char *cmd, ...) {
 #define CAISS_FUNCTION_NO_SUPPORT    \
     return CAISS_RET_NO_SUPPORT;    \
 
-#define CAISS_FUCNTION_SHOW_RESULT    \
-    std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
 
 #define CAISS_FUNCTION_END    \
     return CAISS_RET_OK;    \
@@ -85,4 +87,4 @@ inline void CAISS_PRINT(const char *cmd, ...) {
     return (num1 >= num2) ? (CAISS_TRUE) : (CAISS_FALSE);   \
 
 
-#endif //CHUNELCAISS_UTILSDEFINE_H
+#endif //CAISS_UTILSDEFINE_H

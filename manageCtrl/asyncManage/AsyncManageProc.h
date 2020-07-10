@@ -35,12 +35,16 @@ public:
                          unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                          unsigned int showSpan) override ;
 
-    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
+    CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType,
+                          unsigned int topK, unsigned int filterEditDistance,
+                          CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
 
     CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
 
     // label 是数据标签，index表示数据第几个信息
     CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
+
+    CAISS_RET_TYPE ignore(void *handle, const char *label, bool isIgnore) override ;
 
     RWLock* getRWLock(AlgorithmProc * handle) override ;
 

@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/23.
 //
 
-#ifndef CHUNELCAISS_UTILSINCLUDE_H
-#define CHUNELCAISS_UTILSINCLUDE_H
+#ifndef CAISS_UTILSINCLUDE_H
+#define CAISS_UTILSINCLUDE_H
 
 #include <iostream>
 #include "../caissLib/CaissLibDefine.h"
@@ -15,7 +15,4 @@
 #include "./trieProc/TrieProc.h"
 #include "./editDistanceProc/EditDistanceProc.h"
 
-
-
-
-#endif    //CHUNELCAISS_UTILSINCLUDE_H
+#endif    //CAISS_UTILSINCLUDE_H

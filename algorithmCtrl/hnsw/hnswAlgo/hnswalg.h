@@ -10,14 +10,17 @@
 #include <string.h>
 #include <algorithm>
 #include <atomic>
+#include <list>
 #include <unordered_set>
 #include <unordered_map>
 #include "./boost/bimap/bimap.hpp"
 
+#include "../../../utilsCtrl/UtilsInclude.h"
+
 namespace hnswlib {
     typedef unsigned int tableint;
     typedef unsigned int linklistsizeint;
-    typedef boost::bimaps::bimap< labeltype, std::string> BOOST_BIMAP;
+    typedef boost::bimaps::bimap<labeltype, std::string> BOOST_BIMAP;
 
     template<typename dist_t>
     class HierarchicalNSW : public AlgorithmInterface<dist_t> {
@@ -25,11 +28,13 @@ namespace hnswlib {
         HierarchicalNSW(SpaceInterface<dist_t> *s) {
         }
 
-        HierarchicalNSW(SpaceInterface<dist_t> *s, const std::string &location, size_t max_elements=0) {
-            loadIndex(location, s, max_elements);
+        HierarchicalNSW(SpaceInterface<dist_t> *s, const std::string &location, TrieProc* trie, size_t max_elements=0) {
+            loadIndex(location, s, trie, max_elements);
         }
 
-        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0, unsigned int index_size=64, size_t M = 64, size_t ef = 200, size_t ef_construction = 200, size_t random_seed = 100) :
+        HierarchicalNSW(SpaceInterface<dist_t> *s, size_t max_elements, int normalize = 0,
+                unsigned int index_size = 64, size_t M = 32, size_t ef = 100,
+                size_t ef_construction = 100, size_t random_seed = 100) :
                 link_list_locks_(max_elements), element_levels_(max_elements) {
 
             max_elements_ = max_elements;
@@ -71,6 +76,9 @@ namespace hnswlib {
             per_index_size_ = index_size;
             index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);    // 分配空间，保存具体index信息，训练的时候加载的方法
             memset(index_ptr_, 0, max_elements_ * per_index_size_);
+
+            ignore_info_ = (char *)malloc(max_elements_ * per_index_size_);
+            memset(ignore_info_, 0, max_elements_ * per_index_size_);    // 清空信息
         }
 
         struct CompareByFirst {
@@ -92,6 +100,11 @@ namespace hnswlib {
                 index_ptr_ = nullptr;
             }
 
+            if (ignore_info_) {
+                free(ignore_info_);
+                ignore_info_ = nullptr;
+            }
+
             free(linkLists_);
             delete visited_list_pool_;
         }
@@ -107,6 +120,7 @@ namespace hnswlib {
         size_t ef_construction_;
 
         int normalize_;    // 是否是标准化的内容
+        int ignore_word_size_;    // 忽略的词语的数量
         int placeholder_0_;    // 添加placeholder信息
         int placeholder_1_;
         int placeholder_2_;
@@ -142,6 +156,8 @@ namespace hnswlib {
         char *index_ptr_;    // 用于存放所有单词的地方
         unsigned int per_index_size_;
         BOOST_BIMAP index_lookup_;
+
+        char *ignore_info_;    // 用于存放被忽略的信息（当调用save的时候，被加入模型）
 
         /**
          * 获取当前
@@ -516,7 +532,8 @@ namespace hnswlib {
             return top_candidates;
         };
 
-        void saveIndex(const std::string &location) {
+
+        void saveIndex(const std::string &location, const list<string> &ignore_list) {
             std::ofstream output(location, std::ios::binary);
             std::streampos position;
 
@@ -536,6 +553,8 @@ namespace hnswlib {
             writeBinaryPOD(output, ef_construction_);
 
             writeBinaryPOD(output, normalize_);    // fj add
+            ignore_word_size_ = (int)ignore_list.size();
+            writeBinaryPOD(output, ignore_word_size_);    // 被忽略的词语的数量
             writeBinaryPOD(output, placeholder_0_);
             writeBinaryPOD(output, placeholder_1_);
             writeBinaryPOD(output, placeholder_2_);
@@ -547,8 +566,19 @@ namespace hnswlib {
 
             writeBinaryPOD(output, per_index_size_);
             output.write(index_ptr_, cur_element_count_ * per_index_size_);    // 写的时候，是cur_element_count_的信息
-            output.write(data_level0_memory_, cur_element_count_ * size_data_per_element_);
 
+            if (ignore_list.size() > 0) {
+                ignore_info_ = (char *)malloc(ignore_word_size_ * per_index_size_);
+                memset(ignore_info_, 0, ignore_word_size_ * per_index_size_);
+                int cur_num = 0;
+                for (auto &cur : ignore_list) {
+                    memcpy(ignore_info_ + cur_num * per_index_size_, cur.c_str(), per_index_size_);
+                    cur_num++;
+                }
+                output.write(ignore_info_, ignore_word_size_ * per_index_size_);
+            }
+
+            output.write(data_level0_memory_, cur_element_count_ * size_data_per_element_);
             for (size_t i = 0; i < cur_element_count_; i++) {
                 unsigned int linkListSize = element_levels_[i] > 0 ? size_links_per_element_ * element_levels_[i] : 0;
                 writeBinaryPOD(output, linkListSize);
@@ -559,7 +589,7 @@ namespace hnswlib {
             output.close();
         }
 
-        void loadIndex(const std::string &location, SpaceInterface<dist_t> *s, size_t max_elements_i=0) {
+        void loadIndex(const std::string &location, SpaceInterface<dist_t> *s, TrieProc* trie, size_t max_elements_i=0) {
             std::ifstream input(location, std::ios::binary);
 
             // get file size:
@@ -588,6 +618,8 @@ namespace hnswlib {
             readBinaryPOD(input, ef_construction_);
 
             readBinaryPOD(input, normalize_);
+            readBinaryPOD(input, ignore_word_size_);    // 读取被忽略词语的数量
+
             readBinaryPOD(input, placeholder_0_);
             readBinaryPOD(input, placeholder_1_);
             readBinaryPOD(input, placeholder_2_);
@@ -600,7 +632,7 @@ namespace hnswlib {
             readBinaryPOD(input, per_index_size_);    // 每个单词最大size
 
             // 记住，这里是分配了max个信息，读取了cur的个数的信息
-            index_ptr_ = (char *) malloc(max_elements_ * per_index_size_);
+            index_ptr_ = (char *)malloc(max_elements_ * per_index_size_);
             memset(index_ptr_, 0, max_elements_ * per_index_size_);
 
             // 获取每个词语的最大长度
@@ -612,6 +644,25 @@ namespace hnswlib {
                 index_lookup_.insert(BOOST_BIMAP::value_type(i, std::string(word)));
             }
             free(word);
+
+            if (nullptr != ignore_info_) {
+                free(ignore_info_);
+                ignore_info_ = nullptr;
+            }
+
+            // 这里是load接口，ignore_info_刚开始肯定为nullptr
+            ignore_info_ = (char *)malloc(ignore_word_size_ * per_index_size_);
+            memset(ignore_info_, 0, per_index_size_ * ignore_word_size_);
+            input.read(ignore_info_, ignore_word_size_ * per_index_size_);
+
+            char *ignore_word = (char *)malloc(per_index_size_);
+            memset(ignore_word, 0, per_index_size_);
+            for (int i = 0; i < ignore_word_size_; i++) {
+                memset(ignore_word, 0, per_index_size_);
+                memcpy(ignore_word, ignore_info_ + i * per_index_size_, per_index_size_);
+                trie->insert(std::string(ignore_word));
+            }
+            free(ignore_word);
 
             data_size_ = s->get_data_size();    // 这个是纯数据的大小，dim*size
             fstdistfunc_ = s->get_dist_func();
@@ -678,6 +729,7 @@ namespace hnswlib {
                     input.read(linkLists_[i], linkListSize);    // 如果有信息的话，读入linkListSize个内容
                 }
             }
+
             input.close();
 
             return;

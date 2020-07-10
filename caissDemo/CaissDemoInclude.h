@@ -21,10 +21,10 @@
 #define dim_ (768)
 #define model_path_ ("../../doc/demo_2500words_768dim.caiss")
 #define dist_func_ (nullptr)
-#define info_ ("work")
+#define info_ ("water")
 #define search_type_ (CAISS_SEARCH_WORD)
 #define top_k_ (5)
-#define filter_edit_distance_ (1)
+#define filter_edit_distance_ (0)
 
 #define data_path_ ("../../doc/demo_2500words_768dim.txt")
 #define max_data_size_ (5000)    // 不小于文本最大行数。建议设定为文本行数的1.5倍~2倍，方便今后插入信息。

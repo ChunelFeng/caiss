@@ -33,14 +33,14 @@ public:
      */
     static unsigned int calc(const string &fst, const string &snd) {
 
-        string longStr = std::move(fst);
-        string shortStr = std::move(snd);
+        string longStr = fst;
+        string shortStr = snd;
         if (longStr.length() < shortStr.length()) {
             swap(longStr, shortStr);    // 确保长的在第一个
         }
 
-        int longLen = longStr.size() + 1;    // 用于初始化的值，均加一操作
-        int shortLen = shortStr.size() + 1;
+        int longLen = (int)longStr.size() + 1;    // 用于初始化的值，均加一操作
+        int shortLen = (int)shortStr.size() + 1;
 
         vector<int> vecBefore(shortLen, 0);
         vector<int> vecCur(shortLen, 0);
@@ -67,13 +67,8 @@ public:
 
 
 private:
-    explicit EditDistanceProc() {
-        return;
-    }
-
-    ~EditDistanceProc() {
-        return;
-    }
+    explicit EditDistanceProc() = default;
+    ~EditDistanceProc() override = default;
 };
 
 #endif //CAISS_EDITDISTANCEPROC_H

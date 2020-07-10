@@ -31,6 +31,11 @@ public:
         this->clear();
     }
 
+    /**
+     * 获取数据
+     * @param word
+     * @return
+     */
     string get(const string& word) {
         string result;
         auto cur = cache_.find(word);
@@ -42,6 +47,12 @@ public:
         return result;
     };
 
+    /**
+     * 插入数据
+     * @param word
+     * @param result
+     * @return
+     */
     int put(const string& word, const string result) {
         auto cur = cache_.find(word);
         if (cur != cache_.end()) {
@@ -62,6 +73,10 @@ public:
         return 0;
     };
 
+    /**
+     * 清空缓存
+     * @return
+     */
     int clear() {    // 清空内部的所有数据
         nodes_.clear();
         cache_.clear();

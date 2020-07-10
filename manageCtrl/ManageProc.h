@@ -54,6 +54,10 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
+    virtual CAISS_RET_TYPE ignore(void *handle, const char *label, bool isIgnore) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
+
 
     /**
      * 为了方便外部使用读写锁进行操作。主要是针对ThreadPool类实现的功能
@@ -65,7 +69,7 @@ public:
 
 protected:
     virtual AlgorithmProc* getInstance(void *handle);
-    virtual RWLock* getRWLock(AlgorithmProc  *proc);
+    virtual RWLock* getRWLock(AlgorithmProc *proc);
     AlgorithmProc* createAlgoProc();
 
 
@@ -75,8 +79,6 @@ protected:
     RWLock lock_;
     CAISS_ALGO_TYPE algo_type_;
     unsigned int max_size_;
-
-
 };
 
 

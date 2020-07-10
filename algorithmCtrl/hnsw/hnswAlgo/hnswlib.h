@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <queue>
+#include <list>
 
 #include <string.h>
 
@@ -69,7 +70,7 @@ namespace hnswlib {
     public:
         virtual int addPoint(void *datapoint, labeltype label, const char *index)=0;
         virtual std::priority_queue<std::pair<dist_t, labeltype >> searchKnn(const void *, size_t) const = 0;
-        virtual void saveIndex(const std::string &location)=0;
+        virtual void saveIndex(const std::string &location, const std::list<std::string> &ignoreList)=0;
         virtual ~AlgorithmInterface(){
         }
     };

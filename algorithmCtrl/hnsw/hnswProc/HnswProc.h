@@ -6,11 +6,12 @@
 #define CHUNELCAISS_HNSWPROC_H
 
 #include <list>
+#include <./boost/bimap/bimap.hpp>
 
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
 #include "./HnswProcDefine.h"
-#include <./boost/bimap/bimap.hpp>
+
 
 using namespace hnswlib;
 using HNSW_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>;
@@ -39,7 +40,7 @@ public:
     CAISS_RET_TYPE save(const char *modelPath) override;    // 默认写成是当前模型的
     CAISS_RET_TYPE getResultSize(unsigned int& size) override;
     CAISS_RET_TYPE getResult(char *result, unsigned int size) override;
-    CAISS_RET_TYPE ignore(const char *label) override;    // todo 暂未完成功能
+    CAISS_RET_TYPE ignore(const char *label, bool isIgnore) override;
 
 
 protected:
@@ -57,14 +58,15 @@ protected:
                                  unsigned int filterEditDistance);
     CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result,
                                         unsigned int filterEditDistance);
+    CAISS_RET_TYPE filterByIgnoreTrie(HNSW_RET_TYPE &result);
 
 
 
     // 静态成员变量
 private:
-    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize, unsigned int maxIndexSize=64,
+    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr, unsigned int maxDataSize, CAISS_BOOL normalize, unsigned int maxIndexSize=64,
                                               unsigned int maxNeighbor=32, unsigned int efSearch=100, unsigned int efConstruction=100);
-    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr, const std::string &modelPath);
+    static CAISS_RET_TYPE createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr, const std::string &modelPath);
     static CAISS_RET_TYPE destroyHnswSingleton();
     static CAISS_RET_TYPE checkModelPrecisionEnable(float targetPrecision, unsigned int fastRank, unsigned int realRank,
                                                     const std::vector<CaissDataNode> &datas, float &calcPrecision);
@@ -73,8 +75,8 @@ private:
     static CAISS_RET_TYPE insertByOverwrite(CAISS_FLOAT *node, unsigned int label, const char *index);
     static CAISS_RET_TYPE insertByDiscard(CAISS_FLOAT *node, unsigned int label, const char *index);
 
-    static HierarchicalNSW<CAISS_FLOAT>*     hnsw_alg_ptr_;
-    static RWLock                            hnsw_lock_;
+    static HierarchicalNSW<CAISS_FLOAT>*     hnsw_algo_ptr_;
+    static RWLock                            hnsw_algo_lock_;
 
 private:
     SpaceInterface<CAISS_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了

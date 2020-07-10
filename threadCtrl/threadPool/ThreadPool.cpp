@@ -31,10 +31,6 @@ void ThreadPool::stop() {
 void ThreadPool::appendTask(const ThreadTaskInfo& task) {
     if (running_) {
         unique_lock<mutex> lock(pool_mtx_);
-        if (!task.taskFunc || !task.rwLock) {
-            return;    // 如果传入的任务中，信息为空，则不进入消息队列
-        }
-
         tasks_.push(task);
         cond_.notify_one();
     }

@@ -28,11 +28,6 @@ using CAISS_VECTOR_STRING = std::vector<std::string>;
 using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
 using CAISS_LIST_STRING = std::list<std::string>;
 
-/* 自定义用于计算距离的函数 */
-typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec2, const CAISS_VOID *params);
-/* 查询到结果后，触发的回调函数 */
-typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const CAISS_VOID *params);
-
 /* 函数返回值定义 */
 #define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题
 #define CAISS_RET_WARNING       (1)     // 流程告警
@@ -116,7 +111,6 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
         const unsigned int maxEpoch = 5,
         const unsigned int showSpan = 1000);
 
-
 /**
  * 查询功能
  * @param handle 句柄信息
@@ -126,7 +120,7 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
  * @param filterEditDistance 需要过滤的最小词语编辑距离（仅针对根据单词查询的情况下生效，-1表示不过滤，0表示过滤跟）
  * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
  * @param cbParams 回调函数中，传入的参数信息
- * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
+ * @return 运行成功返回0，警告返回1，词查询模式下，没有找到单词返回2，其他异常值，参考错误码定义
  * @notice filterEditDistance仅针对根据单词过滤的情况下生效。
  *         =-1表示不过滤；=0表示过滤跟当前词语完全相同的；
  *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
@@ -139,7 +133,6 @@ CAISS_RET_TYPE CAISS_Search(void *handle,
         const unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
         const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
         const void *cbParams = nullptr);
-
 
 /**
  * 获取结果字符串长度
@@ -174,6 +167,17 @@ CAISS_RET_TYPE CAISS_Insert(void *handle,
         CAISS_FLOAT *node,
         const char *label,
         CAISS_INSERT_TYPE insertType);
+
+/**
+ * 忽略信息
+ * @param handle 句柄信息
+ * @param label 待忽略的标签信息
+ * @param isIgnore 表示忽略（true）或者不再忽略（false）
+ * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
+ */
+CAISS_RET_TYPE CAISS_Ignore(void *handle,
+        const char *label,
+        const bool isIgnore=true);
 
 /**
  * 保存模型
@@ -366,3 +370,7 @@ int main() {
 [2020.07.03 - v1.3.0 - Chunel]
 * 新增根据编辑距离的过滤
 * 新增python版本，提供基础查询功能
+
+[2020.07.11 - v1.5.0 - Chunel]
+* 新增词语黑名单压缩和过滤功能
+* 新增网络服务功能（python版本）

@@ -109,29 +109,31 @@ TrieNode* TrieProc::getHeadNode() {
  */
 list<string> TrieProc::getAllWords() {
     list<string> words;
-    innerGetWord(getHeadNode(), words);
-    return words;
-}
 
-
-/**
- * 获取数上所有的词语信息
- * @param node
- * @param words
- */
-void TrieProc::innerGetWord(TrieNode* node, list<string> &words) {
-    if (nullptr == node) {
-        return;
-    }
-
-    for (auto &cur : node->children) {
+    queue<TrieNode *> que;
+    for (auto &cur : this->head_->children) {
         if (cur) {
-            if (cur->isEnd) {    // 如果是单词的话，则放入返回列表里
+            if (cur->isEnd) {
                 words.push_back(cur->path);
             }
-            innerGetWord(cur, words);
+            que.push(cur);    // 存入头结点中，
         }
     }
+
+    while (!que.empty()) {
+        auto temp = que.front();    // 这种方法，时间复杂度较低。跟设定的trie结构比较match
+        que.pop();
+        for (auto& child : temp->children) {
+            if (child) {
+                if (child->isEnd) {
+                    words.push_back(child->path);
+                }
+                que.push(child);
+            }
+        }
+    }
+
+    return words;
 }
 
 

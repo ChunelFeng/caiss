@@ -61,7 +61,6 @@ protected:
     void innerInsert(TrieNode* node, const string& word, int index);
     void innerClear(TrieNode* node);
     TrieNode* getHeadNode();
-    void innerGetWord(TrieNode* node, list<string> &words);
     void innerEraser(TrieNode *node, const string &word, int index, bool &isErased);
 
 private:

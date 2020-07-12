@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/24.
 //
 
-#ifndef CHUNELCAISS_ANNMANAGEINCLUDE_H
-#define CHUNELCAISS_ANNMANAGEINCLUDE_H
+#ifndef CAISS_ANNMANAGEINCLUDE_H
+#define CAISS_ANNMANAGEINCLUDE_H
 
 #include "ManageProc.h"
 #include "./syncManage/SyncManageProc.h"
@@ -13,4 +13,4 @@
 
 
 
-#endif //CHUNELCAISS_ANNMANAGEINCLUDE_H
+#endif //CAISS_ANNMANAGEINCLUDE_H

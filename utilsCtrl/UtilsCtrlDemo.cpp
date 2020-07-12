@@ -17,7 +17,7 @@ int main() {
         ptr->insert(s);
     }
 
-    ptr->eraser("ab");
+    ptr->eraser("abc");
 
     list<string> mm = ptr->getAllWords();
     for (auto &m : mm) {

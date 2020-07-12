@@ -111,7 +111,7 @@ list<string> TrieProc::getAllWords() {
     list<string> words;
 
     queue<TrieNode *> que;
-    for (auto &cur : this->head_->children) {
+    for (auto &cur : getHeadNode()->children) {
         if (cur) {
             if (cur->isEnd) {
                 words.push_back(cur->path);

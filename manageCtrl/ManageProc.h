@@ -20,7 +20,7 @@ public:
     virtual ~ManageProc();
     /* 以下这些函数，是同步/异步走相同的流程 */
     virtual CAISS_RET_TYPE createHandle(void **handle);
-    virtual CAISS_RET_TYPE destroyHandle(void* handle);
+    virtual CAISS_RET_TYPE destroyHandle(void *handle);
     virtual CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
                                 CAISS_DIST_FUNC distFunc);
 
@@ -32,7 +32,8 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, const unsigned int filterEditDistance,
+    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType,
+                                  unsigned int topK, const unsigned int filterEditDistance,
                                   CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }

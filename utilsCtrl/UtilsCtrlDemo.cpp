@@ -11,13 +11,13 @@ using namespace std;
 
 
 int main() {
-    string str[4] = {"abc", "abd", "def", "abcdef"};
+    string str[4] = {"abc", "abd", "def", "abcdez"};
     auto* ptr = new TrieProc();
     for (auto &s : str) {
         ptr->insert(s);
     }
 
-    ptr->eraser("abc");
+    cout << ptr->find("abcdez") << endl;
 
     list<string> mm = ptr->getAllWords();
     for (auto &m : mm) {

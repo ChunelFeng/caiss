@@ -41,8 +41,8 @@ bool TrieProc::innerFind(TrieNode* node, const string& word, int index) {
     }
 
     int i = word[index] - 'a';    // 第i个字母（a为第0个）
-    if (i >= 26 || i < 0) {
-        return false;    // 暂时仅支持小写的信息
+    if ((i >= 26 || i < 0) && (i != -97)) {
+        return false;    // 当传入的信息，不是小写字母，并且也不是结束符的时候，就返回否了
     }
 
     if (index == word.size()) {

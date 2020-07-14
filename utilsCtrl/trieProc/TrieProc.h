@@ -65,7 +65,7 @@ protected:
 
 private:
     TrieNode* head_;
-    RWLock lock_;
+    RWLock lock_;    // 获取head_节点的时候，加锁保护
 };
 
 

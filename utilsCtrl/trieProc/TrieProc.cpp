@@ -41,6 +41,10 @@ bool TrieProc::innerFind(TrieNode* node, const string& word, int index) {
     }
 
     int i = word[index] - 'a';    // 第i个字母（a为第0个）
+    if (i >= 26 || i < 0) {
+        return false;    // 暂时仅支持小写的信息
+    }
+
     if (index == word.size()) {
         return node->isEnd;    // 如果是达到长度了，则返回这个节点是不是单词
     }

@@ -220,7 +220,7 @@ static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
-static const std::string info_ = "hello";
+static const std::string info_ = "water";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
@@ -334,7 +334,7 @@ int main() {
 
 ## 6. 编译说明
 
-* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0，高于此版本的应该均可。
+* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
   $ cmake .  
   $ make  
@@ -345,8 +345,13 @@ int main() {
 ## 7. 补充说明
 
 * 训练文本样式，请参考文档中的内容
+
 * 训练功能仅支持单线程。查询和插入功能，支持多线程并发
+
 * 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
+
+* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止
+
 * doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练，或者联系微信：Chunel_Fung
 
   
@@ -361,7 +366,6 @@ int main() {
 * 新增多线程功能
 * 新增缓存机制
 * 提供简单的demo供参考使用
-* 提供简单的训练样本和模型
 * 兼容mac和Linux系统
 
 [2020.06.29 - v1.2.1 - Chunel]
@@ -372,6 +376,9 @@ int main() {
 * 新增python版本，提供基础查询功能
 
 [2020.07.11 - v1.5.0 - Chunel]
-* 新增词语黑名单压缩和过滤功能
+* 新增词语删除功能
 * 新增并行计算功能，极大缩短训练和验证耗时
 * 基于python版本，对外提供网络服务
+
+[2020.07.18 - v1.5.1 - Chunel]
+* 优化异步查询过程中，查询单词信息内存自动释放的问题

@@ -5,7 +5,7 @@
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
 
-#define CAISS_VERSION       ("1.5.0")
+#define CAISS_VERSION       ("1.5.1")
 
 #ifdef WIN32
     #define STDCALL __stdcall

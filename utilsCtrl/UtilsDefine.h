@@ -22,7 +22,6 @@ struct CaissResultDetail {
     std::string label;    // 标签信息 （例：hello）
 };
 
-
 inline void CAISS_ECHO(const char *cmd, ...) {
     std::cout << "[caiss] ";
     va_list args;
@@ -31,7 +30,6 @@ inline void CAISS_ECHO(const char *cmd, ...) {
     va_end(args);
     std::cout << "" << std::endl;
 }
-
 
 // 定义几个常用的宏函数
 #define CAISS_DELETE_PTR(ptr) \

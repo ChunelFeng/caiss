@@ -14,5 +14,6 @@
 #include "./lruProc/LruProc.h"
 #include "./trieProc/TrieProc.h"
 #include "./editDistanceProc/EditDistanceProc.h"
+#include "./memoryPool/MemoryPool.h"
 
 #endif    //CAISS_UTILSINCLUDE_H

@@ -26,7 +26,7 @@ int demo_train() {
 }
 
 int demo_search() {
-    CAISS_ECHO("enter train search...");
+    CAISS_ECHO("enter search demo...");
     CAISS_FUNCTION_BEGIN
 
     void *handle = nullptr;

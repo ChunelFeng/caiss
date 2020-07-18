@@ -645,11 +645,6 @@ namespace hnswlib {
             }
             free(word);
 
-            if (nullptr != ignore_info_) {
-                free(ignore_info_);
-                ignore_info_ = nullptr;
-            }
-
             // 这里是load接口，ignore_info_刚开始肯定为nullptr
             ignore_info_ = (char *)malloc(ignore_word_size_ * per_index_size_);
             memset(ignore_info_, 0, per_index_size_ * ignore_word_size_);

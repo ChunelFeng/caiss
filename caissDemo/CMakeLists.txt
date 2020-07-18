@@ -14,6 +14,7 @@ set(SOURCE_FILES ../caissLib/CaissLib.cpp CaissDemo.cpp
         caissSimpleDemo/CaissSimple.cpp
         ../manageCtrl/ManageProc.cpp
         caissMultiThreadDemo/CaissMutliThread.cpp
-        ../utilsCtrl/trieProc/TrieProc.cpp)
+        ../utilsCtrl/trieProc/TrieProc.cpp
+        ../utilsCtrl/memoryPool/MemoryPool.cpp)
 
 add_executable(CaissDemo ${SOURCE_FILES})

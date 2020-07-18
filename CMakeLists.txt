@@ -48,7 +48,7 @@ add_library(Caiss SHARED
         threadCtrl/rwLock/RWLock.cpp
         manageCtrl/ManageProc.cpp
         utilsCtrl/trieProc/TrieProc.cpp
-        utilsCtrl/UtilsCtrlDemo.cpp)
+        utilsCtrl/memoryPool/MemoryPool.cpp)
 
 # 添加对应依赖的内容
 add_subdirectory(caissDemo)

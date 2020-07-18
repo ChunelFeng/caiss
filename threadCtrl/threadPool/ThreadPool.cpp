@@ -39,7 +39,7 @@ void ThreadPool::appendTask(const ThreadTaskInfo& task) {
 /**
  * 每个线程都一直在运行这个函数。
  * 当有task进来的时候，就获取第一个task，并且执行。
- * 如果没有需要执行的tark了，则一直处于wait的状态，直到有调用appendTask，从而cond被唤醒
+ * 如果没有需要执行的task了，则一直处于wait的状态，直到有调用appendTask，从而cond被唤醒
  */
 void ThreadPool::work() {
     while (running_) {

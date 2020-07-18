@@ -6,7 +6,7 @@
 #include "MemoryPool.h"
 
 int MemoryPool::innerGC() {
-    // 每隔3分钟，如果内存太大，就清理一下
+    // [2020.07.18]暂时将SLEEP_TIME_SECOND设置为INT_MAX表示不会进入下面的自动清除内存的逻辑
     while (!is_finish_) {
         int i = 0;
         while ((++i < SLEEP_TIME_SECOND) && !is_finish_) {
@@ -26,7 +26,7 @@ int MemoryPool::innerGC() {
         }
 
         if (count > MAX_CHUNK_SIZE) {
-            int delNum = count / 100;    // 清除百分之一的数据
+            int delNum = count / 10;    // 清除十分之一的数据
             while (delNum--) {
                 MemChunk *cur = head_chunk_;
                 head_chunk_ = head_chunk_->next;

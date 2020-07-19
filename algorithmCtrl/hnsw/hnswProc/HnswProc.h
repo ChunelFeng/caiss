@@ -54,13 +54,13 @@ protected:
     CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
                                     unsigned int filterEditDistance);
     CAISS_RET_TYPE searchInLruCache(const char *word, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_BOOL &isGet);
+
+    /* 函数过滤条件 */
     CAISS_RET_TYPE filterByRules(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
                                  unsigned int filterEditDistance);
     CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result,
                                         unsigned int filterEditDistance);
     CAISS_RET_TYPE filterByIgnoreTrie(HNSW_RET_TYPE &result);
-
-
 
     // 静态成员变量
 private:
@@ -80,6 +80,7 @@ private:
 
 private:
     SpaceInterface<CAISS_FLOAT>*             distance_ptr_;    // 其实，这里也可以考虑用static了
+    unsigned int                             neighbors_;
 };
 
 

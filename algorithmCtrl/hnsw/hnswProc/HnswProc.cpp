@@ -31,7 +31,8 @@ inline static bool isAnnSuffix(const char *modelPath) {
 
 inline static bool isWordSearchType(CAISS_SEARCH_TYPE searchType) {
     bool ret = false;
-    if (CAISS_SEARCH_WORD == searchType || CAISS_LOOP_WORD == searchType) {
+    if (CAISS_SEARCH_WORD == searchType
+        || CAISS_LOOP_WORD == searchType) {
         ret = true;
     }
     return ret;
@@ -40,7 +41,8 @@ inline static bool isWordSearchType(CAISS_SEARCH_TYPE searchType) {
 inline static bool isAnnSearchType(CAISS_SEARCH_TYPE searchType) {
     // 判定是否是快速查询类型
     bool ret = false;
-    if (CAISS_SEARCH_WORD == searchType || CAISS_SEARCH_QUERY == searchType) {
+    if (CAISS_SEARCH_WORD == searchType
+        || CAISS_SEARCH_QUERY == searchType) {
         ret = true;
     }
     return ret;
@@ -48,6 +50,7 @@ inline static bool isAnnSearchType(CAISS_SEARCH_TYPE searchType) {
 
 
 HnswProc::HnswProc() {
+    this->neighbors_ = 0;
     this->distance_ptr_ = nullptr;
 }
 
@@ -92,6 +95,7 @@ CAISS_RET_TYPE HnswProc::reset() {
     this->dim_ = 0;
     this->cur_mode_ = CAISS_MODE_DEFAULT;
     this->normalize_ = 0;
+    this->neighbors_ = 0;
     this->result_.clear();
 
     CAISS_FUNCTION_END
@@ -393,6 +397,7 @@ CAISS_RET_TYPE HnswProc::loadModel(const char *modelPath) {
 
     HnswProc::createHnswSingleton(this->distance_ptr_, this->model_path_);    // 读取模型的时候，使用的获取方式
     this->normalize_ = HnswProc::getHnswSingleton()->normalize_;    // 保存模型的时候，会写入是否被标准化的信息
+    this->neighbors_ = HnswProc::getHnswSingleton()->ef_construction_;
 
     CAISS_FUNCTION_END
 }
@@ -688,7 +693,7 @@ CAISS_RET_TYPE HnswProc::innerSearchResult(void *info, const CAISS_SEARCH_TYPE s
 
     CAISS_FUNCTION_CHECK_STATUS
 
-    unsigned int queryTopK = topK * 7;    // 表示7分(*^▽^*)
+    unsigned int queryTopK = std::max(topK*7, this->neighbors_);    // 表示7分(*^▽^*)
     auto *query = (CAISS_FLOAT *)vec.data();
     HNSW_RET_TYPE&& result = isAnnSearchType(searchType)
             ? ptr->searchKnn((void *)query, queryTopK) : ptr->forceLoop((void *)query, queryTopK);

@@ -4,7 +4,7 @@
 namespace hnswlib {
 
     static float
-    EditionProduct(const void *pVect1, const void *pVect2, const void *qty_ptr) {
+    InnerProduct(const void *pVect1, const void *pVect2, const void *qty_ptr) {
         size_t qty = *((size_t *) qty_ptr);
         float res = 0;
         for (unsigned i = 0; i < qty; i++) {
@@ -217,7 +217,7 @@ namespace hnswlib {
         size_t dim_;
     public:
         InnerProductSpace(size_t dim) {
-            fstdistfunc_ = EditionProduct;
+            fstdistfunc_ = InnerProduct;
     #if defined(USE_AVX) || defined(USE_SSE)
             if (dim % 4 == 0)
                 fstdistfunc_ = InnerProductSIMD4Ext;

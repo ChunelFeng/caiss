@@ -716,7 +716,7 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
     CAISS_ASSERT_NOT_NULL(ptr)
 
     unsigned int suitableTimes = 0;
-    unsigned int calcTimes = min((int)datas.size(), 10000);    // 最多1000次比较
+    unsigned int calcTimes = min((int)datas.size(), 10000);    // 最多10000次比较
 
     {
         #ifdef _USE_OPENMP_

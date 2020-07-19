@@ -22,9 +22,20 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
     auto threadPool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(threadPool)
 
+    MemoryPool *memoryPool = getMemoryPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(memoryPool)
+
+    FreeBlock *block = memoryPool->allocate();
+    CAISS_ASSERT_NOT_NULL(block)
+
+    char *ptr = block->data;
+    memset(ptr, 0, BLOCK_SIZE);
+    memcpy(ptr, dataPath, strlen(dataPath) + 1);
+
     // 绑定训练的流程到线程池中去
     ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
-                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo), true);
+                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo), true,
+                                          memoryPool, block);
     threadPool->appendTask(task);
     CAISS_FUNCTION_END
 }
@@ -45,9 +56,15 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
     auto threadPool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(threadPool)
 
+    MemoryPool *memoryPool = getMemoryPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(memoryPool)
+
+    FreeBlock *block = memoryPool->allocate();
+    CAISS_ASSERT_NOT_NULL(block)
+
     void *ptr = nullptr;
     if (searchType == CAISS_SEARCH_WORD || searchType == CAISS_LOOP_WORD) {
-        ptr = getMemoryPoolSingleton()->allocate()->data;
+        ptr = block->data;
         CAISS_ASSERT_NOT_NULL(ptr)
         memset(ptr, 0, BLOCK_SIZE);
         memcpy(ptr, info, strlen((char *)info) + 1);
@@ -56,7 +73,8 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
     }
 
     // 查询需要上的锁，属于读锁的性质，其他应该都要上写锁
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, ptr, searchType, topK, filterEditDistance, searchCBFunc, cbParams), this->getRWLock(algo), false);
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::search, algo, ptr, searchType, topK, filterEditDistance, searchCBFunc, cbParams),
+            this->getRWLock(algo), false, memoryPool, block);
     threadPool->appendTask(task);    // 将信息放到线程池中去计算
 
     CAISS_FUNCTION_END
@@ -72,7 +90,14 @@ CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
     auto threadPool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(threadPool)
 
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::save, algo, modelPath), this->getRWLock(algo), true);
+    MemoryPool *memoryPool = getMemoryPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(memoryPool)
+
+    FreeBlock *block = memoryPool->allocate();
+    CAISS_ASSERT_NOT_NULL(block)
+
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::save, algo, modelPath),
+            this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);
 
     CAISS_FUNCTION_END
@@ -89,12 +114,20 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
     auto threadPool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(threadPool)
 
-    char *ptr = getMemoryPoolSingleton()->allocate()->data;
+    MemoryPool *memoryPool = getMemoryPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(memoryPool)
+
+    FreeBlock *block = memoryPool->allocate();
+    CAISS_ASSERT_NOT_NULL(block)
+
+    char *ptr = block->data;
     CAISS_ASSERT_NOT_NULL(ptr)
     memset(ptr, 0, BLOCK_SIZE);
     memcpy(ptr, label, strlen(label) + 1);
 
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, ptr, insertType), this->getRWLock(algo), true);
+
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, ptr, insertType),
+            this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);
 
     CAISS_FUNCTION_END
@@ -110,12 +143,19 @@ CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, bool isI
     auto threadPool = getThreadPoolSingleton();
     CAISS_ASSERT_NOT_NULL(threadPool)
 
-    char *ptr = getMemoryPoolSingleton()->allocate()->data;
+    MemoryPool *memoryPool = getMemoryPoolSingleton();
+    CAISS_ASSERT_NOT_NULL(memoryPool)
+
+    FreeBlock *block = memoryPool->allocate();
+    CAISS_ASSERT_NOT_NULL(block)
+
+    char *ptr = block->data;
     CAISS_ASSERT_NOT_NULL(ptr)
     memset(ptr, 0, BLOCK_SIZE);
     memcpy(ptr, label, strlen(label) + 1);
 
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::ignore, algo, ptr, isIgnore), this->getRWLock(algo), true);
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::ignore, algo, ptr, isIgnore),
+            this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);
 
     CAISS_FUNCTION_END

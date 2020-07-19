@@ -68,7 +68,6 @@ inline void CAISS_ECHO(const char *cmd, ...) {
 #define CAISS_FUNCTION_NO_SUPPORT    \
     return CAISS_RET_NO_SUPPORT;    \
 
-
 #define CAISS_FUNCTION_END    \
     return CAISS_RET_OK;    \
 

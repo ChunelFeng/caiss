@@ -6,7 +6,7 @@
 #include "MemoryPool.h"
 
 int MemoryPool::innerGC() {
-    // [2020.07.18]暂时将SLEEP_TIME_SECOND设置为INT_MAX表示不会进入下面的自动清除内存的逻辑
+    // 暂时将SLEEP_TIME_SECOND设置为INT_MAX表示不会进入下面的自动清除内存的逻辑
     while (!is_finish_) {
         int i = 0;
         while ((++i < SLEEP_TIME_SECOND) && !is_finish_) {
@@ -46,12 +46,12 @@ MemoryPool::MemoryPool(unsigned int blockNumPerChunk, unsigned int blockSize) {
     block_size_ = blockSize;
     block_num_per_chunk_ = blockNumPerChunk;
     is_finish_ = false;
-    future_ = std::async(std::launch::async, &MemoryPool::innerGC, this);
+    //future_ = std::async(std::launch::async, &MemoryPool::innerGC, this);    // 暂不开启自动回收机制
 }
 
 MemoryPool::~MemoryPool() {
     is_finish_ = true;    // 保证gc线程终止
-    future_.get();    // 等待结束
+    //future_.get();
 
     std::lock_guard<std::mutex> lock(mtx_);
     MemChunk *p;
@@ -67,7 +67,6 @@ FreeBlock *MemoryPool::allocate() {
     if (!free_block_head_) {
         // 如果空闲节点的信息为空了
         auto *curChunk = new MemChunk(this->block_num_per_chunk_, this->block_size_);
-
         free_block_head_ = curChunk->blocks[0];    // 获得新的Chunk的信息，作为头结点
         for (unsigned int i = 1; i < this->block_num_per_chunk_; i++) {
             curChunk->blocks[i-1]->next = curChunk->blocks[i];

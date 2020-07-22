@@ -17,11 +17,20 @@ IF (WIN32)
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 ELSEIF(APPLE)
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
+
+    set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
+    set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
+
+    include_directories(${BLAS_INC_DIR})
+    link_directories(${BLAS_LINK_DIR})
+
+    link_libraries(libopenblas.a)    # import openblas static lib
+
     if (OPENMP_FOUND)
         message("openmp support")
         link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
         include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp  -lomp")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp -lomp")
         add_definitions(-D_USE_OPENMP_)
     else()
         message("no openmp support")

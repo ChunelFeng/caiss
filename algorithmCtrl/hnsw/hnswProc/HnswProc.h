@@ -7,11 +7,11 @@
 
 #include <list>
 #include <./boost/bimap/bimap.hpp>
+#include <immintrin.h>
 
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"
 #include "./HnswProcDefine.h"
-
 
 using namespace hnswlib;
 using HNSW_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>;

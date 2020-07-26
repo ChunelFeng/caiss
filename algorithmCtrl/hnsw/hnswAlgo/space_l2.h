@@ -124,11 +124,12 @@ namespace hnswlib {
 
         const float *pEnd1 = pVect1 + (qty16 << 2);
 
+        /*https://zhuanlan.zhihu.com/p/94649418 参考文档*/
         __m128 diff, v1, v2;
-        __m128 sum = _mm_set1_ps(0);
+        __m128 sum = _mm_set1_ps(0);    // 128表示128（32*4）bytes数据，相当于是4个float数据
 
         while (pVect1 < pEnd1) {
-            v1 = _mm_loadu_ps(pVect1);
+            v1 = _mm_loadu_ps(pVect1);    // _mm表示返回128bytes大小的数据， _ps表示里面都是float的数据
             pVect1 += 4;
             v2 = _mm_loadu_ps(pVect2);
             pVect2 += 4;

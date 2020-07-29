@@ -3,9 +3,9 @@
 
 namespace hnswlib {
 
+    // 欧式距离
     static float
     L2Sqr(const void *pVect1, const void *pVect2, const void *qty_ptr) {
-        //return *((float *)pVect2);
         size_t qty = *((size_t *) qty_ptr);
         float res = 0;
         for (unsigned i = 0; i < qty; i++) {

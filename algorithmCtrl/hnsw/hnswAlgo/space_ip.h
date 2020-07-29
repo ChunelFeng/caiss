@@ -1,6 +1,10 @@
 #pragma once
 #include "hnswlib.h"
 
+#include <Eigen/Core>
+
+typedef Eigen::Map<Eigen::Matrix<float, 1, Eigen::Dynamic>> DynamicMapType;
+
 namespace hnswlib {
 
     static float
@@ -11,6 +15,15 @@ namespace hnswlib {
             res += ((float *) pVect1)[i] * ((float *) pVect2)[i];
         }
         return (1.0f - res);
+    }
+
+    static float
+    InnerProductEigen(const void *pVect1, const void *pVect2, const void *qty_ptr) {
+        int qty = *((size_t *) qty_ptr);    // 计算出来
+        DynamicMapType vec1((float *)pVect1, (const int)qty);
+        DynamicMapType vec2((float *)pVect2, (const int)qty);
+        auto x = vec1 * vec2.transpose();
+        return 1 - x;
     }
 
 #if defined(USE_AVX)

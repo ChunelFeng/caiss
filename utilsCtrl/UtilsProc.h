@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/24.
 //
 
-#ifndef CHUNELCAISS_UTILSPROC_H
-#define CHUNELCAISS_UTILSPROC_H
+#ifndef CAISS_UTILSPROC_H
+#define CAISS_UTILSPROC_H
 
 #include "../caissLib/CaissLibDefine.h"
 
@@ -24,4 +24,4 @@ public:
 };
 
 
-#endif //CHUNELCAISS_UTILSPROC_H
+#endif //CAISS_UTILSPROC_H

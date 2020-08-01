@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/6/12.
 //
 
-#ifndef CHUNELANN_SPACE_EDITION_H
-#define CHUNELANN_SPACE_EDITION_H
+#ifndef CAISS_SPACE_EDITION_H
+#define CAISS_SPACE_EDITION_H
 
 #pragma once
 #include "hnswlib.h"
@@ -43,9 +43,7 @@ namespace hnswlib {
 
         ~EditionProductSpace() {}
     };
-
-
 }
 
 
-#endif //CHUNELANN_SPACE_EDITION_H
+#endif //CAISS_SPACE_EDITION_H

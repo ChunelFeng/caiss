@@ -3,8 +3,8 @@
 // 同步管理的逻辑处理
 //
 
-#ifndef CHUNELCAISS_SYNCMANAGEPROC_H
-#define CHUNELCAISS_SYNCMANAGEPROC_H
+#ifndef CAISS_SYNCMANAGEPROC_H
+#define CAISS_SYNCMANAGEPROC_H
 
 #include "../ManageProc.h"
 
@@ -31,4 +31,4 @@ public:
 };
 
 
-#endif //CHUNELCAISS_SYNCMANAGEPROC_H
+#endif //CAISS_SYNCMANAGEPROC_H

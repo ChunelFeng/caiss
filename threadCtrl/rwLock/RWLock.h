@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/24.
 //
 
-#ifndef CHUNELCAISS_RWLOCK_H
-#define CHUNELCAISS_RWLOCK_H
+#ifndef CAISS_RWLOCK_H
+#define CAISS_RWLOCK_H
 
 #include <mutex>
 
@@ -31,4 +31,4 @@ private:
 };
 
 
-#endif //CHUNELCAISS_RWLOCK_H
+#endif //CAISS_RWLOCK_H

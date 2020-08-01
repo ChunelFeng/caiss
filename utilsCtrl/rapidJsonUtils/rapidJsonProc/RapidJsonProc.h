@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/24.
 //
 
-#ifndef CHUNELCAISS_RAPIDJSONPROC_H
-#define CHUNELCAISS_RAPIDJSONPROC_H
+#ifndef CAISS_RAPIDJSONPROC_H
+#define CAISS_RAPIDJSONPROC_H
 
 #include <list>
 #include <string>
@@ -30,4 +30,4 @@ public:
 };
 
 
-#endif //CHUNELCAISS_RAPIDJSONPROC_H
+#endif //CAISS_RAPIDJSONPROC_H

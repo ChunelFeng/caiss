@@ -2,8 +2,8 @@
 // Created by Chunel on 2020/5/23.
 //
 
-#ifndef CHUNELCAISS_HNSWPROC_H
-#define CHUNELCAISS_HNSWPROC_H
+#ifndef CAISS_HNSWPROC_H
+#define CAISS_HNSWPROC_H
 
 #include <list>
 #include <./boost/bimap/bimap.hpp>
@@ -84,4 +84,4 @@ private:
 };
 
 
-#endif //CHUNELCAISS_HNSWPROC_H
+#endif //CAISS_HNSWPROC_H

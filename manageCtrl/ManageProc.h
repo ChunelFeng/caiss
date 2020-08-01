@@ -3,8 +3,8 @@
 // 这里直接跟对外暴露的lib接口关联
 //
 
-#ifndef CHUNELCAISS_ANNMANAGE_PROC_H
-#define CHUNELCAISS_ANNMANAGE_PROC_H
+#ifndef CAISS_ANNMANAGE_PROC_H
+#define CAISS_ANNMANAGE_PROC_H
 
 #include <map>
 
@@ -83,4 +83,4 @@ protected:
 };
 
 
-#endif //CHUNELCAISS_ANNMANAGE_H
+#endif //CAISS_ANNMANAGE_PROC_H

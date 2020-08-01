@@ -5,8 +5,13 @@
 #ifndef CAISS_MEMORYPOOLDEFINE_H
 #define CAISS_MEMORYPOOLDEFINE_H
 
-
+#include <stdio.h>
 #include <vector>
+
+# ifdef linux
+    #include <climits>    // linux environment INT_MAX is in this file
+    #include <cstring>
+# endif
 
 const static int SLEEP_TIME_SECOND = INT_MAX;    // 单位是秒
 const static int MAX_CHUNK_SIZE = INT_MAX;
@@ -16,7 +21,7 @@ struct FreeBlock {
     explicit FreeBlock(unsigned int blockSize) {
         this->next = nullptr;
         this->data = new char[blockSize];
-        memset(data, 0, blockSize);
+        memset(this->data, 0, blockSize);
     }
 
     ~FreeBlock() {

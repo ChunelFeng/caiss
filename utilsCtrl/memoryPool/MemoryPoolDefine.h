@@ -7,11 +7,8 @@
 
 #include <stdio.h>
 #include <vector>
-
-# ifdef linux
-    #include <climits>    // linux environment INT_MAX is in this file
-    #include <cstring>
-# endif
+#include <cstring>
+#include <climits>
 
 const static int SLEEP_TIME_SECOND = INT_MAX;    // 单位是秒
 const static int MAX_CHUNK_SIZE = INT_MAX;

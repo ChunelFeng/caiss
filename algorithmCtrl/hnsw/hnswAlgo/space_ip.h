@@ -1,7 +1,9 @@
 #pragma once
 #include "hnswlib.h"
 
-#include <Eigen/Core>
+#if _USE_EIGEN3_
+    #include <Eigen/Core>
+#endif
 
 typedef Eigen::Map<Eigen::Matrix<float, 1, Eigen::Dynamic>> DynamicMapType;
 

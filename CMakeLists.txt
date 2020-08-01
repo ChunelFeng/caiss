@@ -9,12 +9,6 @@ aux_source_directory(. DIRSRCS)
 add_definitions(-D_CAISS_EXPORTS_)
 
 find_package(OpenMP)
-find_package(Eigen3 REQUIRED)
-
-if (EIGEN3_FOUND)
-    add_definitions(-D_USE_EIGEN3_)
-    message("eigen support")
-endif()
 
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
@@ -32,6 +26,12 @@ ELSEIF(APPLE)
     link_directories(${BLAS_LINK_DIR})
 
     link_libraries(libopenblas.a)    # import openblas static lib
+
+    find_package(Eigen3 REQUIRED)    # check if env support eigen
+    if (EIGEN3_FOUND)
+        add_definitions(-D_USE_EIGEN3_)
+        message("eigen support")
+    endif()
 
     if (OPENMP_FOUND)
         message("openmp support")

@@ -5,8 +5,6 @@
     #include <Eigen/Core>
 #endif
 
-typedef Eigen::Map<Eigen::Matrix<float, 1, Eigen::Dynamic>> DynamicMapType;
-
 namespace hnswlib {
 
     static float
@@ -20,6 +18,8 @@ namespace hnswlib {
     }
 
 # if _USE_EIGEN3_
+    typedef Eigen::Map<Eigen::Matrix<float, 1, Eigen::Dynamic>> DynamicMapType;
+
     static float
     InnerProductEigen(const void *pVect1, const void *pVect2, const void *qty_ptr) {
         int qty = *((size_t *) qty_ptr);    // 计算出来

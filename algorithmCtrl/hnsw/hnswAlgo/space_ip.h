@@ -17,6 +17,7 @@ namespace hnswlib {
         return (1.0f - res);
     }
 
+# if _USE_EIGEN3_
     static float
     InnerProductEigen(const void *pVect1, const void *pVect2, const void *qty_ptr) {
         int qty = *((size_t *) qty_ptr);    // 计算出来
@@ -25,6 +26,7 @@ namespace hnswlib {
         auto x = vec1 * vec2.transpose();
         return 1 - x;
     }
+#endif
 
 #if defined(USE_AVX)
 
@@ -236,7 +238,12 @@ namespace hnswlib {
                 fstdistfunc_ = InnerProductSIMD4Ext;
             if (dim % 16 == 0)
                 fstdistfunc_ = InnerProductSIMD16Ext;
+    #endif
+
+#if _USE_EIGEN3_
+            fstdistfunc_ = InnerProductEigen;    // 优先支持eigen计算方式
 #endif
+
             dim_ = dim;
             data_size_ = dim * sizeof(float);
         }

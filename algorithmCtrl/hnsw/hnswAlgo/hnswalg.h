@@ -866,39 +866,32 @@ namespace hnswlib {
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
             for (int level = maxlevel_; level > 0; level--) {
+                cout << "*";
+
                 bool changed = true;
                 while (changed) {
                     changed = false;    // 先设置为false
                     int *data =  (int *) (linkLists_[currObj] + (level - 1) * size_links_per_element_);
                     int neighbor_size = *data;    // 这一层有多少个邻居
                     tableint *data_list = (tableint *)(data + 1);    // 将data_list中的数据，拼凑到一个matrix中去
-                    int dim = *((size_t *) dist_func_param_);     // 维度信息
+                    int dim = *((size_t *)dist_func_param_);     // 维度信息
 
                     DynamicMatrixType query_matrix((float *)query_data, 1, dim);
                     DynamicMatrixType neighbor_matrix(f, dim, neighbor_size);
 
                     for (int i = 0; i < neighbor_size; i++) {
                         void* neigh_data = getDataByInternalId(data_list[i]);    // 拿到第i条data信息，
-                        auto x = Eigen::Map<Eigen::Array<float, 768, 1>>((float *)neigh_data);
-                        neighbor_matrix.col(i) = x;
+                        DynamicMatrixType cand((float *)neigh_data, dim, 1);
+                        neighbor_matrix.col(i) = cand;
                     }
 
-                    auto product_result = query_matrix * neighbor_matrix;    // 这里做了矩阵相乘
-                    int index = 0;
-                    float cur_min = (float)curdist;
-
-                    auto result = product_result.row(0);
-                    for (int n = 0; n < neighbor_size; n++) {
-
-                        clock_t start = clock();
-                        float temp = result[n];
-                        cout << "in function parallel cost " << clock() - start << endl;
-
-                        if (cur_min > temp) {
-                            cur_min = temp;     // 找到了更小的值
-                            currObj = data_list[n];
-                            changed = true;
-                        }
+                    auto result = query_matrix * neighbor_matrix;    // 这里做了矩阵相乘
+                    Eigen::Index maxRow, maxCol;    // row always = 0, and col = index-value;
+                    float min_value = 1 - result.maxCoeff(&maxRow, &maxCol);
+                    if (min_value < curdist) {
+                        curdist = min_value;
+                        currObj = data_list[maxCol];
+                        changed = true;
                     }
                 }
             }
@@ -913,6 +906,7 @@ namespace hnswlib {
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
             for (int level = maxlevel_; level > 0; level--) {
+                cout << "-";
                 bool changed = true;
                 while (changed) {
                     clock_t start = clock();
@@ -935,7 +929,7 @@ namespace hnswlib {
                         }
                     }
 
-                    cout << "un parallel cost " << clock() - start << endl;
+                    //cout << "un parallel cost " << clock() - start << endl;
                 }
             }
 
@@ -946,15 +940,25 @@ namespace hnswlib {
         static const int search_times = 1;
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
 
-            float *f = new float[768*500];
-            memset(f, 0, 768*500);
+            float *f = new float[768*40];
+            memset(f, 0, 768*40);
             tableint currObj = 0;
-            clock_t start = clock();
+
+
+            clock_t start;
+
+            start = clock();
             for (int i = 0; i < search_times; i++) {
                 currObj = (tableint)findLevel0EnterPointParallel(query_data, f);
-                //currObj = (tableint)findLevel0EnterPoint(query_data);
             }
-            cout << "parallel cost " << clock() - start << endl;
+            cout << currObj << ", parallel cost " << clock() - start << endl;
+
+            start = clock();
+            for (int i = 0; i < search_times; i++) {
+                currObj = (tableint)findLevel0EnterPoint(query_data);
+            }
+            cout << currObj << ", un parallel cost " << clock() - start << endl;
+
             if (f) {
                 delete [] f;
             }

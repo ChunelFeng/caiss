@@ -21,6 +21,7 @@ namespace hnswlib {
     typedef unsigned int tableint;
     typedef unsigned int linklistsizeint;
     typedef boost::bimaps::bimap<labeltype, std::string> BOOST_BIMAP;
+    typedef Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>> DynamicMatrixType;    // 用于异步计算的
 
     template<typename dist_t>
     class HierarchicalNSW : public AlgorithmInterface<dist_t> {
@@ -496,42 +497,6 @@ namespace hnswlib {
             ef_ = ef;
         }
 
-        std::priority_queue<std::pair<dist_t, tableint>> searchKnnInternal(void *query_data, int k) {
-            tableint currObj = enterpoint_node_;
-            dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);
-
-            for (size_t level = maxlevel_; level > 0; level--) {
-                bool changed = true;
-                while (changed) {
-                    changed = false;
-                    int *data;
-                    data = (int *) (linkLists_[currObj] + (level - 1) * size_links_per_element_);
-                    int size = *data;
-                    tableint *datal = (tableint *) (data + 1);
-                    for (int i = 0; i < size; i++) {
-                        tableint cand = datal[i];
-                        if (cand < 0 || cand > max_elements_)
-                            throw std::runtime_error("cand error");
-                        dist_t d = fstdistfunc_(query_data, getDataByInternalId(cand), dist_func_param_);
-
-                        if (d < curdist) {
-                            curdist = d;
-                            currObj = cand;
-                            changed = true;
-                        }
-                    }
-                }
-            }
-
-            //std::priority_queue< std::pair< dist_t, tableint  >> top_candidates = searchBaseLayer(currObj, query_data, 0);
-            std::priority_queue<std::pair<dist_t, tableint  >> top_candidates = searchBaseLayerST(currObj, query_data,
-                                                                                                  ef_);
-            while (top_candidates.size() > k) {
-                top_candidates.pop();
-            }
-            return top_candidates;
-        };
-
 
         void saveIndex(const std::string &location, const list<string> &ignore_list) {
             std::ofstream output(location, std::ios::binary);
@@ -893,7 +858,55 @@ namespace hnswlib {
             //return cur_c;
         };
 
-        std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
+
+
+        tableint findLevel0EnterPointParallel(const void *query_data) const {
+            // 仅用于inner-product方面的计算
+            tableint currObj = enterpoint_node_;    // 进入点，是一个随机值，相当于最上层的入口点
+            dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
+
+            for (int level = maxlevel_; level>0; level--) {
+                bool changed = true;
+                while (changed) {
+                    changed = false;    // 先设置为false
+                    int *data =  (int *) (linkLists_[currObj] + (level - 1) * size_links_per_element_);
+                    int neighbor_size = *data;    // 这一层有多少个邻居
+                    tableint *data_list = (tableint *)(data + 1);    // 将data_list中的数据，拼凑到一个matrix中去
+                    int dim = *((size_t *) dist_func_param_);     // 维度信息
+                    DynamicMatrixType query_matrix((float *)query_data, 1, dim);
+
+                    float* f = new float[dim * neighbor_size];
+                    DynamicMatrixType neighbor_matrix(f, dim, neighbor_size);
+
+                    for (int i = 0; i < neighbor_size; i++) {
+                        void* neigh_data = getDataByInternalId(data_list[i]);    // 拿到第i条data信息，
+                        for (int j = 0; j < dim; j++) {
+                            neighbor_matrix(j, i) = ((float *)(neigh_data))[j];
+                        }
+                    }
+
+                    auto result = query_matrix * neighbor_matrix;
+                    int index = 0;
+                    float cur_min = (float)curdist;
+                    for (int n = 0; n < neighbor_size; n++) {
+                        if (cur_min > result(n)) {
+                            cur_min = result(n);     // 找到了更小的值
+                            currObj = data_list[n];
+                            changed = true;
+                        }
+                    }
+
+                    cout << result << endl;
+                    delete [] f;
+                }
+            }
+
+            return currObj;
+        }
+
+        tableint findLevel0EnterPoint(const void *query_data) const {
+            // 查询中间层数据
+
             tableint currObj = enterpoint_node_;    // 进入点，是一个随机值，相当于最上层的入口点
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
@@ -919,6 +932,15 @@ namespace hnswlib {
                     }
                 }
             }
+
+            return currObj;
+        }
+
+
+
+        std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
+
+            tableint currObj = (tableint)findLevel0EnterPointParallel(query_data);
 
             std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst> top_candidates = searchBaseLayerST(
                     currObj, query_data, std::max(ef_,k));    // 在最低层查询信息

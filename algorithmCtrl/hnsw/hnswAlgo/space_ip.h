@@ -242,9 +242,9 @@ namespace hnswlib {
                 fstdistfunc_ = InnerProductSIMD16Ext;
     #endif
 
-#if _USE_EIGEN3_
+    #if defined(_USE_EIGEN3_)
             fstdistfunc_ = InnerProductEigen;    // 优先支持eigen计算方式
-#endif
+    #endif
 
             dim_ = dim;
             data_size_ = dim * sizeof(float);

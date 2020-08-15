@@ -13,8 +13,9 @@
 #include <list>
 #include <unordered_set>
 #include <unordered_map>
-#include "./boost/bimap/bimap.hpp"
+#include <time.h>
 
+#include "./boost/bimap/bimap.hpp"
 #include "../../../utilsCtrl/UtilsInclude.h"
 
 namespace hnswlib {
@@ -497,7 +498,6 @@ namespace hnswlib {
             ef_ = ef;
         }
 
-
         void saveIndex(const std::string &location, const list<string> &ignore_list) {
             std::ofstream output(location, std::ios::binary);
             std::streampos position;
@@ -860,12 +860,12 @@ namespace hnswlib {
 
 
 
-        tableint findLevel0EnterPointParallel(const void *query_data) const {
+        tableint findLevel0EnterPointParallel(const void *query_data, float *f) const {
             // 仅用于inner-product方面的计算
             tableint currObj = enterpoint_node_;    // 进入点，是一个随机值，相当于最上层的入口点
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
-            for (int level = maxlevel_; level>0; level--) {
+            for (int level = maxlevel_; level > 0; level--) {
                 bool changed = true;
                 while (changed) {
                     changed = false;    // 先设置为false
@@ -873,31 +873,33 @@ namespace hnswlib {
                     int neighbor_size = *data;    // 这一层有多少个邻居
                     tableint *data_list = (tableint *)(data + 1);    // 将data_list中的数据，拼凑到一个matrix中去
                     int dim = *((size_t *) dist_func_param_);     // 维度信息
-                    DynamicMatrixType query_matrix((float *)query_data, 1, dim);
 
-                    float* f = new float[dim * neighbor_size];
+                    DynamicMatrixType query_matrix((float *)query_data, 1, dim);
                     DynamicMatrixType neighbor_matrix(f, dim, neighbor_size);
 
                     for (int i = 0; i < neighbor_size; i++) {
                         void* neigh_data = getDataByInternalId(data_list[i]);    // 拿到第i条data信息，
-                        for (int j = 0; j < dim; j++) {
-                            neighbor_matrix(j, i) = ((float *)(neigh_data))[j];
-                        }
+                        auto x = Eigen::Map<Eigen::Array<float, 768, 1>>((float *)neigh_data);
+                        neighbor_matrix.col(i) = x;
                     }
 
-                    auto result = query_matrix * neighbor_matrix;
+                    auto product_result = query_matrix * neighbor_matrix;    // 这里做了矩阵相乘
                     int index = 0;
                     float cur_min = (float)curdist;
+
+                    auto result = product_result.row(0);
                     for (int n = 0; n < neighbor_size; n++) {
-                        if (cur_min > result(n)) {
-                            cur_min = result(n);     // 找到了更小的值
+
+                        clock_t start = clock();
+                        float temp = result[n];
+                        cout << "in function parallel cost " << clock() - start << endl;
+
+                        if (cur_min > temp) {
+                            cur_min = temp;     // 找到了更小的值
                             currObj = data_list[n];
                             changed = true;
                         }
                     }
-
-                    cout << result << endl;
-                    delete [] f;
                 }
             }
 
@@ -913,6 +915,8 @@ namespace hnswlib {
             for (int level = maxlevel_; level > 0; level--) {
                 bool changed = true;
                 while (changed) {
+                    clock_t start = clock();
+
                     changed = false;
                     int *data;
                     data = (int *) (linkLists_[currObj] + (level - 1) * size_links_per_element_);
@@ -930,6 +934,8 @@ namespace hnswlib {
                             changed = true;
                         }
                     }
+
+                    cout << "un parallel cost " << clock() - start << endl;
                 }
             }
 
@@ -937,10 +943,21 @@ namespace hnswlib {
         }
 
 
-
+        static const int search_times = 1;
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
 
-            tableint currObj = (tableint)findLevel0EnterPointParallel(query_data);
+            float *f = new float[768*500];
+            memset(f, 0, 768*500);
+            tableint currObj = 0;
+            clock_t start = clock();
+            for (int i = 0; i < search_times; i++) {
+                currObj = (tableint)findLevel0EnterPointParallel(query_data, f);
+                //currObj = (tableint)findLevel0EnterPoint(query_data);
+            }
+            cout << "parallel cost " << clock() - start << endl;
+            if (f) {
+                delete [] f;
+            }
 
             std::priority_queue<std::pair<dist_t, tableint>, std::vector<std::pair<dist_t, tableint>>, CompareByFirst> top_candidates = searchBaseLayerST(
                     currObj, query_data, std::max(ef_,k));    // 在最低层查询信息

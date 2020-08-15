@@ -23,6 +23,7 @@ namespace hnswlib {
     typedef unsigned int linklistsizeint;
     typedef boost::bimaps::bimap<labeltype, std::string> BOOST_BIMAP;
     typedef Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>> DynamicMatrixType;    // 用于异步计算的
+    typedef Eigen::Map<Eigen::Array<float, 1, Eigen::Dynamic>> DynamicArrayType;
 
     template<typename dist_t>
     class HierarchicalNSW : public AlgorithmInterface<dist_t> {
@@ -855,10 +856,7 @@ namespace hnswlib {
             }
 
             return 0;    // 0表示插入成功
-            //return cur_c;
         };
-
-
 
         tableint findLevel0EnterPointParallel(const void *query_data, float *f) const {
             // 仅用于inner-product方面的计算
@@ -866,8 +864,6 @@ namespace hnswlib {
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
             for (int level = maxlevel_; level > 0; level--) {
-                cout << "*";
-
                 bool changed = true;
                 while (changed) {
                     changed = false;    // 先设置为false
@@ -881,7 +877,7 @@ namespace hnswlib {
 
                     for (int i = 0; i < neighbor_size; i++) {
                         void* neigh_data = getDataByInternalId(data_list[i]);    // 拿到第i条data信息，
-                        DynamicMatrixType cand((float *)neigh_data, dim, 1);
+                        DynamicArrayType cand((float *)neigh_data, dim, 1);
                         neighbor_matrix.col(i) = cand;
                     }
 
@@ -906,7 +902,6 @@ namespace hnswlib {
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 
             for (int level = maxlevel_; level > 0; level--) {
-                cout << "-";
                 bool changed = true;
                 while (changed) {
                     clock_t start = clock();
@@ -937,7 +932,7 @@ namespace hnswlib {
         }
 
 
-        static const int search_times = 1;
+        static const int search_times = 1000;
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
 
             float *f = new float[768*40];

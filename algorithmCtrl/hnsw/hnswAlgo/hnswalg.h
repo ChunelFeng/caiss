@@ -883,7 +883,10 @@ namespace hnswlib {
 
                     auto result = query_matrix * neighbor_matrix;    // 这里做了矩阵相乘
                     Eigen::Index maxRow, maxCol;    // row always = 0, and col = index-value;
+                    clock_t start = clock();
                     float min_value = 1 - result.maxCoeff(&maxRow, &maxCol);
+                    cout << " cost is " << clock() - start << endl;
+
                     if (min_value < curdist) {
                         curdist = min_value;
                         currObj = data_list[maxCol];

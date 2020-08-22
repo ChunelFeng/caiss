@@ -36,6 +36,8 @@ def pca_process():
 
     start = datetime.datetime.now()
     array = np.asarray(result_val)
+
+    # PCA相当于是对array的协方差矩阵的top-n个特征矩阵组成的矩阵，乘以原先的array，从而降至n维
     pca = PCA(n_components=N_COMPONENTS)
     x_dr = pca.fit_transform(array)    # x_dr是降维后的信息
     print('pca fit transform cost {}'.format(datetime.datetime.now() - start))

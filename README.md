@@ -49,15 +49,15 @@ using CAISS_LIST_STRING = std::list<std::string>;
 
 ```cpp
 /**
- * 初始化环境信息
+* 初始化环境信息
  * @param maxThreadSize 支持的最大并发数
  * @param algoType 算法类型（详见CaissLibDefine.h文件）
  * @param manageType 并发类型（详见CaissLibDefine.h文件）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_Environment(const unsigned int maxThreadSize,
-        const CAISS_ALGO_TYPE algoType,
-        const CAISS_MANAGE_TYPE manageType);
+CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
+        CAISS_ALGO_TYPE algoType,
+        CAISS_MANAGE_TYPE manageType);
 
 /**
  * 创建句柄信息
@@ -77,11 +77,11 @@ CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_RET_TYPE CAISS_Init(void *handle,
-        const CAISS_MODE mode,
-        const CAISS_DISTANCE_TYPE distanceType,
-        const unsigned int dim,
+        CAISS_MODE mode,
+        CAISS_DISTANCE_TYPE distanceType,
+        unsigned int dim,
         const char *modelPath,
-        const CAISS_DIST_FUNC distFunc = nullptr);
+        CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
  * 模型训练功能 （当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成）
@@ -101,15 +101,15 @@ CAISS_RET_TYPE CAISS_Init(void *handle,
  */
 CAISS_RET_TYPE CAISS_Train(void *handle,
         const char *dataPath,
-        const unsigned int maxDataSize,
-        const CAISS_BOOL normalize,
-        const unsigned int maxIndexSize,
-        const float precision = 0.95,
-        const unsigned int fastRank = 5,
-        const unsigned int realRank = 5,
-        const unsigned int step = 1,
-        const unsigned int maxEpoch = 5,
-        const unsigned int showSpan = 1000);
+        unsigned int maxDataSize,
+        CAISS_BOOL normalize,
+        unsigned int maxIndexSize,
+        float precision = 0.95,
+        unsigned int fastRank = 5,
+        unsigned int realRank = 5,
+        unsigned int step = 1,
+        unsigned int maxEpoch = 5,
+        unsigned int showSpan = 1000);
 
 /**
  * 查询功能
@@ -128,10 +128,10 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
  */
 CAISS_RET_TYPE CAISS_Search(void *handle,
         void *info,
-        const CAISS_SEARCH_TYPE searchType,
-        const unsigned int topK,
-        const unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
-        const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+        CAISS_SEARCH_TYPE searchType,
+        unsigned int topK,
+        unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+        CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
         const void *cbParams = nullptr);
 
 /**
@@ -177,7 +177,7 @@ CAISS_RET_TYPE CAISS_Insert(void *handle,
  */
 CAISS_RET_TYPE CAISS_Ignore(void *handle,
         const char *label,
-        const bool isIgnore=true);
+        bool isIgnore=true);
 
 /**
  * 保存模型
@@ -285,7 +285,6 @@ int main() {
     // ret = search();
     return 0;
 }
-
 ```
 
  

@@ -8,9 +8,9 @@
 * 标签信息和向量的分离，导致标定和查询需要在不同的步骤中完成。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等互联网巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK，支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
+&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK，支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
 
-&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)，希望可以在大家的研究和生产过程中，发挥积极的作用。
+&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实际计算，它可以将原先100分钟才能暴力计算完成的逻辑，耗时降低至20秒左右（在保持96%以上准确率的情况下），且随着数据量的不断增加，优势会更加明显。希望可以在大家的研究和生产过程中，发挥积极的作用。
 
 ## 2. 相关信息定义
 
@@ -49,7 +49,7 @@ using CAISS_LIST_STRING = std::list<std::string>;
 
 ```cpp
 /**
-* 初始化环境信息
+ * 初始化环境信息
  * @param maxThreadSize 支持的最大并发数
  * @param algoType 算法类型（详见CaissLibDefine.h文件）
  * @param manageType 并发类型（详见CaissLibDefine.h文件）
@@ -64,7 +64,7 @@ CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
+CAISS_RET_TYPE CAISS_CreateHandle(void **handle);
 
 /**
  * 初始化信息
@@ -103,7 +103,7 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
         const char *dataPath,
         unsigned int maxDataSize,
         CAISS_BOOL normalize,
-        unsigned int maxIndexSize,
+        unsigned int maxIndexSize = 64,
         float precision = 0.95,
         unsigned int fastRank = 5,
         unsigned int realRank = 5,
@@ -227,7 +227,7 @@ static const unsigned int top_k_ = 5;
 static const string data_path_ = "demo_2500words_768dim.txt";
 static const unsigned int max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
-static const unsigned int max_index_size_ = 64;
+static const unsigned int max_index_size_ = 64;     // 标签的最大长度
 static const float precision_ = 0.95;               // 模型精确度
 static const unsigned int fast_rank_ = 5;
 static const unsigned int real_rank_ = 5;
@@ -285,6 +285,7 @@ int main() {
     // ret = search();
     return 0;
 }
+
 ```
 
  
@@ -343,10 +344,16 @@ int main() {
 ## 7. 补充说明
 
 * 训练文本样式，请参考文档中的内容
+
 * 训练功能仅支持单线程。查询和插入功能，支持多线程并发
+
 * 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
+
 * 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止
+
 * doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练，或者联系微信：Chunel_Fung
+
+* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss 
 
   
 ## 8. 版本信息
@@ -379,3 +386,8 @@ int main() {
 [2020.08.01 - v1.5.2 - Chunel]
 * mac版本中，提供并行计算方法，进一步减少查询耗时
 * 解决跨平台兼容性问题
+
+[2020.08.22 - v1.6.0 - Chunel]
+
+* 加入降维算法。确保少量降低准确率的情况下，大幅度降低查询耗时
+* 提供针对文本的embedding处理方法，方便自行生成符合格式的训练文件

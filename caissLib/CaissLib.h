@@ -1,5 +1,5 @@
 /**************************************************************
-* 当前版本：1.5.2
+* 当前版本：1.6.0
 * 作   者: Chunel
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
@@ -89,7 +89,7 @@ extern "C" {
             const char *dataPath,
             unsigned int maxDataSize,
             CAISS_BOOL normalize,
-            unsigned int maxIndexSize,
+            unsigned int maxIndexSize = 64,
             float precision = 0.95,
             unsigned int fastRank = 5,
             unsigned int realRank = 5,

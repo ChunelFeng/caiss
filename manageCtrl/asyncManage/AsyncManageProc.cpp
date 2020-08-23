@@ -125,7 +125,6 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
     memset(ptr, 0, BLOCK_SIZE);
     memcpy(ptr, label, strlen(label) + 1);
 
-
     ThreadTaskInfo task(std::bind(&AlgorithmProc::insert, algo, node, ptr, insertType),
             this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);

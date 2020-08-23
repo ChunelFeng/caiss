@@ -23,7 +23,7 @@
 #define dist_func_ (nullptr)
 #define info_ ("water")
 #define search_type_ (CAISS_SEARCH_WORD)
-#define top_k_ (1)
+#define top_k_ (5)
 #define filter_edit_distance_ (0)
 
 #define data_path_ ("/Users/chunel/Documents/code/cpp/models/bert_71290words_768dim.txt")

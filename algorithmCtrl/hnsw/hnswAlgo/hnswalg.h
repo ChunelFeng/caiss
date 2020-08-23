@@ -877,7 +877,7 @@ namespace hnswlib {
 
                     for (int i = 0; i < neighbor_size; i++) {
                         void* neigh_data = getDataByInternalId(data_list[i]);    // 拿到第i条data信息，
-                        DynamicArrayType cand((float *)neigh_data, dim, 1);
+                        DynamicMatrixType cand((float *)neigh_data, dim, 1);
                         neighbor_matrix.col(i) = cand;
                     }
 
@@ -938,8 +938,8 @@ namespace hnswlib {
         static const int search_times = 1000;
         std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
 
-            float *f = new float[768*40];
-            memset(f, 0, 768*40);
+            float *f = new float[768*400];
+            memset(f, 0, 768*400);
             tableint currObj = 0;
 
 

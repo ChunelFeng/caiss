@@ -175,6 +175,19 @@ extern "C" {
             const char *modelPath = nullptr);
 
     /**
+     * 执行sql指令
+     * @param handle 句柄信息
+     * @param sql 查询的sql语句
+     * @param sqlCBFunc 执行sql过程中，触发的回调函数
+     * @param sqlParams 传入的条件信息
+     * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
+     */
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_ExecuteSQL(void *handle,
+            const char *sql,
+            CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
+            const void *sqlParams = nullptr);
+
+    /**
      * 销毁句柄信息
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义

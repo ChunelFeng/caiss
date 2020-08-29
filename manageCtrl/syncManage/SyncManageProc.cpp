@@ -113,4 +113,66 @@ CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, bool isIg
     CAISS_FUNCTION_END
 }
 
+CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
+                                          const char *sql,
+                                          CAISS_SQL_CALLBACK sqlCBFunc,
+                                          const void *sqlParams) {
+    CAISS_FUNCTION_BEGIN
+
+    CAISS_ASSERT_NOT_NULL(sql)
+
+    AlgorithmProc *proc = this->getInstance(handle);
+    CAISS_ASSERT_NOT_NULL(proc)
+
+    SqlProc sqlProc;
+    ret = sqlProc.parseSql(sql, sqlParams);
+    CAISS_FUNCTION_CHECK_STATUS
+
+    if (model_path_.find(sqlProc.getTableName()) == std::string::npos) {
+        return CAISS_RET_PATH;    // 当传入的模型名称，跟模型真实的名称不同的时候，
+    }
+
+    switch (sqlProc.getType()) {
+        case hsql::kStmtError:
+            break;
+        case hsql::kStmtSelect:
+            ret = this->search(handle, (void *)sqlProc.getQueryWord().c_str(),
+                    CAISS_SEARCH_WORD, sqlProc.getLimitNum(), 0,
+                    sqlCBFunc, sqlParams);
+            break;
+        case hsql::kStmtInsert:
+            break;
+        case hsql::kStmtUpdate:
+            break;
+        case hsql::kStmtDelete:
+            break;
+        case hsql::kStmtDrop:
+            break;
+        case hsql::kStmtPrepare:
+            break;
+        case hsql::kStmtExecute:
+            break;
+        case hsql::kStmtExport:
+            break;
+        case hsql::kStmtRename:
+            break;
+        case hsql::kStmtAlter:
+            break;
+        case hsql::kStmtShow:
+            break;
+        case hsql::kStmtTransaction:
+            break;
+        case hsql::kStmtImport:
+            break;
+        case hsql::kStmtCreate:
+            break;
+        default:
+            break;
+    }
+
+    CAISS_FUNCTION_CHECK_STATUS
+
+    CAISS_FUNCTION_END
+}
+
 

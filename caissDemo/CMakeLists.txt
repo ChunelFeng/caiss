@@ -3,7 +3,6 @@ project(CaissDemo)
 
 set(CMAKE_CXX_STANDARD 14)
 
-
 set(SOURCE_FILES ../caissLib/CaissLib.cpp CaissDemo.cpp
         ../threadCtrl/rwLock/RWLock.cpp
         ../manageCtrl/asyncManage/AsyncManageProc.cpp

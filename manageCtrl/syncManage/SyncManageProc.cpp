@@ -125,7 +125,7 @@ CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
     CAISS_ASSERT_NOT_NULL(proc)
 
     SqlProc sqlProc;
-    ret = sqlProc.parseSql(sql, sqlParams);
+    ret = sqlProc.parseSql(sql);
     CAISS_FUNCTION_CHECK_STATUS
 
     if (model_path_.find(sqlProc.getTableName()) == std::string::npos) {

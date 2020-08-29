@@ -4,14 +4,17 @@ project(SqlCtrlDemo)
 set(CMAKE_CXX_STANDARD 14)
 
 
-aux_source_directory(sql SOURCE_LIST)
-aux_source_directory(parser SOURCE_LIST)
-aux_source_directory(util SOURCE_LIST)
-aux_source_directory(../sqlCtrl SOURCE_LIST)
-
 set (SOURCE_FILES
+        sql/Expr.cpp
+        sql/PrepareStatement.cpp
+        sql/SQLStatement.cpp
+        sql/statements.cpp
         SqlProc.cpp
+        util/sqlhelper.cpp
+        util/SQLParserResult.cpp
+        util/SQLParser.cpp
+        parser/bison_parser.cpp
+        parser/flex_lexer.cpp
         SqlCtrlDemo.cpp)
 
-
-add_executable(SqlCtrlDemo ${SOURCE_LIST} ${SOURCE_FILES})
+add_executable(SqlCtrlDemo ${SOURCE_FILES})

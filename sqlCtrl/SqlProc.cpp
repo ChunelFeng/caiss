@@ -4,8 +4,6 @@
 
 #include "SqlProc.h"
 
-using namespace hsql;
-
 SqlProc::SqlProc(){
     limit_num_ = DEFAULT_LIMIT_NUM;
     type_ = kStmtError;    // 初始化的时候，用个默认错误的占位

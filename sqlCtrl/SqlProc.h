@@ -11,6 +11,8 @@
 #include "util/SQLParser.h"
 #include "util/SQLParserResult.h"
 
+using namespace hsql;
+
 const static unsigned int DEFAULT_LIMIT_NUM = 5;
 
 class SqlProc {

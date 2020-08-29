@@ -189,6 +189,19 @@ CAISS_RET_TYPE CAISS_Save(void *handle,
         const char *modelPath = nullptr);
 
 /**
+ * 执行sql指令
+ * @param handle 句柄信息
+ * @param sql 查询的sql语句
+ * @param sqlCBFunc 执行sql过程中，触发的回调函数
+ * @param sqlParams 传入的条件信息
+ * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
+ */
+CAISS_RET_TYPE CAISS_ExecuteSQL(void *handle,
+        const char *sql,
+        CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
+        const void *sqlParams = nullptr);
+
+/**
  * 销毁句柄信息
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
@@ -391,3 +404,8 @@ int main() {
 
 * 加入降维算法。确保少量降低准确率的情况下，大幅度降低查询耗时
 * 提供针对文本的embedding处理方法，方便自行生成符合格式的训练文件
+
+[2020.08.30 - v2.0.0- Chunel]
+
+* 提供基础SQL语句查询功能
+

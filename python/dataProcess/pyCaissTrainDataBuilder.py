@@ -37,10 +37,10 @@ if __name__ == '__main__':
     server.start()
     print('bert server has been started')
 
-    words_list_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
+    embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
     result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置
     # 构造可供caiss训练的文件内容
-    build_train_data(words_list_path, result_path)
+    build_train_data(embedding_file_path, result_path)
 
     # 关闭bert服务
     server.close()

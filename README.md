@@ -8,42 +8,21 @@
 * 标签信息和向量的分离，导致标定和查询需要在不同的步骤中完成。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK，支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
+&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练过程，会在训练过程中，根据设定的目标，自动调节参数。提供自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。提供纯C风格的SDK，支持sql语法进行增删查改，支持Windows，Linux和Mac系统，并方便迁移到其他编程语言，如python，java等。
 
-&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实际计算，它可以将原先100分钟才能暴力计算完成的逻辑，耗时降低至20秒左右（在保持96%以上准确率的情况下），且随着数据量的不断增加，优势会更加明显。希望可以在大家的研究和生产过程中，发挥积极的作用。
+&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，耗时降低至20秒左右（在保持96%以上准确率的情况下），且随着数据量的不断增加，优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-## 2. 相关信息定义
+## 2. 使用流程
 
-```cpp
-/* 数据类型定义 */
-using CAISS_RET_TYPE = int;
-using CAISS_VOID = void;
-using CAISS_UINT = unsigned int;
-using CAISS_FLOAT = float;
-using CAISS_BOOL = int;
+1，安装python3环境，安装TensorFlow-v1.11.0版本，安装bert-serving-server库和bert-serving-client库。注：以上两个库，暂时无法配合tf-v2.0.0或以上版本正常使用。如必须使用tf-v2.0.0或以上版本，请自行解决编码训练的问题，并参考。
 
-using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
-using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
-using CAISS_VECTOR_STRING = std::vector<std::string>;
-using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
-using CAISS_LIST_STRING = std::list<std::string>;
+2，根据自身需求，下载对应的bert模型。bert模型下载，请参考链接：<https://blog.csdn.net/qq_34832393/article/details/90414293>，并解压至本地。
 
-/* 函数返回值定义 */
-#define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题
-#define CAISS_RET_WARNING       (1)     // 流程告警
-#define CAISS_RET_OK            (0)     // 流程正常
-#define CAISS_RET_ERR           (-1)    // 流程异常
-#define CAISS_RET_RES           (-2)    // 资源问题
-#define CAISS_RET_MODE          (-3)    // 模式选择问题
-#define CAISS_RET_PATH          (-4)    // 路径问题
-#define CAISS_RET_JSON          (-5)    // json解析问题
-#define CAISS_RET_PARAM         (-6)    // 参数问题
-#define CAISS_RET_HANDLE        (-7)    // 句柄申请问题
-#define CAISS_RET_DIM           (-8)    // 维度问题
-#define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
-#define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
-#define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
-```
+3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc文件夹下的english-words-71290.txt文件。
+
+4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置（embedding_file_path），bert模型的位置（bert_model_path）。函数执行完毕后，会在result_path位置，生成可用于caiss库训练的文本内容。
+
+5，参考下文第4部分关于caiss的使用demo，开始训练、查询等功能吧。
 
 ## 3. 相关接口定义
 

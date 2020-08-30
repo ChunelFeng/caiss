@@ -5,6 +5,7 @@
 #ifndef CAISS_UTILSDEFINE_H
 #define CAISS_UTILSDEFINE_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <stdarg.h>

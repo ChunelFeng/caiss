@@ -3,9 +3,9 @@
 /.idea/
 /doc/bert_71290words_768dim.txt
 /doc/libDemo.caiss
-/caissDemo/
 /doc/*.caiss
 /python/libCaiss.dylib
 /python/__pycache__/
 .DS_Store
 /bin/
+/caissDemo

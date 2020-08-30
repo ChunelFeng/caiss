@@ -53,6 +53,8 @@ include_directories(${MY_BOOST_PATH})
 #添加头文件搜索路径
 include_directories(${MY_BOOST_PATH}/libs)
 
+aux_source_directory(sqlCtrl/sql SOURCE_LIST)
+
 # 以下是编译动态库文件，对应的内容
 add_library(Caiss SHARED
         manageCtrl/syncManage/SyncManageProc.cpp
@@ -64,8 +66,20 @@ add_library(Caiss SHARED
         threadCtrl/rwLock/RWLock.cpp
         manageCtrl/ManageProc.cpp
         utilsCtrl/trieProc/TrieProc.cpp
-        utilsCtrl/memoryPool/MemoryPool.cpp)
+        utilsCtrl/memoryPool/MemoryPool.cpp
+        sqlCtrl/sql/Expr.cpp
+        sqlCtrl/sql/PrepareStatement.cpp
+        sqlCtrl/sql/SQLStatement.cpp
+        sqlCtrl/sql/statements.cpp
+        sqlCtrl/SqlProc.cpp
+        sqlCtrl/util/sqlhelper.cpp
+        sqlCtrl/util/SQLParserResult.cpp
+        sqlCtrl/util/SQLParser.cpp
+        sqlCtrl/parser/bison_parser.cpp
+        sqlCtrl/parser/flex_lexer.cpp
+        )
 
 # 添加对应依赖的内容
 add_subdirectory(caissDemo)
 add_subdirectory(utilsCtrl)
+add_subdirectory(sqlCtrl)

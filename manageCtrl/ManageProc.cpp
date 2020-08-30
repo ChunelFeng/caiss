@@ -80,6 +80,8 @@ CAISS_RET_TYPE ManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TY
     this->lock_.writeUnlock();
     CAISS_FUNCTION_CHECK_STATUS
 
+    model_path_ = std::string(modelPath);
+
     CAISS_FUNCTION_END
 }
 

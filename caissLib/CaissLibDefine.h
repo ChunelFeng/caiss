@@ -5,7 +5,7 @@
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
 
-#define CAISS_VERSION       ("1.5.2")
+#define CAISS_VERSION       ("2.0.0")
 
 #ifdef WIN32
     #define STDCALL __stdcall
@@ -43,6 +43,9 @@ using CAISS_LIST_STRING = std::list<std::string>;
 typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec2, const CAISS_VOID *params);
 /* 查询到结果后，触发的回调函数 */
 typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING &words, CAISS_LIST_FLOAT &distances, const CAISS_VOID *params);
+/* 执行sql过程中，触发的回调函数 */
+typedef CAISS_VOID (STDCALL *CAISS_SQL_CALLBACK)(CAISS_LIST_STRING &words, CAISS_LIST_FLOAT &distances, const CAISS_VOID *params);
+
 
 /* 函数返回值定义 */
 #define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题
@@ -58,6 +61,7 @@ typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING &words, CA
 #define CAISS_RET_DIM           (-8)    // 维度问题
 #define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
 #define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
+#define CAISS_RET_SQL_PARSE     (-11)   // 传入的sql无法解析
 #define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 
 

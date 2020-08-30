@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 from ctypes import *
 
 CAISS_MODE_DEFAULT = 0
@@ -23,6 +26,7 @@ CAISS_DISTANCE_EDITION = 99
 CAISS_ALGO_HNSW = 1
 CAISS_ALGO_NSG = 2
 
+CAISS_RET_OK = 0    # 返回值，正常
 
 
 class PyCaiss:
@@ -37,13 +41,15 @@ class PyCaiss:
     def init(self, handle, mode, distance_type, dim, model_path):
         path = create_string_buffer(model_path.encode(), len(model_path)+1)
         ret = self._caiss.CAISS_Init(handle, mode, distance_type, dim, path)
-        if ret == 0:
+        if CAISS_RET_OK == ret:
             self._dim = dim
         return ret
 
     def train(self, handle, data_path, max_data_size, normalize,
               max_index_size, precision, fast_rank, real_rank, step, max_epoch, show_span):
-        return self._caiss.CAISS_Train(handle, data_path, max_data_size, normalize,
+        path = create_string_buffer(data_path.encode(), len(data_path)+1)
+        precision = c_float(precision)
+        return self._caiss.CAISS_Train(handle, path, max_data_size, normalize,
                                        max_index_size, precision, fast_rank, real_rank, step, max_epoch, show_span)
 
     def sync_search(self, handle, info, search_type, top_k, filter_edit_distance):
@@ -60,17 +66,17 @@ class PyCaiss:
             word = create_string_buffer(info.encode(), len(info)+1)
             ret = self._caiss.CAISS_Search(handle, word, search_type, top_k, filter_edit_distance, None, None)
 
-        if 0 != ret:
+        if CAISS_RET_OK != ret:
             return ret, ''
 
         size = c_int(0)    # 获取结果大小
         ret = self._caiss.CAISS_GetResultSize(handle, byref(size))
-        if 0 != ret:
+        if CAISS_RET_OK != ret:
             return ret, ''
 
         result = create_string_buffer(size.value)
         ret = self._caiss.CAISS_GetResult(handle, result, size)
-        if 0 != ret:
+        if CAISS_RET_OK != ret:
             return ret, ''
 
         return ret, result.value.decode()

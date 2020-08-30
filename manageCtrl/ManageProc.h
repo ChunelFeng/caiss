@@ -11,6 +11,7 @@
 #include "./ManageDefine.h"
 #include "../threadCtrl/ThreadInclude.h"
 #include "../algorithmCtrl/AlgorithmInclude.h"
+#include "../sqlCtrl/SqlInclude.h"
 
 using ManageCtrl = std::map<void*, AlgorithmProc*>;
 
@@ -59,6 +60,14 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
+    // 在这里可以执行sql指令信息。执行的方式，就是解析出来参数，然后通过这里的接口，进行crud
+    // 暂时仅支持同步模式
+    virtual CAISS_RET_TYPE executeSQL(void *handle,
+            const char *sql,
+            CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
+            const void *sqlParams = nullptr) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
 
     /**
      * 为了方便外部使用读写锁进行操作。主要是针对ThreadPool类实现的功能
@@ -80,6 +89,7 @@ protected:
     RWLock lock_;
     CAISS_ALGO_TYPE algo_type_;
     unsigned int max_size_;
+    string model_path_;    // 用于记录当前的模型路径信息
 };
 
 

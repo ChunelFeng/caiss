@@ -16,7 +16,7 @@
 
 1，安装python3环境，安装TensorFlow-v1.11.0版本，安装bert-serving-server库和bert-serving-client库。注：以上两个库，暂时无法配合tf-v2.0.0或以上版本正常使用。如必须使用tf-v2.0.0或以上版本，请自行解决训练特征向量的问题，并参考/doc/demo_2500words_768dim.txt中格式，自行生成文件供caiss训练使用。
 
-2，根据自身需求，下载对应的bert模型。bert模型下载，请参考链接：<https://blog.csdn.net/qq_34832393/article/details/90414293>，并解压至本地。
+2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：<https://blog.csdn.net/qq_34832393/article/details/90414293>
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc文件夹下的english-words-71290.txt文件。
 

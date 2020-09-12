@@ -5,7 +5,7 @@
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
 
-#define CAISS_VERSION       ("2.0.0")
+#define CAISS_VERSION       ("2.0.1")
 
 #ifdef WIN32
     #define STDCALL __stdcall
@@ -86,8 +86,8 @@ enum CAISS_SEARCH_TYPE {
 enum CAISS_INSERT_TYPE {
     // 如果插入相同的数据
     CAISS_INSERT_DEFAULT = 1,
-    CAISS_INSERT_OVERWRITE = 1,   // 覆盖原有的
-    CAISS_INSERT_DISCARD = 2,     // 丢弃当前的
+    CAISS_INSERT_OVERWRITE = 1,   // 覆盖模型中原有的数据
+    CAISS_INSERT_DISCARD = 2,     // 丢弃当前插入的数据
 };
 
 enum CAISS_MANAGE_TYPE {

@@ -1,5 +1,5 @@
 /**************************************************************
-* 当前版本：2.0.0
+* 当前版本：2.0.1
 * 作   者: Chunel
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
@@ -163,7 +163,7 @@ extern "C" {
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Ignore(void *handle,
             const char *label,
-            bool isIgnore=true);
+            bool isIgnore = true);
 
     /**
      * 保存模型

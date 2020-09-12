@@ -50,10 +50,10 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
 }
 
 
-CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize, CAISS_BOOL normalize,
-                      const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                      const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
-                      const unsigned int showSpan) {
+CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize,
+        CAISS_BOOL normalize, const unsigned int maxIndexSize, const float precision,
+        const unsigned int fastRank, const unsigned int realRank, const unsigned int step,
+        const unsigned int maxEpoch, const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -128,45 +128,41 @@ CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
     ret = sqlProc.parseSql(sql);
     CAISS_FUNCTION_CHECK_STATUS
 
-    if (model_path_.find(sqlProc.getTableName()) == std::string::npos) {
+    if (model_path_.find(sqlProc.getTableName()) == std::string::npos
+        || sqlProc.getTableName().empty()) {
         return CAISS_RET_PATH;    // 当传入的模型名称，跟模型真实的名称不同的时候，
     }
 
     switch (sqlProc.getType()) {
-        case hsql::kStmtError:
+        case hsql::kStmtSelect: {
+            ret = this->search(handle, (void *)sqlProc.getQueryWord(),
+                               CAISS_SEARCH_WORD, sqlProc.getLimitNum(), 0,
+                               sqlCBFunc, sqlParams);
+        }
             break;
-        case hsql::kStmtSelect:
-            ret = this->search(handle, (void *)sqlProc.getQueryWord().c_str(),
-                    CAISS_SEARCH_WORD, sqlProc.getLimitNum(), 0,
-                    sqlCBFunc, sqlParams);
+        case hsql::kStmtInsert: {
+            std::vector<std::string> keys = sqlProc.getInsertKeys();
+            std::vector<void *> values = sqlProc.getInsertValues();
+            int size = (int)keys.size();
+            for (int i = 0; i < size; i++) {
+                // 如果重复插入的话，则丢弃当前信息。可以批量插入信息
+                ret = this->insert(handle, (CAISS_FLOAT *)values[i], keys[i].c_str(), CAISS_INSERT_DISCARD);
+                CAISS_FUNCTION_CHECK_STATUS
+            }
+        }
             break;
-        case hsql::kStmtInsert:
+        case hsql::kStmtUpdate: {
+            // 更新信息。如果之前模型中没有，则直接插入
+            ret = this->insert(handle, (CAISS_FLOAT *)sqlProc.getUpdateValue(), sqlProc.getUpdateInfo(),
+                               CAISS_INSERT_OVERWRITE);
+        }
             break;
-        case hsql::kStmtUpdate:
-            break;
-        case hsql::kStmtDelete:
-            break;
-        case hsql::kStmtDrop:
-            break;
-        case hsql::kStmtPrepare:
-            break;
-        case hsql::kStmtExecute:
-            break;
-        case hsql::kStmtExport:
-            break;
-        case hsql::kStmtRename:
-            break;
-        case hsql::kStmtAlter:
-            break;
-        case hsql::kStmtShow:
-            break;
-        case hsql::kStmtTransaction:
-            break;
-        case hsql::kStmtImport:
-            break;
-        case hsql::kStmtCreate:
+        case hsql::kStmtDelete: {
+            ret = this->ignore(handle, sqlProc.getDeleteQueryWord(), true);
+        }
             break;
         default:
+            ret = CAISS_RET_SQL_PARSE;    // 如果不是以上语句，则不支持
             break;
     }
 

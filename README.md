@@ -328,8 +328,9 @@ int main() {
 ## 6. 编译说明
 
 * 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
+
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
-  $ cmake .  
+  $ cmake .     
   $ make  
   即可完成编译（前提：环境中支持cmake命令）。
 

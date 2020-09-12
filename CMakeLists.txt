@@ -82,4 +82,3 @@ add_library(Caiss SHARED
 # 添加对应依赖的内容
 add_subdirectory(caissDemo)
 add_subdirectory(utilsCtrl)
-add_subdirectory(sqlCtrl)

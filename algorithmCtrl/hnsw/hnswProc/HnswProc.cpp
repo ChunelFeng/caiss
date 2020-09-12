@@ -283,9 +283,11 @@ CAISS_RET_TYPE HnswProc::ignore(const char *label, const bool isIgnore) {
 
     string info = label;
     if (isIgnore) {
-        AlgorithmProc::AlgorithmProc::getIgnoreTrie()->insert(info);    // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
+        // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
+        AlgorithmProc::getIgnoreTrie()->insert(info);
     } else {
-        AlgorithmProc::AlgorithmProc::getIgnoreTrie()->eraser(info);    // 对于外部的 not-ignore，相当于是在字典树中，
+        // 对于外部的 not-ignore，相当于是在字典树中
+        AlgorithmProc::getIgnoreTrie()->eraser(info);
     }
 
     this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
@@ -614,7 +616,7 @@ CAISS_RET_TYPE HnswProc::insertByOverwrite(CAISS_FLOAT *node, unsigned int label
     CAISS_ASSERT_NOT_NULL(node)    // 传入的信息，已经是normalize后的信息了
     CAISS_ASSERT_NOT_NULL(index)
     auto ptr = HnswProc::getHnswSingleton();
-    CAISS_ASSERT_NOT_NULL(ptr);
+    CAISS_ASSERT_NOT_NULL(ptr)
 
     if (-1 == ptr->findWordLabel(index)) {
         // 返回-1，表示没找到对应的信息，如果不存在，则插入内容
@@ -637,9 +639,9 @@ CAISS_RET_TYPE HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, 
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
 
-    bool bret = ptr->findWordLabel(index);
-    if (!bret) {
+    if (-1 == ptr->findWordLabel(index)) {
         // 如果不存在，则直接添加；如果存在，则不进入此逻辑，直接返回
+        // -1表示不存在
         ret = ptr->addPoint(node, label, index);
         CAISS_FUNCTION_CHECK_STATUS
     }

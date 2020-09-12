@@ -81,5 +81,23 @@ class PyCaiss:
 
         return ret, result.value.decode()
 
+    def sync_execute_sql(self, handle, sql):
+        sql = create_string_buffer(sql.encode(), len(sql)+1)
+        ret = self._caiss.CAISS_ExecuteSQL(handle, sql, None, None)
+        if CAISS_RET_OK != ret:
+            return ret, ''
+
+        size = c_int(0)    # 获取结果大小
+        ret = self._caiss.CAISS_GetResultSize(handle, byref(size))
+        if CAISS_RET_OK != ret:
+            return ret, ''
+
+        result = create_string_buffer(size.value)
+        ret = self._caiss.CAISS_GetResult(handle, result, size)
+        if CAISS_RET_OK != ret:
+            return ret, ''
+
+        return ret, result.value.decode()
+
     def destroy(self, handle):
         return self._caiss.CAISS_DestroyHandle(handle)

@@ -70,9 +70,9 @@ extern "C" {
             CAISS_DIST_FUNC distFunc = nullptr);
 
     /**
-     * 模型训练功能 （当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成）
+     * 模型训练功能
      * @param handle 句柄信息
-     * @param dataPath 带训练样本路径（训练文件格式，参考说明文档）
+     * @param dataPath 待训练样本路径（训练文件格式，参考/doc/文件夹下demo_2500words_768dim.txt的格式）
      * @param maxDataSize 最大样本个数
      * @param normalize 样本数据是否归一化
      * @param maxIndexSize 样本标签最大长度
@@ -83,7 +83,7 @@ extern "C" {
      * @param maxEpoch 最大迭代轮数 （maxEpoch轮后，准确率仍不满足要求，则停止训练，返回警告信息）
      * @param showSpan 信息打印行数
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
-     * @notice 训练文件格式，参考doc文件夹下内容
+     * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
             const char *dataPath,
@@ -103,7 +103,7 @@ extern "C" {
      * @param info 待查询的信息
      * @param searchType 查询信息的类型（详见CaissLibDefine.h文件）
      * @param topK 返回最近的topK个信息
-     * @param filterEditDistance 需要过滤的最小词语编辑距离（仅针对根据单词查询的情况下生效，-1表示不过滤，0表示过滤跟）
+     * @param filterEditDistance 需要过滤的最小词语编辑距离
      * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
      * @param cbParams 回调函数中，传入的参数信息
      * @return 运行成功返回0，警告返回1，词查询模式下，没有找到单词返回2，其他异常值，参考错误码定义

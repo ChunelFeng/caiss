@@ -23,7 +23,7 @@
 
 4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置（embedding_file_path），bert模型的位置（bert_model_path）。函数执行完毕后，会在result_path位置，生成可用于caiss库训练的文本内容。
 
-5，参考下文第4部分关于caiss的使用demo，开始训练、查询等功能吧。
+5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 ## 3. 相关接口定义
 
@@ -44,7 +44,7 @@ CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_CreateHandle(void **handle);
+CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
 
 /**
  * 初始化信息
@@ -64,9 +64,9 @@ CAISS_RET_TYPE CAISS_Init(void *handle,
         CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
- * 模型训练功能 （当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成）
+ * 模型训练功能
  * @param handle 句柄信息
- * @param dataPath 带训练样本路径（训练文件格式，参考说明文档）
+ * @param dataPath 待训练样本路径（训练文件格式，参考/doc/文件夹下demo_2500words_768dim.txt的格式）
  * @param maxDataSize 最大样本个数
  * @param normalize 样本数据是否归一化
  * @param maxIndexSize 样本标签最大长度
@@ -77,7 +77,7 @@ CAISS_RET_TYPE CAISS_Init(void *handle,
  * @param maxEpoch 最大迭代轮数 （maxEpoch轮后，准确率仍不满足要求，则停止训练，返回警告信息）
  * @param showSpan 信息打印行数
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
- * @notice 训练文件格式，参考doc文件夹下内容
+ * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
  */
 CAISS_RET_TYPE CAISS_Train(void *handle,
         const char *dataPath,
@@ -97,7 +97,7 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
  * @param info 待查询的信息
  * @param searchType 查询信息的类型（详见CaissLibDefine.h文件）
  * @param topK 返回最近的topK个信息
- * @param filterEditDistance 需要过滤的最小词语编辑距离（仅针对根据单词查询的情况下生效，-1表示不过滤，0表示过滤跟）
+ * @param filterEditDistance 需要过滤的最小词语编辑距离
  * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
  * @param cbParams 回调函数中，传入的参数信息
  * @return 运行成功返回0，警告返回1，词查询模式下，没有找到单词返回2，其他异常值，参考错误码定义
@@ -157,7 +157,7 @@ CAISS_RET_TYPE CAISS_Insert(void *handle,
  */
 CAISS_RET_TYPE CAISS_Ignore(void *handle,
         const char *label,
-        bool isIgnore=true);
+        bool isIgnore = true);
 
 /**
  * 保存模型
@@ -330,7 +330,7 @@ int main() {
 * 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
 
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
-  $ cmake .     
+  $ cmake .    
   $ make  
   即可完成编译（前提：环境中支持cmake命令）。
 
@@ -338,18 +338,12 @@ int main() {
 ## 7. 补充说明
 
 * 训练文本样式，请参考文档中的内容
-
 * 训练功能仅支持单线程。查询和插入功能，支持多线程并发
-
 * 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
-
 * 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止
-
 * doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练，或者联系微信：Chunel_Fung
-
 * 本库的源代码，发布在：https://github.com/ChunelFeng/caiss 。欢迎随时交流指导
 
-  
 ## 8. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 

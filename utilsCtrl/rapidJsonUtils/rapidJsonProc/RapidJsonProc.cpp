@@ -66,7 +66,7 @@ CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& da
 
 CAISS_RET_TYPE
 RapidJsonProc::buildSearchResult(const std::list<CaissResultDetail> &details, CAISS_DISTANCE_TYPE distanceType,
-                                 std::string &result, std::string searchType) {
+                                 std::string &result, const std::string& searchType) {
     CAISS_FUNCTION_BEGIN
 
     Document dom;

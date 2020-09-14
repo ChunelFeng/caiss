@@ -376,14 +376,7 @@ CAISS_RET_TYPE HnswProc::buildResult(const CAISS_FLOAT *query, const CAISS_SEARC
         this->result_distance_.push_front(detail.distance);    // 保存对应的距离信息
     }
 
-    std::string type;
-    if (isAnnSearchType(searchType)) {
-        type = "ann_search";
-    } else {
-        type = "force_loop";
-    }
-
-
+    std::string type = isAnnSearchType(searchType) ? "ann_search" : "force_loop";
     ret = RapidJsonProc::buildSearchResult(detailsList, this->distance_type_, this->result_, type);
     CAISS_FUNCTION_CHECK_STATUS
 

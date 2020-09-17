@@ -52,4 +52,11 @@ public class JaCaissDefine {
         int CAISS_SEARCH_WORD = 2;     // 通过快速检索的方式，查询word信息
         int CAISS_LOOP_WORD = 4;       // 通过暴力循环的方式，查询word信息
     };
+
+    public interface  CAISS_INSERT_TYPE {
+        // 如果插入相同的数据
+        int CAISS_INSERT_DEFAULT = 1;
+        int CAISS_INSERT_OVERWRITE = 1;   // 覆盖模型中原有的数据
+        int CAISS_INSERT_DISCARD = 2;     // 丢弃当前插入的数据
+    };
 }

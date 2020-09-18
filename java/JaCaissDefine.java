@@ -49,8 +49,10 @@ public class JaCaissDefine {
 
     public interface CAISS_SEARCH_TYPE {
         int CAISS_SEARCH_DEFAULT = 0;
-        int CAISS_SEARCH_WORD = 2;     // 通过快速检索的方式，查询word信息
-        int CAISS_LOOP_WORD = 4;       // 通过暴力循环的方式，查询word信息
+        int CAISS_SEARCH_QUERY = 1;     // 通过快速检索的方式，查询query信息
+        int CAISS_SEARCH_WORD = 2;      // 通过快速检索的方式，查询word信息
+        int CAISS_LOOP_QUERY = 3;       // 通过暴力循环的方式，查询query信息
+        int CAISS_LOOP_WORD = 4;        // 通过暴力循环的方式，查询word信息
     };
 
     public interface  CAISS_INSERT_TYPE {

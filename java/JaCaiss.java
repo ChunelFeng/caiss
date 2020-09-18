@@ -2,7 +2,7 @@
  * @author junfeng.fj
  * @Name JavaCaiss.java
  * @date 2020/9/15 1:23 上午
- * @Desc
+ * @Desc 具体函数功能，请参考说明文档
  */
 
 import com.sun.jna.Native;
@@ -16,26 +16,27 @@ public class JaCaiss {
     private interface JnaCaiss extends Library {
         JnaCaiss instance = (JnaCaiss) Native.loadLibrary(CAISS_PATH, JnaCaiss.class);
 
-        int CAISS_Environment(NativeLong maxThreadSize, int algoType, int manageType);
+        int CAISS_Environment(int maxThreadSize, int algoType, int manageType);
         int CAISS_CreateHandle(PointerByReference pointer);
-        int CAISS_Init(Pointer handle, int mode, int distanceType, NativeLong dim, String modelPath, Object distFunc);
-        int CAISS_Train(Pointer handle, String dataPath, NativeLong maxDataSize, int normalize,
-                        NativeLong maxIndexSize, float precision, NativeLong fastRank, NativeLong realRank,
-                        NativeLong step, NativeLong maxEpoch, NativeLong showSpan);
-        int CAISS_Search(Pointer handle, Pointer info, int searchType, NativeLong topK,
-                         NativeLong filterEditDistance, Object searchCBFunc, Pointer cbParams);    // 暂不支持回调函数
+        int CAISS_Init(Pointer handle, int mode, int distanceType, int dim, String modelPath, Object distFunc);
+        int CAISS_Train(Pointer handle, String dataPath, int maxDataSize, int normalize,
+                        int maxIndexSize, float precision, int fastRank, int realRank,
+                        int step, int maxEpoch, int showSpan);
+        int CAISS_Search(Pointer handle, String info, int searchType, int topK,
+                         int filterEditDistance, Object searchCBFunc, Pointer cbParams);    // 暂不支持回调函数
+        int CAISS_Search(Pointer handle, float[] info, int searchType, int topK,
+                         int filterEditDistance, Object searchCBFunc, Pointer cbParams);    // 传入向量的情况下，
         int CAISS_GetResultSize(Pointer handle, NativeLongByReference size);
         int CAISS_GetResult(Pointer handle, Pointer result, NativeLong size);
         int CAISS_Insert(Pointer handle, float[] node, String label, int insertType);
-        int CAISS_Ignore(Pointer handle, String label, boolean isIgnore);
+        int CAISS_Ignore(Pointer handle, String label, int isIgnore);
         int CAISS_Save(Pointer handle, String modelPath);
         int CAISS_ExecuteSQL(Pointer handle, String sql, Object sqlCBFunc, Pointer sqlParams);    // 暂不支持回调函数
         int CAISS_DestroyHandle(Pointer handle);
     }
 
     public int Environment(int maxThreadSize, int algoType, int manageType) {
-        NativeLong maxThreadSize_ = new NativeLong(maxThreadSize);
-        return JnaCaiss.instance.CAISS_Environment(maxThreadSize_, algoType, manageType);
+        return JnaCaiss.instance.CAISS_Environment(maxThreadSize, algoType, manageType);
     }
 
     public int CreateHandle(PointerByReference pointer) {
@@ -43,38 +44,34 @@ public class JaCaiss {
     }
 
     public int Init(Pointer handle, int mode, int distanceType, int dim, String modelPath) {
-        NativeLong dim_ = new NativeLong(dim);
-        return JnaCaiss.instance.CAISS_Init(handle, mode, distanceType, dim_, modelPath, null);
+        return JnaCaiss.instance.CAISS_Init(handle, mode, distanceType, dim, modelPath, null);
     }
 
     public int Train(Pointer handle, String dataPath, int maxDataSize, int normalize,
                      int maxIndexSize, float precision, int fastRank, int realRank,
                      int step, int maxEpoch, int showSpan) {
-        NativeLong maxDataSize_ = new NativeLong(maxDataSize);
-        NativeLong maxIndexSize_ = new NativeLong(maxIndexSize);
-        NativeLong fastRank_ = new NativeLong(fastRank);
-        NativeLong realRank_ = new NativeLong(realRank);
-        NativeLong step_ = new NativeLong(step);
-        NativeLong maxEpoch_ = new NativeLong(maxEpoch);
-        NativeLong showSpan_ = new NativeLong(showSpan);
-        return JnaCaiss.instance.CAISS_Train(handle, dataPath, maxDataSize_, normalize,
-                maxIndexSize_, precision, fastRank_, realRank_, step_, maxEpoch_, showSpan_);
+        return JnaCaiss.instance.CAISS_Train(handle, dataPath, maxDataSize, normalize,
+                maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
     }
 
-    // 查询接口，适用于同步模式下的查询
+    // 查询接口，适用于同步模式下的查询(单词查询)
     public String SyncSearch(Pointer handle, String info, int searchType, int topK,
                              int filterEditDistance , NativeLongByReference ref) {
-        NativeLong filterEditDistance_ = new NativeLong(filterEditDistance);
-        NativeLong topK_ = new NativeLong(topK);
+        int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
+                filterEditDistance, null, null);
 
-        Pointer info_ = new Memory(info.length() + 1);    // todo 需要区分是向量查询，还是单词查询的模式
-        info_.setString(0, info);
+        if (JaCaissDefine.CAISS_RET_OK != ret) {
+            ref.setValue(new NativeLong(ret));
+            return "";
+        }
 
-        int ret = JnaCaiss.instance.CAISS_Search(handle, info_, searchType, topK_,
-                filterEditDistance_, null, null);
+        return getResultString(handle, ref);
+    }
 
-        Native.free(Pointer.nativeValue(info_));    // 释放申请的内存信息
-        Pointer.nativeValue(info_, 0);
+    public String SyncSearch(Pointer handle, float[] info, int searchType, int topK,
+                             int filterEditDistance , NativeLongByReference ref) {
+        int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
+                filterEditDistance, null, null);
 
         if (JaCaissDefine.CAISS_RET_OK != ret) {
             ref.setValue(new NativeLong(ret));
@@ -98,7 +95,7 @@ public class JaCaiss {
         return JnaCaiss.instance.CAISS_Insert(handle, node, label, insertType);
     }
 
-    public int Ignore(Pointer handle, String label, boolean isIgnore) {
+    public int Ignore(Pointer handle, String label, int isIgnore) {
         return JnaCaiss.instance.CAISS_Ignore(handle, label, isIgnore);
     }
 
@@ -112,9 +109,8 @@ public class JaCaiss {
 
     /**
      * 获取最终的结果，并且返回对应的返回值
-     * @param handle
-     * @param ref
-     * @return
+     * @param handle 句柄信息
+     * @param ref CAISS函数的返回值信息
      */
     private String getResultString(Pointer handle, NativeLongByReference ref) {
         NativeLongByReference sizeRef = new NativeLongByReference();
@@ -124,7 +120,7 @@ public class JaCaiss {
             return "";
         }
 
-        long size = sizeRef.getValue().longValue();
+        int size = sizeRef.getValue().intValue();
         Pointer resultPtr = new Memory(size + 1);
         NativeLong size_ = new NativeLong(size);
         ret = JnaCaiss.instance.CAISS_GetResult(handle, resultPtr, size_);

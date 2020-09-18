@@ -44,6 +44,7 @@ ELSEIF(APPLE)
         message("no openmp support")
     endif()
 ELSEIF(UNIX)
+    set(CMAKE_CXX_FLAGS -m64)    # 设置64位系统
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread")    # set multi thread in Linux platform
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
 ENDIF()

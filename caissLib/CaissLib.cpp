@@ -113,7 +113,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Insert(void *handle,
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Ignore(void *handle,
                                                   const char *label,
-                                                  const bool isIgnore) {
+                                                  const CAISS_BOOL isIgnore) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->ignore(handle, label, isIgnore);
 }

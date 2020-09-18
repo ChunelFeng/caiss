@@ -157,7 +157,7 @@ CAISS_RET_TYPE CAISS_Insert(void *handle,
  */
 CAISS_RET_TYPE CAISS_Ignore(void *handle,
         const char *label,
-        bool isIgnore = true);
+        CAISS_BOOL isIgnore = CAISS_TRUE);
 
 /**
  * 保存模型

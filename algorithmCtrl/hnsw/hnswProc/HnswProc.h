@@ -40,7 +40,7 @@ public:
     CAISS_RET_TYPE save(const char *modelPath) override;    // 默认写成是当前模型的
     CAISS_RET_TYPE getResultSize(unsigned int& size) override;
     CAISS_RET_TYPE getResult(char *result, unsigned int size) override;
-    CAISS_RET_TYPE ignore(const char *label, bool isIgnore) override;
+    CAISS_RET_TYPE ignore(const char *label, CAISS_BOOL isIgnore) override;
 
 
 protected:

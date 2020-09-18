@@ -99,7 +99,7 @@ CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const cha
     CAISS_FUNCTION_END
 }
 
-CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, bool isIgnore) {
+CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

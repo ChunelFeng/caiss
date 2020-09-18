@@ -276,7 +276,7 @@ CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
 }
 
 
-CAISS_RET_TYPE HnswProc::ignore(const char *label, const bool isIgnore) {
+CAISS_RET_TYPE HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(label)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行

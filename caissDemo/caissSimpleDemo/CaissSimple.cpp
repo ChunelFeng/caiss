@@ -117,7 +117,7 @@ int demo_ignore() {
     string ignoreWord2 = "mud";
     ret = CAISS_Ignore(handle, ignoreWord1.c_str());    // isIgnore参数的默认值是true，表示忽略
     CAISS_FUNCTION_CHECK_STATUS
-    ret = CAISS_Ignore(handle, ignoreWord2.c_str(), true);
+    ret = CAISS_Ignore(handle, ignoreWord2.c_str(), CAISS_TRUE);
     CAISS_FUNCTION_CHECK_STATUS
 
     ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_, filter_edit_distance_);
@@ -138,7 +138,7 @@ int demo_ignore() {
     // CAISS_FUNCTION_CHECK_STATUS
 
     // 将之前忽略的部分关键词添加回来，重新查找
-    ret = CAISS_Ignore(handle, ignoreWord1.c_str(), false);
+    ret = CAISS_Ignore(handle, ignoreWord1.c_str(), CAISS_FALSE);
     CAISS_FUNCTION_CHECK_STATUS
 
     ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_, filter_edit_distance_);

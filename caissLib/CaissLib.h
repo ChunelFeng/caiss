@@ -163,7 +163,7 @@ extern "C" {
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Ignore(void *handle,
             const char *label,
-            bool isIgnore = true);
+            CAISS_BOOL isIgnore = CAISS_TRUE);
 
     /**
      * 保存模型

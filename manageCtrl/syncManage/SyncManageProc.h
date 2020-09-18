@@ -27,7 +27,7 @@ public:
     CAISS_RET_TYPE save(void *handle, const char *modelPath) override ;
     // label 是数据标签，index表示数据第几个信息
     CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) override ;
-    CAISS_RET_TYPE ignore(void *handle, const char *label, bool isIgnore) override ;
+    CAISS_RET_TYPE ignore(void *handle, const char *label, CAISS_BOOL isIgnore) override ;
 
     // 暂时仅支持同步模式
     CAISS_RET_TYPE executeSQL(void *handle,

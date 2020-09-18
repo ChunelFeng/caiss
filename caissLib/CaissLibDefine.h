@@ -33,9 +33,6 @@ using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;
 using CAISS_BOOL = int;
 
-using CAISS_VECTOR_FLOAT = std::vector<CAISS_FLOAT>;
-using CAISS_VECTOR_UINT = std::vector<CAISS_UINT>;
-using CAISS_VECTOR_STRING = std::vector<std::string>;
 using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
 using CAISS_LIST_STRING = std::list<std::string>;
 

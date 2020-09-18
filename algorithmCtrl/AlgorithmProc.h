@@ -125,7 +125,7 @@ public:
      * @param isIgnore 放入忽略列表/从忽略列表中取出
      * @return
      */
-    virtual CAISS_RET_TYPE ignore(const char *label, const bool isIgnore = true) = 0;
+    virtual CAISS_RET_TYPE ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
 
 
 protected:

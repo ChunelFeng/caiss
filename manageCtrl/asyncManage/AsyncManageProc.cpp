@@ -134,7 +134,7 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
 }
 
 
-CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, bool isIgnore) {
+CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);

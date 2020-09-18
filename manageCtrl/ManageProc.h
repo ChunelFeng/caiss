@@ -56,7 +56,7 @@ public:
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE ignore(void *handle, const char *label, bool isIgnore) {
+    virtual CAISS_RET_TYPE ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 

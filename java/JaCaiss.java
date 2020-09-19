@@ -54,9 +54,16 @@ public class JaCaiss {
                 maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
     }
 
-    // 查询接口，适用于同步模式下的查询(单词查询方式)
+    // 查询接口，适用于同步模式下的查询(单词查询)
     public String SyncSearch(Pointer handle, String info, int searchType, int topK,
                              int filterEditDistance , NativeLongByReference ref) {
+        if (searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_SEARCH_WORD
+                && searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_LOOP_WORD) {
+            // 如果不是单词查询的方式，则返回错误码
+            ref.setValue(new NativeLong(JaCaissDefine.CAISS_RET_PARAM));
+            return "";
+        }
+
         int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
                 filterEditDistance, null, null);
 
@@ -68,9 +75,15 @@ public class JaCaiss {
         return getResultString(handle, ref);
     }
 
-    // 查询接口，适用于同步模式下的查询（向量查询方式）
     public String SyncSearch(Pointer handle, float[] info, int searchType, int topK,
                              int filterEditDistance , NativeLongByReference ref) {
+        if (searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_SEARCH_QUERY
+                && searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_LOOP_QUERY) {
+            // 如果不是向量查询的方式，则返回错误码
+            ref.setValue(new NativeLong(JaCaissDefine.CAISS_RET_PARAM));
+            return "";
+        }
+
         int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
                 filterEditDistance, null, null);
 

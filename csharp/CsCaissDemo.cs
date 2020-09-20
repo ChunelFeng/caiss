@@ -65,6 +65,10 @@ namespace CsCaissSpace
             // 查询demo
             var handle = IntPtr.Zero;
             var ret = CsCaiss.CreateHandle(ref handle);
+            if (CsCaissDefine.CAISS_RET_OK != ret)
+            {
+                return ret;
+            }
 
             ret = CsCaiss.Init(handle,
                 CsCaissDefine.CAISS_MODE.CAISS_MODE_PROCESS,

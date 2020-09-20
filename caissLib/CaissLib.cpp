@@ -27,6 +27,10 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(const unsigned int maxThr
                                                        const CAISS_ALGO_TYPE algoType,
                                                        const CAISS_MANAGE_TYPE manageType) {
     CAISS_FUNCTION_BEGIN
+    if (algoType != CAISS_ALGO_HNSW) {
+        return CAISS_RET_NO_SUPPORT;    // 暂时不支持除了HNSW之外的算法
+    }
+
     if (nullptr == g_manage) {
         g_lock.writeLock();
         if (nullptr == g_manage) {

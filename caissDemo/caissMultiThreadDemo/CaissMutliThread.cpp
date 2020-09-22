@@ -63,7 +63,7 @@ int syncSearch(void *handle) {
     CAISS_FUNCTION_BEGIN
     int times = SEARCH_TIMES;
     while (times--) {
-        // 查询10000次，结束之后正常退出
+        // 查询SEARCH_TIMES次，结束之后正常退出
         // 由于样本原因，可能会出现，输入的词语在模型中无法查到的问题。这种情况会返回非0的值
         int i = (int)rand() % (int)WORDS.size();
         ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, filter_edit_distance_, searchCallbackFunc, nullptr);
@@ -115,7 +115,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    printf("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
+    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_DestroyHandle(handle);

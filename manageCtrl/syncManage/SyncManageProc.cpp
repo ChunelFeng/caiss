@@ -5,7 +5,12 @@
 
 #include "SyncManageProc.h"
 
-
+/**
+ *
+ * @param handle
+ * @param size
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
     CAISS_FUNCTION_BEGIN
 
@@ -19,6 +24,13 @@ CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
 }
 
 
+/**
+ *
+ * @param handle
+ * @param result
+ * @param size
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
     CAISS_FUNCTION_BEGIN
 
@@ -32,6 +44,17 @@ CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsig
 }
 
 
+/**
+ *
+ * @param handle
+ * @param info
+ * @param searchType
+ * @param topK
+ * @param filterEditDistance
+ * @param searchCBFunc
+ * @param cbParams
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
         const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
     CAISS_FUNCTION_BEGIN
@@ -50,6 +73,21 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
 }
 
 
+/**
+ *
+ * @param handle
+ * @param dataPath
+ * @param maxDataSize
+ * @param normalize
+ * @param maxIndexSize
+ * @param precision
+ * @param fastRank
+ * @param realRank
+ * @param step
+ * @param maxEpoch
+ * @param showSpan
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize,
         CAISS_BOOL normalize, const unsigned int maxIndexSize, const float precision,
         const unsigned int fastRank, const unsigned int realRank, const unsigned int step,
@@ -69,6 +107,12 @@ CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const u
 }
 
 
+/**
+ *
+ * @param handle
+ * @param modelPath
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
@@ -84,6 +128,14 @@ CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
 }
 
 
+/**
+ *
+ * @param handle
+ * @param node
+ * @param label
+ * @param insertType
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
 
@@ -99,6 +151,14 @@ CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const cha
     CAISS_FUNCTION_END
 }
 
+
+/**
+ *
+ * @param handle
+ * @param label
+ * @param isIgnore
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
@@ -113,6 +173,15 @@ CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOO
     CAISS_FUNCTION_END
 }
 
+
+/**
+ *
+ * @param handle
+ * @param sql
+ * @param sqlCBFunc
+ * @param sqlParams
+ * @return
+ */
 CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
                                           const char *sql,
                                           CAISS_SQL_CALLBACK sqlCBFunc,

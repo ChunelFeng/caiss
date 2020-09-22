@@ -202,7 +202,6 @@ CAISS_RET_TYPE CAISS_DestroyHandle(void *handle);
 */
 
 #include <iostream>
-#include <string>
 #include "CaissLib.h"
 
 using namespace std;
@@ -215,11 +214,11 @@ static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const unsigned int dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
-static const std::string info_ = "water";
+static const char *info_ = "water";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const unsigned int top_k_ = 5;
 
-static const string data_path_ = "demo_2500words_768dim.txt";
+static const char *data_path_ = "demo_2500words_768dim.txt";
 static const unsigned int max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
 static const unsigned int max_index_size_ = 64;     // 标签的最大长度
@@ -239,7 +238,7 @@ static int train() {
 
     ret = CAISS_Init(handle, CAISS_MODE_TRAIN, dist_type_, dim_, model_path_, dist_func_);
 
-    ret = CAISS_Train(handle, data_path_.c_str(), max_data_size_, normalize_, max_index_size_,
+    ret = CAISS_Train(handle, data_path_, max_data_size_, normalize_, max_index_size_,
             precision_, fast_rank_, real_rank_, step_, max_epoch_, show_span_);
 
     ret = CAISS_DestroyHandle(handle);
@@ -255,7 +254,7 @@ static int search() {
 
     ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);
 
-    ret = CAISS_Search(handle, (void *)info_.c_str(), search_type_, top_k_);
+    ret = CAISS_Search(handle, (void *)info_, search_type_, top_k_);
 
     unsigned int size = 0;
     ret = CAISS_GetResultSize(handle, size);

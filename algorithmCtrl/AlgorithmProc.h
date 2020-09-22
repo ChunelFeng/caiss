@@ -129,10 +129,11 @@ public:
 
 
 protected:
+
     /**
-     * 从lru中查询
-     * @param word
-     * @param isGet
+     * 将向量归一化
+     * @param node
+     * @param dim
      * @return
      */
     CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
@@ -157,8 +158,12 @@ protected:
         return CAISS_RET_OK;
     }
 
+    /**
+     * 快速求平方根
+     * @param x
+     * @return
+     */
     float fastSqrt(float x) {
-        /* 快速开平方计算方式 */
         float half = 0.5f * x;
         int i = *(int*)&x;     // get bits for floating VALUE
         i = 0x5f375a86 - (i >> 1);    // gives initial guess y0
@@ -167,6 +172,10 @@ protected:
         return 1 / x;
     }
 
+    /**
+     * 获取挂有忽略信息的trie树
+     * @return
+     */
     static TrieProc* getIgnoreTrie() {
         if (nullptr == AlgorithmProc::ignore_trie_ptr_) {
             AlgorithmProc::trie_lock_.writeLock();

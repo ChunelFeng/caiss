@@ -95,7 +95,7 @@ public class JaCaiss {
         return getResultString(handle, ref);
     }
 
-    String SyncExecuteSQL(Pointer handle, String sql, NativeLongByReference ref) {
+    public String SyncExecuteSQL(Pointer handle, String sql, NativeLongByReference ref) {
         int ret = JnaCaiss.instance.CAISS_ExecuteSQL(handle, sql, null, null);
         if (JaCaissDefine.CAISS_RET_OK != ret) {
             ref.setValue(new NativeLong(ret));

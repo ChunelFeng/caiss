@@ -48,9 +48,10 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
     memcpy(ptr, dataPath, strlen(dataPath) + 1);
 
     // 绑定训练的流程到线程池中去
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
-                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo), true,
-                                          memoryPool, block);
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize,
+                                  normalize, maxIndexSize, precision, fastRank, realRank,
+                                  step, maxEpoch, showSpan),
+                        this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);
     CAISS_FUNCTION_END
 }

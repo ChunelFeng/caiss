@@ -5,7 +5,7 @@
  * @Desc 具体函数功能，请参考说明文档
  */
 
-import com.sun.jna.Native;
+import com.sun.jna.Native;    // 请自行引入相关依赖。具体可参考pom.xml文件
 import com.sun.jna.*;
 import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.PointerByReference;

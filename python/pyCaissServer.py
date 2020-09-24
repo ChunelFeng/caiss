@@ -5,7 +5,7 @@ import json
 
 import tornado.ioloop
 import tornado.web
-from bert_serving.client import BertClient
+#from bert_serving.client import BertClient
 #from bert_serving.server.helper import get_args_parser
 #from bert_serving.server import BertServer
 

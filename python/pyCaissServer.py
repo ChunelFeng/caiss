@@ -5,9 +5,9 @@ import json
 
 import tornado.ioloop
 import tornado.web
-from bert_serving.client import BertClient
-from bert_serving.server.helper import get_args_parser
-from bert_serving.server import BertServer
+# from bert_serving.client import BertClient
+# from bert_serving.server.helper import get_args_parser
+# from bert_serving.server import BertServer
 
 from python.pyCaiss import *
 
@@ -29,6 +29,7 @@ class CaissWordHandler(tornado.web.RequestHandler):
         if len(query_word) == 0:
             self.write('please enter query word.')
             return
+        print('query word is : ' + query_word)
         top_k = self.get_argument('top', '5')
 
         ret, result_str = caiss.sync_search(handle, query_word, CAISS_SEARCH_WORD, int(top_k), 0)
@@ -53,36 +54,37 @@ class CaissWordHandler(tornado.web.RequestHandler):
 
 class CaissSentenceHandler(tornado.web.RequestHandler):
     def get(self):
-        query_sent = self.get_argument('sent', '')
-        if len(query_sent) == 0:
-            self.write('please enter sentence info.')
-            return
-
-        if query_sent[0].isalnum() is False:
-            self.write('please enter english sentence.')
-            return
-
-        res = bert_client.encode([query_sent])
-        res_vec = res[0].tolist()
-
-        top_k = self.get_argument('top', '3')
-        ret, result_str = caiss.sync_search(handle, res_vec, CAISS_SEARCH_QUERY, int(top_k), 0)
-        if 0 != ret:
-            self.write('search failed for the reason of : ' + ret)
-            return
-
-        result_dict = json.loads(result_str)
-        sent_list = list()
-        for info in result_dict['details']:
-            sent_list.append(info['label'])
-
-        self.write('the query sentence is [' + query_sent + '].')
-        self.write('<br>')
-        self.write('the info you also want to know maybe : ')
-        self.write('<br>')
-        for i in sent_list:
-            self.write('****' + i)
-            self.write('<br>')
+        pass
+        # query_sent = self.get_argument('sent', '')
+        # if len(query_sent) == 0:
+        #     self.write('please enter sentence info.')
+        #     return
+        #
+        # if query_sent[0].isalnum() is False:
+        #     self.write('please enter english sentence.')
+        #     return
+        #
+        # res = bert_client.encode([query_sent])
+        # res_vec = res[0].tolist()
+        #
+        # top_k = self.get_argument('top', '3')
+        # ret, result_str = caiss.sync_search(handle, res_vec, CAISS_SEARCH_QUERY, int(top_k), 0)
+        # if 0 != ret:
+        #     self.write('search failed for the reason of : ' + ret)
+        #     return
+        #
+        # result_dict = json.loads(result_str)
+        # sent_list = list()
+        # for info in result_dict['details']:
+        #     sent_list.append(info['label'])
+        #
+        # self.write('the query sentence is [' + query_sent + '].')
+        # self.write('<br>')
+        # self.write('the info you also want to know maybe : ')
+        # self.write('<br>')
+        # for i in sent_list:
+        #     self.write('****' + i)
+        #     self.write('<br>')
 
 
 def make_app():
@@ -99,25 +101,25 @@ def tornado_server_start():
     tornado.ioloop.IOLoop.current().start()
 
 
-def bert_server_start():
-    # 感谢哈工大人工智能团队提供的bert服务
-    args = get_args_parser().parse_args(['-num_worker', '1',
-                                         '-model_dir', BERT_MODEL_PATH,
-                                         '-port', '5555',
-                                         '-port_out', '5556',
-                                         '-max_seq_len', 'NONE',
-                                         '-mask_cls_sep',
-                                         '-cpu'])
-    bert_server = BertServer(args)
-    bert_server.start()
+# def bert_server_start():
+#     # 感谢哈工大人工智能团队提供的bert服务
+#     args = get_args_parser().parse_args(['-num_worker', '1',
+#                                          '-model_dir', BERT_MODEL_PATH,
+#                                          '-port', '5555',
+#                                          '-port_out', '5556',
+#                                          '-max_seq_len', 'NONE',
+#                                          '-mask_cls_sep',
+#                                          '-cpu'])
+#     bert_server = BertServer(args)
+#     bert_server.start()
 
 
 if __name__ == "__main__":
     # http://127.0.0.1:8888/caiss/word?query=water
-    bert_server_start()    # 开启bert服务
+    #bert_server_start()    # 开启bert服务
     print('[caiss] bert server start success...')
 
-    bert_client = BertClient()
+    #bert_client = BertClient()
     print('[caiss] bert client start success...')
 
     caiss = PyCaiss(CAISS_LIB_PATH, MAX_THREAD_SIZE, CAISS_ALGO_HNSW, CAISS_MANAGE_SYNC)

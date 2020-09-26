@@ -30,7 +30,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class CaissWordHandler(tornado.web.RequestHandler):
     def get(self):
-        #logs = SummaryLog()
+        logs = SummaryLog()
         query_word = self.get_argument('query', '')
         if len(query_word) == 0:
             self.write('please enter query word.')
@@ -50,9 +50,9 @@ class CaissWordHandler(tornado.web.RequestHandler):
         for info in result_dict['details']:
             word_list.append(info['label'])
 
-        #logs.record(query_word, word_list)
-        #print(logs)
-        #sys.stdout.flush()
+        logs.record(query_word, word_list)
+        print(logs)
+        sys.stdout.flush()
 
         self.write('the query word is [' + query_word + '].')
         self.write('<br>')

@@ -12,8 +12,8 @@ import tornado.web
 # from bert_serving.client import BertClient
 # from bert_serving.server.helper import get_args_parser
 # from bert_serving.server import BertServer
-from python.dataLogs.summary import SummaryLog
-from python.pyCaiss import *
+from dataLogs.summary import SummaryLog
+from pyCaiss import *
 
 CAISS_LIB_PATH = r'/home/chunel/code/cpp/caiss/doc/linux/libCaiss.so'                    # caiss动态库所在路径
 CAISS_MODEL_PATH = r'/home/chunel/model/caiss_model/bert_71290words_768dim.caiss'     # caiss模型所在路径
@@ -30,7 +30,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class CaissWordHandler(tornado.web.RequestHandler):
     def get(self):
-        logs = SummaryLog()
+        #logs = SummaryLog()
         query_word = self.get_argument('query', '')
         if len(query_word) == 0:
             self.write('please enter query word.')
@@ -50,9 +50,9 @@ class CaissWordHandler(tornado.web.RequestHandler):
         for info in result_dict['details']:
             word_list.append(info['label'])
 
-        logs.record(query_word, word_list)
-        print(logs)
-        sys.stdout.flush()
+        #logs.record(query_word, word_list)
+        #print(logs)
+        #sys.stdout.flush()
 
         self.write('the query word is [' + query_word + '].')
         self.write('<br>')

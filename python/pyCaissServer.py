@@ -2,15 +2,14 @@
 # encoding: utf-8
 
 import json
+import sys
 
 import tornado.ioloop
 import tornado.web
 # from bert_serving.client import BertClient
 # from bert_serving.server.helper import get_args_parser
 # from bert_serving.server import BertServer
-
-import aliyun.log
-
+from python.logs.summary import SummaryLog
 from python.pyCaiss import *
 
 CAISS_LIB_PATH = r'../doc/linux/libCaiss.so'                    # caiss动态库所在路径
@@ -20,6 +19,7 @@ BERT_MODEL_PATH = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12'      
 MAX_THREAD_SIZE = 1    # caiss最大并发数量（推荐不超过cpu核数）
 DIM = 768              # 数据维度
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Hello, welcome to the world of Caiss")
@@ -27,11 +27,11 @@ class MainHandler(tornado.web.RequestHandler):
 
 class CaissWordHandler(tornado.web.RequestHandler):
     def get(self):
+        logs = SummaryLog()
         query_word = self.get_argument('query', '')
         if len(query_word) == 0:
             self.write('please enter query word.')
             return
-        print('query word is : ' + query_word)
         top_k = self.get_argument('top', '5')
 
         ret, result_str = caiss.sync_search(handle, query_word, CAISS_SEARCH_WORD, int(top_k), 0)
@@ -46,6 +46,10 @@ class CaissWordHandler(tornado.web.RequestHandler):
         word_list = list()
         for info in result_dict['details']:
             word_list.append(info['label'])
+
+        logs.record(query_word, word_list)
+        print(logs)
+        sys.stdout.flush()
 
         self.write('the query word is [' + query_word + '].')
         self.write('<br>')

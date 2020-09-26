@@ -12,7 +12,7 @@ import tornado.web
 from python.dataLogs.summary import SummaryLog
 from python.pyCaiss import *
 
-CAISS_LIB_PATH = r'../doc/linux/libCaiss.so'                    # caiss动态库所在路径
+CAISS_LIB_PATH = r'/home/chunel/code/cpp/caiss/doc/linux/libCaiss.so'                    # caiss动态库所在路径
 CAISS_MODEL_PATH = r'/home/chunel/model/caiss_model/bert_71290words_768dim.caiss'     # caiss模型所在路径
 BERT_MODEL_PATH = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12'          # bert模型所在路径
 

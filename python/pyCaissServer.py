@@ -9,7 +9,9 @@ import tornado.web
 # from bert_serving.server.helper import get_args_parser
 # from bert_serving.server import BertServer
 
-from pyCaiss import *
+import aliyun.log
+
+from python.pyCaiss import *
 
 CAISS_LIB_PATH = r'../doc/linux/libCaiss.so'                    # caiss动态库所在路径
 CAISS_MODEL_PATH = r'/home/chunel/model/caiss_model/bert_71290words_768dim.caiss'     # caiss模型所在路径

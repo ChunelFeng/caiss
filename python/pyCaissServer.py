@@ -3,6 +3,9 @@
 
 import json
 import sys
+import os
+
+print(os.getcwd())
 
 import tornado.ioloop
 import tornado.web

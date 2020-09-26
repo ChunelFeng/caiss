@@ -9,7 +9,7 @@ import tornado.web
 # from bert_serving.client import BertClient
 # from bert_serving.server.helper import get_args_parser
 # from bert_serving.server import BertServer
-from python.logs.summary import SummaryLog
+from python.dataLogs.summary import SummaryLog
 from python.pyCaiss import *
 
 CAISS_LIB_PATH = r'../doc/linux/libCaiss.so'                    # caiss动态库所在路径

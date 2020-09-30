@@ -25,10 +25,4 @@ class CaissBertServer:
         self._server.close()
 
 
-if __name__ == '__main__':
-    bert_model_path = r'/uncased_L-12_H-768_A-12'
-    server = CaissBertServer(bert_model_path)
-    server.start()
-
-    server.close()
 

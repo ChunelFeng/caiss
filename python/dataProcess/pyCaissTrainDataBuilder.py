@@ -50,7 +50,7 @@ def build_train_data(data_path, output_path, bert_model_path):
 
             num += 1
             if 0 == num % 100:
-                print('[caiss] bert predict {0} words, time cost is {0}'.format(num, datetime.now() - start))
+                print('[caiss] bert predict {0} words, time cost is {1}'.format(num, datetime.now() - start))
                 start = datetime.now()
 
     return

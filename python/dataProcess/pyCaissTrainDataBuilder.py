@@ -25,6 +25,7 @@ def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None):
 # 生成供caiss训练的文件
 def build_train_data(data_path, output_path, bert_model_path):
     token_dict = {}
+    print('[caiss] begin to load bert vocab.txt...')
     with codecs.open(bert_model_path + 'vocab.txt', 'r', 'utf8') as reader:
         for line in reader:
             token = line.strip()
@@ -40,24 +41,30 @@ def build_train_data(data_path, output_path, bert_model_path):
         num = 0
         for word in fr.readlines():
             word = word.strip('\n')
-            indices, segments = tokenizer.encode(first=word, max_len=512)
+            indices, segments = tokenizer.encode(first=word, max_len=5)
             tensor = model.predict([np.array([indices]), np.array([segments])])[0][0]
             result_dict = {word: [str(tensor[j])[0:8] for j in range(0, len(tensor))]}
             fw.writelines(json.dumps(result_dict) + '\n')
 
             num += 1
             if 0 == num % 100:
-                print('[caiss] bert predict {0} words, and {1} words left'.format(num, len(token_dict) - num))
+                print('[caiss] bert predict {0} words'.format(num))
 
     return
 
 
-# 执行以下逻辑，获取用于caiss库训练的文件内容
-if __name__ == '__main__':
+def main():
     # 开启bert服务
     bert_model_path = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12/'    # bert模型所在的文件路径
     embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
     result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置
 
     # 构造可供caiss训练的文件内容
+    print('[caiss] begin to build train data...')
     build_train_data(embedding_file_path, result_path, bert_model_path)
+    print('[caiss] build train data finished...')
+
+
+# 执行以下逻辑，获取用于caiss库训练的文件内容
+if __name__ == '__main__':
+    main()

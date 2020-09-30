@@ -3,21 +3,18 @@
 
 import os
 import json
-import datetime
 import codecs
 
 import numpy as np
 from keras_bert import *
 
 
-def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None, name='caiss'):
+def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None):
     bert_config_path = os.path.join(bert_path, 'bert_config.json')
     bert_checkpoint_path = os.path.join(bert_path, 'bert_model.ckpt')
 
     bert_layer = load_trained_model_from_checkpoint(
         bert_config_path, bert_checkpoint_path, training=training, seq_len=seq_len)
-
-    bert_layer.name = name
 
     for layer in bert_layer.layers:
         layer.trainable = trainable
@@ -34,7 +31,9 @@ def build_train_data(data_path, output_path, bert_model_path):
             token_dict[token] = len(token_dict)    # 从bert的词表中读取信息
 
     tokenizer = Tokenizer(token_dict)
+    print('[caiss] begin to build bert model...')
     model = build_bert_layer(bert_model_path)
+    print('[caiss] build bert model finished...')
 
     fw = open(output_path, 'w+')
     with open(data_path, 'r') as fr:
@@ -47,7 +46,7 @@ def build_train_data(data_path, output_path, bert_model_path):
             fw.writelines(json.dumps(result_dict) + '\n')
 
             num += 1
-            if 0 == num % 1000:
+            if 0 == num % 100:
                 print('[caiss] bert predict {0} words, and {1} words left'.format(num, len(token_dict) - num))
 
     return

@@ -55,7 +55,6 @@ def build_train_data(data_path, output_path, bert_model_path):
 # 执行以下逻辑，获取用于caiss库训练的文件内容
 if __name__ == '__main__':
     # 开启bert服务
-    print('[caiss] bert server has been started')
     bert_model_path = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12/'    # bert模型所在的文件路径
     embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
     result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置

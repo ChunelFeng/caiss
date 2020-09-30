@@ -10,7 +10,7 @@ import numpy as np
 from keras_bert import *
 
 
-def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None, name='bert_layer'):
+def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None, name='caiss'):
     bert_config_path = os.path.join(bert_path, 'bert_config.json')
     bert_checkpoint_path = os.path.join(bert_path, 'bert_model.ckpt')
 

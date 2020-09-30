@@ -6,6 +6,7 @@ import json
 import codecs
 
 import numpy as np
+from datetime import datetime
 from keras_bert import *
 
 
@@ -39,6 +40,7 @@ def build_train_data(data_path, output_path, bert_model_path):
     fw = open(output_path, 'w+')
     with open(data_path, 'r') as fr:
         num = 0
+        start = datetime.now()
         for word in fr.readlines():
             word = word.strip('\n')
             indices, segments = tokenizer.encode(first=word, max_len=5)
@@ -48,7 +50,8 @@ def build_train_data(data_path, output_path, bert_model_path):
 
             num += 1
             if 0 == num % 100:
-                print('[caiss] bert predict {0} words'.format(num))
+                print('[caiss] bert predict {0} words, time cost is {0}'.format(num, datetime.now() - start))
+                start = datetime.now()
 
     return
 
@@ -61,8 +64,9 @@ def main():
 
     # 构造可供caiss训练的文件内容
     print('[caiss] begin to build train data...')
+    start = datetime.now()
     build_train_data(embedding_file_path, result_path, bert_model_path)
-    print('[caiss] build train data finished...')
+    print('[caiss] build train data finished, time cost is {0}...'.format(datetime.now() - start))
 
 
 # 执行以下逻辑，获取用于caiss库训练的文件内容

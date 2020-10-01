@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 import json
-import sys
 
 import tornado.ioloop
 import tornado.web
@@ -52,7 +51,7 @@ class CaissWordHandler(tornado.web.RequestHandler):
 
 class CaissSentenceHandler(tornado.web.RequestHandler):
     def get(self):
-        # 暂不支持句式解析
+        # 暂不支持句式查询
         pass
         # query_sent = self.get_argument('sent', '')
         # if len(query_sent) == 0:

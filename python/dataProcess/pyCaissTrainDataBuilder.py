@@ -47,6 +47,7 @@ def build_train_data(data_path, output_path, bert_model_path):
     num = 0
     start = datetime.now()
     for word in words_list:
+        # max_len=4是针对词语做embedding的情况下的使用
         indices, segments = tokenizer.encode(first=word, max_len=4)
         # 在词向量训练任务中，固定获取第一个词语的信息
         tensor = model.predict([np.array([indices]), np.array([segments])])[0][1]
@@ -58,13 +59,14 @@ def build_train_data(data_path, output_path, bert_model_path):
             print('[caiss] bert predict [{0}] words, [{1}] words left. time cost is {2}'
                   .format(num, len(words_list) - num, datetime.now() - start))
             start = datetime.now()
+    fw.close()
 
     return
 
 
 def main():
     # 开启bert服务
-    bert_model_path = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12/'    # bert模型所在的文件路径
+    bert_model_path = r'uncased_L-12_H-768_A-12/'    # bert模型所在的文件路径(需自行下载)
     embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
     result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置
 

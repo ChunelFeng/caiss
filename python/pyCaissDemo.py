@@ -72,5 +72,5 @@ def search_demo():
 
 
 if __name__ == '__main__':
-    train_demo()
-    #search_demo()
+    #train_demo()
+    search_demo()

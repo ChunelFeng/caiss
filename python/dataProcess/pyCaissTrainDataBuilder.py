@@ -10,6 +10,7 @@ from datetime import datetime
 from keras_bert import *
 
 
+# 根据传入的路径信息，构建bert模型
 def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None):
     bert_config_path = os.path.join(bert_path, 'bert_config.json')
     bert_checkpoint_path = os.path.join(bert_path, 'bert_model.ckpt')
@@ -37,21 +38,26 @@ def build_train_data(data_path, output_path, bert_model_path):
     model = build_bert_layer(bert_model_path)
     print('[caiss] build bert model finished...')
 
+    words_list = []
     fw = open(output_path, 'w+')
     with open(data_path, 'r') as fr:
-        num = 0
-        start = datetime.now()
         for word in fr.readlines():
-            word = word.strip('\n')
-            indices, segments = tokenizer.encode(first=word, max_len=5)
-            tensor = model.predict([np.array([indices]), np.array([segments])])[0][0]
-            result_dict = {word: [str(tensor[j])[0:8] for j in range(0, len(tensor))]}
-            fw.writelines(json.dumps(result_dict) + '\n')
+            words_list.append(word.strip('\n'))    # 读取本地带embedding词语的词表信息
 
-            num += 1
-            if 0 == num % 100:
-                print('[caiss] bert predict {0} words, time cost is {1}'.format(num, datetime.now() - start))
-                start = datetime.now()
+    num = 0
+    start = datetime.now()
+    for word in words_list:
+        indices, segments = tokenizer.encode(first=word, max_len=4)
+        # 在词向量训练任务中，固定获取第一个词语的信息
+        tensor = model.predict([np.array([indices]), np.array([segments])])[0][1]
+        result_dict = {word: [str(tensor[i])[0:8] for i in range(0, len(tensor))]}
+        fw.writelines(json.dumps(result_dict) + '\n')
+
+        num += 1
+        if 0 == num % 100:
+            print('[caiss] bert predict [{0}] words, [{1}] words left. time cost is {2}'
+                  .format(num, len(words_list) - num, datetime.now() - start))
+            start = datetime.now()
 
     return
 

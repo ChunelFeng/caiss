@@ -1,48 +1,80 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 import json
-import datetime
+import codecs
 
-from bert_serving.client import BertClient
-from python.dataProcess.pyCaissBertServer import *
+import numpy as np
+from datetime import datetime
+from keras_bert import *
 
 
-def build_train_data(data_path, output_path):
+# 根据传入的路径信息，构建bert模型
+def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None):
+    bert_config_path = os.path.join(bert_path, 'bert_config.json')
+    bert_checkpoint_path = os.path.join(bert_path, 'bert_model.ckpt')
+
+    bert_layer = load_trained_model_from_checkpoint(
+        bert_config_path, bert_checkpoint_path, training=training, seq_len=seq_len)
+
+    for layer in bert_layer.layers:
+        layer.trainable = trainable
+
+    return bert_layer
+
+
+# 生成供caiss训练的文件
+def build_train_data(data_path, output_path, bert_model_path):
+    token_dict = {}
+    print('[caiss] begin to load bert vocab.txt...')
+    with codecs.open(bert_model_path + 'vocab.txt', 'r', 'utf8') as reader:
+        for line in reader:
+            token = line.strip()
+            token_dict[token] = len(token_dict)    # 从bert的词表中读取信息
+
+    tokenizer = Tokenizer(token_dict)
+    print('[caiss] begin to build bert model...')
+    model = build_bert_layer(bert_model_path)
+    print('[caiss] build bert model finished...')
+
     words_list = []
     with open(data_path, 'r') as fr:
         for word in fr.readlines():
-            words_list.append(word)
-
-    print('begin to embedding')
-    start = datetime.datetime.now()
-    client = BertClient()
-    tensors = client.encode(words_list)
-    print('bert embedding finished, time cost is : {0}'.format(datetime.datetime.now() - start))
+            words_list.append(word.strip('\n'))    # 读取本地带embedding词语的词表信息
 
     fw = open(output_path, 'w+')
-    for i in range(0, len(words_list)):
-        if 0 == i % 1000:
-            print('already process [{0}] lines, [{1}] lines was left.'.format(i, len(words_list) - i))
-        result_dict = {words_list[i].strip('\n'): [str(tensors[i][j]) for j in range(0, len(tensors[i]))]}
+    num = 0
+    start = datetime.now()
+    for word in words_list:
+        indices, segments = tokenizer.encode(first=word, max_len=4)
+        # 在词向量训练任务中，固定获取第一个词语的信息
+        tensor = model.predict([np.array([indices]), np.array([segments])])[0][1]
+        result_dict = {word: [str(tensor[i])[0:8] for i in range(0, len(tensor))]}
         fw.writelines(json.dumps(result_dict) + '\n')
+
+        num += 1
+        if 0 == num % 100:
+            print('[caiss] bert predict [{0}] words, [{1}] words left. time cost is {2}'
+                  .format(num, len(words_list) - num, datetime.now() - start))
+            start = datetime.now()
+
     return
+
+
+def main():
+    # 开启bert服务
+    bert_model_path = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12/'    # bert模型所在的文件路径
+    embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
+    result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置
+
+    # 构造可供caiss训练的文件内容
+    print('[caiss] begin to build train data...')
+    start = datetime.now()
+    build_train_data(embedding_file_path, result_path, bert_model_path)
+    print('[caiss] build train data finished, time cost is {0}...'.format(datetime.now() - start))
 
 
 # 执行以下逻辑，获取用于caiss库训练的文件内容
 if __name__ == '__main__':
-    # 开启bert服务
-    bert_model_path = r'./uncased_L-12_H-768_A-12'    # bert模型所在的文件路径
-    server = CaissBertServer(bert_model_path)
-    server.start()
-    print('bert server has been started')
-
-    embedding_file_path = r'./doc/english-words-71290.txt'    # 获取需要处理的文档
-    result_path = r'./doc/caiss_train.txt'    # 训练结束后，可供caiss训练的文件的位置
-    # 构造可供caiss训练的文件内容
-    build_train_data(embedding_file_path, result_path)
-
-    # 关闭bert服务
-    server.close()
-    print('bert server has been closed')
-
+    main()

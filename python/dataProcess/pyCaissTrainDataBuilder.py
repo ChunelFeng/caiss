@@ -7,9 +7,8 @@ import codecs
 
 import numpy as np
 from datetime import datetime
-from keras_bert import *
 
-from python.dataProcess.pyCaissBert import *
+from dataProcess.pyCaissBert import *
 
 
 # 生成供caiss训练的文件

@@ -6,9 +6,9 @@ import sys
 import tornado.ioloop
 import tornado.web
 
-from python.dataLogs.summary import SummaryLog
-from python.pyCaiss import *
-from python.dataProcess.pyCaissTrainDataBuilder import *
+from dataLogs.summary import SummaryLog
+from pyCaiss import *
+from dataProcess.pyCaissTrainDataBuilder import *
 
 CAISS_LIB_PATH = r'/home/chunel/code/cpp/caiss/doc/linux/libCaiss.so'                    # caiss动态库所在路径
 CAISS_MODEL_PATH = r'/home/chunel/model/caiss_model/bert_71290words_768dim.caiss'     # caiss模型所在路径

@@ -1,63 +1,38 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import os
 import json
-import codecs
-
 import numpy as np
 from datetime import datetime
-from keras_bert import *
 
-
-# 根据传入的路径信息，构建bert模型
-def build_bert_layer(bert_path, trainable=True, training=False, seq_len=None):
-    bert_config_path = os.path.join(bert_path, 'bert_config.json')
-    bert_checkpoint_path = os.path.join(bert_path, 'bert_model.ckpt')
-
-    bert_layer = load_trained_model_from_checkpoint(
-        bert_config_path, bert_checkpoint_path, training=training, seq_len=seq_len)
-
-    for layer in bert_layer.layers:
-        layer.trainable = trainable
-
-    return bert_layer
+from python.dataProcess.pyCaissBert import *
 
 
 # 生成供caiss训练的文件
 def build_train_data(data_path, output_path, bert_model_path):
-    token_dict = {}
-    print('[caiss] begin to load bert vocab.txt...')
-    with codecs.open(bert_model_path + 'vocab.txt', 'r', 'utf8') as reader:
-        for line in reader:
-            token = line.strip()
-            token_dict[token] = len(token_dict)    # 从bert的词表中读取信息
+    tokenizer = build_bert_tokenizer(bert_model_path)
 
-    tokenizer = Tokenizer(token_dict)
-    print('[caiss] begin to build bert model...')
-    model = build_bert_layer(bert_model_path)
-    print('[caiss] build bert model finished...')
+    model = build_bert_model(bert_model_path)
 
     words_list = []
     with open(data_path, 'r') as fr:
         for word in fr.readlines():
             words_list.append(word.strip('\n'))    # 读取本地带embedding词语的词表信息
 
-    fw = open(output_path, 'w+')
     num = 0
+    fw = open(output_path, 'w+')
     start = datetime.now()
     for word in words_list:
-        # max_len=4是针对词语做embedding的情况下的使用
         indices, segments = tokenizer.encode(first=word, max_len=4)
-        # 在词向量训练任务中，固定获取第一个词语的信息
+        # 在词向量训练任务中，固定获取第一个词语的信息。因为第0个是[CLS]
         tensor = model.predict([np.array([indices]), np.array([segments])])[0][1]
         result_dict = {word: [str(tensor[i])[0:8] for i in range(0, len(tensor))]}
         fw.writelines(json.dumps(result_dict) + '\n')
 
         num += 1
         if 0 == num % 100:
-            print('[caiss] bert predict [{0}] words, [{1}] words left. time cost is {2}'
-                  .format(num, len(words_list) - num, datetime.now() - start))
+            print('[caiss] bert predict [{0} / {1}] words, time cost is {2}.'
+                  .format(num, len(words_list), datetime.now() - start))
             start = datetime.now()
     fw.close()
 

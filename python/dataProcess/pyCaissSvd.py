@@ -12,7 +12,7 @@ N_COMPONENTS = 600    # 降维后，数据的维度信息
 DIM = 768             # 原始维度信息
 SVD_MODEL_PATH = './caiss-svd.plk'    # svd模型的名称
 BERT_PROCESS_TEXT_PATH = './bert_71290words_768dim.txt'
-SVD_PROCESS_TEST_PATH = './svd_71290words_{0}dim.txt'.format(N_COMPONENTS)
+SVD_PROCESS_TEXT_PATH = './svd_71290words_{0}dim.txt'.format(N_COMPONENTS)
 
 
 def svd_load():
@@ -45,7 +45,7 @@ def svd_process():
     joblib.dump(svd, SVD_MODEL_PATH)    # 保存模型的位置信息
 
     start = datetime.datetime.now()
-    fw = open(SVD_PROCESS_TEST_PATH, 'w+')    # 将降维后的数据，写入txt文档中
+    fw = open(SVD_PROCESS_TEXT_PATH, 'w+')    # 将降维后的数据，写入txt文档中
     for i in range(0, len(result_key)):
         result_dict = {result_key[i]: [str(round(float(x_dr[i][j]), 6)) for j in range(0, len(x_dr[i]))]}
         fw.writelines(json.dumps(result_dict) + '\n')

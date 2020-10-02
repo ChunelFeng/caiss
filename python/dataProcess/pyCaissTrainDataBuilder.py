@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import os
 import json
-import codecs
 
 import numpy as np
 from datetime import datetime
 
-from dataProcess.pyCaissBert import *
+from python.dataProcess.pyCaissBert import *
 
 
 # 生成供caiss训练的文件

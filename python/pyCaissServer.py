@@ -2,18 +2,16 @@
 # encoding: utf-8
 
 import sys
-
 import tornado.ioloop
 import tornado.web
-import json
 
-from dataLogs.summary import SummaryLog
-from pyCaiss import *
-from dataProcess.pyCaissTrainDataBuilder import *
+from python.dataLogs.summary import SummaryLog
+from python.pyCaiss import *
+from python.dataProcess.pyCaissTrainDataBuilder import *
 
 CAISS_LIB_PATH = r'/home/chunel/code/cpp/caiss/doc/linux/libCaiss.so'                    # caiss动态库所在路径
 CAISS_MODEL_PATH = r'/home/chunel/model/caiss_model/bert_71290words_768dim.caiss'     # caiss模型所在路径
-BERT_MODEL_PATH = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12'          # bert模型所在路径
+BERT_MODEL_PATH = r'/home/chunel/model/bert_model/uncased_L-12_H-768_A-12/'          # bert模型所在路径
 
 MAX_THREAD_SIZE = 1    # caiss最大并发数量
 DIM = 768              # 数据维度

@@ -6,18 +6,18 @@
 * 由于对于各种算法原理的了解不深，不会调整参数，导致的训练模型结果偏差较大。
 * 开源库对于各种距离的支持有限，无法满足随时变化的实验需求。
 * 标签信息和向量的分离，导致标记和查询需要在不同的步骤中完成。
-* 功能不够全面，无法完全覆盖日常需要的"增删改查"功能。
+* 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
 &ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
-&ensp;&ensp;&ensp;&ensp; 我们把这个库，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&ensp;&ensp;&ensp;&ensp; 我们把这套解决方案，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
 ![caiss架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 ## 2. 使用流程
 
-1，安装python3环境，安装TensorFlow，安装keras-bert库。
+1，安装python3环境，安装TensorFlow，安装keras-bert库，安装numpy库。
 
 2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert模型下载说明](https://blog.csdn.net/qq_34832393/article/details/90414293)
 

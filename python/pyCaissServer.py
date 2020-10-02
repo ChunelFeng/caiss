@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+import json
 import sys
+
+import numpy as np
 import tornado.ioloop
 import tornado.web
 
@@ -57,7 +60,6 @@ class CaissWordHandler(tornado.web.RequestHandler):
 
 class CaissSentenceHandler(tornado.web.RequestHandler):
     def get(self):
-        pass
         query_sent = self.get_argument('sent', '')
         if len(query_sent) == 0:
             self.write('please enter sentence info.')

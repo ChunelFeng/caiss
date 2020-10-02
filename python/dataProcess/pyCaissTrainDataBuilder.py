@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 import json
-
 import numpy as np
 from datetime import datetime
 
@@ -16,12 +15,12 @@ def build_train_data(data_path, output_path, bert_model_path):
     model = build_bert_model(bert_model_path)
 
     words_list = []
-    fw = open(output_path, 'w+')
     with open(data_path, 'r') as fr:
         for word in fr.readlines():
             words_list.append(word.strip('\n'))    # 读取本地带embedding词语的词表信息
 
     num = 0
+    fw = open(output_path, 'w+')
     start = datetime.now()
     for word in words_list:
         indices, segments = tokenizer.encode(first=word, max_len=4)
@@ -35,6 +34,7 @@ def build_train_data(data_path, output_path, bert_model_path):
             print('[caiss] bert predict [{0} / {1}] words, time cost is {2}.'
                   .format(num, len(words_list), datetime.now() - start))
             start = datetime.now()
+    fw.close()
 
     return
 

@@ -50,7 +50,7 @@ extern "C" {
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_CreateHandle(void** handle);
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_CreateHandle(void **handle);
 
     /**
      * 初始化信息

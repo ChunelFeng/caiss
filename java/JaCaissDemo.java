@@ -29,8 +29,9 @@ public class JaCaissDemo {
     public static String QUERY_WORD = "water";
     public static String QUERY_SQL = "SELECT * FROM bert_71290words_768dim WHERE word LIKE 'water' limit 5";
 
-    public static int TrainDemo(JaCaiss caiss) {
+    public static int TrainDemo() {
         // 训练demo
+        JaCaiss caiss = new JaCaiss();
         PointerByReference ptr = new PointerByReference(Pointer.NULL);
         int ret = caiss.CreateHandle(ptr);    // 申请句柄信息
         if (JaCaissDefine.CAISS_RET_OK != ret) {
@@ -55,8 +56,9 @@ public class JaCaissDemo {
         return ret;
     }
 
-    public static int SearchDemo(JaCaiss caiss) {
+    public static int SearchDemo() {
         // 查询demo
+        JaCaiss caiss = new JaCaiss();
         PointerByReference ptr = new PointerByReference(Pointer.NULL);
         int ret = caiss.CreateHandle(ptr);    // 申请句柄信息
         if (JaCaissDefine.CAISS_RET_OK != ret) {
@@ -93,8 +95,7 @@ public class JaCaissDemo {
     }
 
     public static void main(String[] args) {
-        JaCaiss caiss = new JaCaiss();
-        int ret = caiss.Environment(MAX_THREAD_SIZE,
+        int ret = JaCaiss.Environment(MAX_THREAD_SIZE,
                 JaCaissDefine.CAISS_ALGO_TYPE.CAISS_ALGO_HNSW,
                 JaCaissDefine.CAISS_MANAGE_TYPE.CAISS_MANAGE_SYNC);
         if (JaCaissDefine.CAISS_RET_OK != ret) {
@@ -102,10 +103,10 @@ public class JaCaissDemo {
             return;
         }
 
-        // ret = TrainDemo(caiss);
+        // ret = TrainDemo();
         // System.out.println("Train Demo return is : " + ret);
 
-        ret = SearchDemo(caiss);
+        ret = SearchDemo();
         System.out.println("Search Demo return is : " + ret);
     }
 }

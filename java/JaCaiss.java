@@ -35,7 +35,7 @@ public class JaCaiss {
         int CAISS_DestroyHandle(Pointer handle);
     }
 
-    public int Environment(int maxThreadSize, int algoType, int manageType) {
+    public synchronized static int Environment(int maxThreadSize, int algoType, int manageType) {
         return JnaCaiss.instance.CAISS_Environment(maxThreadSize, algoType, manageType);
     }
 

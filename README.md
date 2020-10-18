@@ -46,7 +46,7 @@ CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_CreateHandle(void** handle);
+CAISS_RET_TYPE CAISS_CreateHandle(void **handle);
 
 /**
  * 初始化信息
@@ -272,8 +272,11 @@ static int search() {
 
 int main() {
     /* 使用过程中，请注意添加针对返回值ret的判定 */
-    int ret = 0;
+    int ret = CAISS_RET_OK;
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
+    if (CAISS_RET_OK != ret) {
+        return ret;    // 针对CAISS_*函数返回值，进行异常判定
+    }
 
     ret = train();
     // ret = search();
@@ -333,16 +336,16 @@ int main() {
   $ cmake .    
   $ make  
   即可完成编译（前提：环境中支持cmake命令）。
-* IDE为Visual Studio的开发者，如果在编译过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung ， 邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+* IDE为Visual Studio的开发者，如果在编译过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
 ## 7. 补充说明
 
-* 训练文本样式，请参考/doc/文档中的内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人
-* 训练功能仅支持单线程。查询和插入功能，支持多线程并发
-* 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
-* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止
-* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss ，欢迎随时交流指导。如有使用需求，周末可提供支持服务
+* 训练文本样式，请参考/doc/文档中的内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
+* 训练功能仅支持单线程。查询和插入功能，支持多线程并发。
+* 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法。
+* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
+* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 
 
 ## 8. 版本信息

@@ -19,7 +19,7 @@
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
 
-2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert模型下载说明](https://blog.csdn.net/qq_34832393/article/details/90414293)
+2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 

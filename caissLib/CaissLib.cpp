@@ -131,7 +131,7 @@ CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Save(void *handle,
 
 CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_ExecuteSQL(void *handle,
                                                       const char *sql,
-                                                      CAISS_SQL_CALLBACK sqlCBFunc,
+                                                      CAISS_SEARCH_CALLBACK sqlCBFunc,
                                                       const void *sqlParams) {
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->executeSQL(handle, sql, sqlCBFunc, sqlParams);

@@ -5,8 +5,6 @@
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
 
-#define CAISS_VERSION       ("2.0.1")
-
 #ifdef WIN32
     #define STDCALL __stdcall
     #ifndef CAISS_LIB_API
@@ -33,19 +31,16 @@ using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;
 using CAISS_BOOL = int;
 
-using CAISS_LIST_FLOAT = std::list<CAISS_FLOAT>;
-using CAISS_LIST_STRING = std::list<std::string>;
+using CAISS_FLOAT_ARRAY = std::vector<CAISS_FLOAT>;
+using CAISS_STRING_ARRAY = std::vector<std::string>;
 
 /* 自定义用于计算距离的函数 */
 typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec2, const CAISS_VOID *params);
 /* 查询到结果后，触发的回调函数 */
-typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(CAISS_LIST_STRING &words, CAISS_LIST_FLOAT &distances, const CAISS_VOID *params);
-/* 执行sql过程中，触发的回调函数 */
-typedef CAISS_VOID (STDCALL *CAISS_SQL_CALLBACK)(CAISS_LIST_STRING &words, CAISS_LIST_FLOAT &distances, const CAISS_VOID *params);
+typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(const char *query, const CAISS_STRING_ARRAY &infos, const CAISS_FLOAT_ARRAY &distances, const CAISS_VOID *params);
 
 
 /* 函数返回值定义 */
-#define CAISS_RET_NO_WORD       (2)     // 模型词库中无对应词语问题
 #define CAISS_RET_WARNING       (1)     // 流程告警
 #define CAISS_RET_OK            (0)     // 流程正常
 #define CAISS_RET_ERR           (-1)    // 流程异常

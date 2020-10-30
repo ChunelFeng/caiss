@@ -4,6 +4,7 @@
 
 #include "../CaissDemoInclude.h"
 
+
 int demo_train() {
     CAISS_ECHO("enter train demo...");
     CAISS_FUNCTION_BEGIN
@@ -72,7 +73,7 @@ int demo_insert() {
         vec.push_back(1.0f);
     }
 
-    string word = "this-is-a-new-word";    // 生成一个词语
+    string word = "caiss";    // 生成一个词语
     ret = CAISS_Insert(handle, vec.data(),  word.c_str(), CAISS_INSERT_OVERWRITE);
     CAISS_FUNCTION_CHECK_STATUS
 

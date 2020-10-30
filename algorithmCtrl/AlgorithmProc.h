@@ -45,8 +45,11 @@ public:
      * @param func
      * @return
      */
-    virtual CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-                                const CAISS_DIST_FUNC func) = 0;
+    virtual CAISS_RET_TYPE init(CAISS_MODE mode,
+                                const CAISS_DISTANCE_TYPE distanceType,
+                                const unsigned int dim,
+                                const char *modelPath,
+                                CAISS_DIST_FUNC func) = 0;
 
     // train_mode
     /**
@@ -63,11 +66,11 @@ public:
      * @param showSpan
      * @return
      */
-    virtual CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                                 const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP,
-                                 const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
-                                 const unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
+    virtual CAISS_RET_TYPE train(const char *dataPath, unsigned int maxDataSize, const CAISS_BOOL normalize,
+                                 unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                                 unsigned int realRank, const unsigned int step=DEFAULT_STEP,
+                                 unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                                 unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
     /**
@@ -81,10 +84,10 @@ public:
      * @return
      */
     virtual CAISS_RET_TYPE search(void *info,
-                                  const CAISS_SEARCH_TYPE searchType,
-                                  const unsigned int topK,
-                                  const unsigned int filterEditDistance = 0,
-                                  const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                  CAISS_SEARCH_TYPE searchType,
+                                  unsigned int topK,
+                                  unsigned int filterEditDistance = 0,
+                                  CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
                                   const void *cbParams = nullptr) = 0;
 
     /**
@@ -94,7 +97,7 @@ public:
      * @param insertType
      * @return
      */
-    virtual CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, const CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
+    virtual CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
 
     /**
      * 保存模型信息
@@ -191,10 +194,11 @@ protected:
 
 protected:
     std::string model_path_;
-    unsigned int dim_;
+    unsigned int dim_{};
     CAISS_MODE cur_mode_;
-    CAISS_BOOL normalize_;    // 是否需要标准化数据
+    CAISS_BOOL normalize_{};    // 是否需要标准化数据
     std::string result_;
+    ALOG_WORD2DETAILS_MAP word_details_map_;    // 记录结果使用的信息
     CAISS_DISTANCE_TYPE distance_type_;
 
     LruProc lru_cache_;    // 最近N次的查询记录

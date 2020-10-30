@@ -32,7 +32,7 @@ public:
     // 暂时仅支持同步模式
     CAISS_RET_TYPE executeSQL(void *handle,
             const char *sql,
-            CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
+            CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
             const void *sqlParams = nullptr) override ;
 };
 

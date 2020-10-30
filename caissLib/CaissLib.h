@@ -1,5 +1,5 @@
 /**************************************************************
-* 当前版本：2.0.1
+* 当前版本：2.4.0
 * 作   者: Chunel
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
@@ -41,7 +41,7 @@ extern "C" {
      * @param manageType 并发类型（详见CaissLibDefine.h文件）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(unsigned int maxThreadSize,
+    CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Environment(CAISS_UINT maxThreadSize,
             CAISS_ALGO_TYPE algoType,
             CAISS_MANAGE_TYPE manageType);
 
@@ -65,7 +65,7 @@ extern "C" {
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Init(void *handle,
             CAISS_MODE mode,
             CAISS_DISTANCE_TYPE distanceType,
-            unsigned int dim,
+            CAISS_UINT dim,
             const char *modelPath,
             CAISS_DIST_FUNC distFunc = nullptr);
 
@@ -87,15 +87,15 @@ extern "C" {
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Train(void *handle,
             const char *dataPath,
-            unsigned int maxDataSize,
+            CAISS_UINT maxDataSize,
             CAISS_BOOL normalize,
-            unsigned int maxIndexSize = 64,
+            CAISS_UINT maxIndexSize = 64,
             float precision = 0.95,
-            unsigned int fastRank = 5,
-            unsigned int realRank = 5,
-            unsigned int step = 1,
-            unsigned int maxEpoch = 5,
-            unsigned int showSpan = 1000);
+            CAISS_UINT fastRank = 5,
+            CAISS_UINT realRank = 5,
+            CAISS_UINT step = 1,
+            CAISS_UINT maxEpoch = 5,
+            CAISS_UINT showSpan = 1000);
 
     /**
      * 查询功能
@@ -115,8 +115,8 @@ extern "C" {
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_Search(void *handle,
             void *info,
             CAISS_SEARCH_TYPE searchType,
-            unsigned int topK,
-            unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+            CAISS_UINT topK,
+            CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
             CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
             const void *cbParams = nullptr);
 
@@ -127,7 +127,7 @@ extern "C" {
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResultSize(void *handle,
-            unsigned int &size);
+            CAISS_UINT &size);
 
     /**
      * 获取查询结果信息
@@ -138,7 +138,7 @@ extern "C" {
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_GetResult(void *handle,
             char *result,
-            unsigned int size);
+            CAISS_UINT size);
 
     /**
      * 插入信息
@@ -184,7 +184,7 @@ extern "C" {
      */
     CAISS_LIB_API CAISS_RET_TYPE STDCALL CAISS_ExecuteSQL(void *handle,
             const char *sql,
-            CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
+            CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
             const void *sqlParams = nullptr);
 
     /**

@@ -15,7 +15,7 @@
 
 using namespace std;
 
-class LruProc : UtilsProc {
+class LruProc : public UtilsProc {
 public:
     explicit LruProc(unsigned int capacity) {
         this->cur_size_ = 0;
@@ -27,7 +27,7 @@ public:
         this->capacity_ = DEFAULT_CAPACITY;
     };
 
-    ~LruProc() {
+    ~LruProc() override {
         this->clear();
     }
 
@@ -36,11 +36,11 @@ public:
      * @param word
      * @return
      */
-    string get(const string& word) {
-        string result;
+    ALOG_RET_TYPE get(const string& word) {
+        ALOG_RET_TYPE result;
         auto cur = cache_.find(word);
         if (cur != cache_.end()) {
-            result = cur->second->result;    // 如果找到了
+            result = cur->second->result;    // 找到的情况
             put(word, result);    // 重新放入，就是为了靠前一些
         }
 
@@ -53,7 +53,7 @@ public:
      * @param result
      * @return
      */
-    int put(const string& word, const string result) {
+    int put(const string& word, const ALOG_RET_TYPE& result) {
         auto cur = cache_.find(word);
         if (cur != cache_.end()) {
             nodes_.erase(cache_[word]);    // 删除对应的iter信息

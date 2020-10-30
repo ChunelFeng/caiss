@@ -64,7 +64,7 @@ public:
     // 暂时仅支持同步模式
     virtual CAISS_RET_TYPE executeSQL(void *handle,
             const char *sql,
-            CAISS_SQL_CALLBACK sqlCBFunc,
+            CAISS_SEARCH_CALLBACK sqlCBFunc,
             const void *sqlParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }

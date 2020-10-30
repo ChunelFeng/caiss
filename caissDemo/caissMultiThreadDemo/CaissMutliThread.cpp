@@ -6,13 +6,14 @@
 
 #include <functional>
 #include <future>
+
 #include "../CaissDemoInclude.h"
 
 const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-static int SEARCH_TIMES = 100;
+static int SEARCH_TIMES = 1000;
 
-void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
-    cout << "The query word is [" << (char *)params << "], and the match words may be : ";
+void STDCALL searchCallbackFunc(const char *query, const CAISS_STRING_ARRAY& words, const CAISS_FLOAT_ARRAY& distances, const void *params) {
+    cout << "The query word is [" << query << "], and the match words may be : ";
     for (const auto& word : words) {
         cout << word << " ";
     }
@@ -26,7 +27,7 @@ void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& dist
  */
 int demo_asyncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
-    printf("[caiss] enter demo_asyncMultiThreadSearch function ... \n");
+    CAISS_ECHO("enter demo_asyncMultiThreadSearch function ...");
 
     vector<void *> hdlsVec;
     for (int i = 0; i < max_thread_num_ ; i++) {
@@ -115,7 +116,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
+    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms.", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_DestroyHandle(handle);

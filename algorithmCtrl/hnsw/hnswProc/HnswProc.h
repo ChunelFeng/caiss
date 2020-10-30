@@ -13,14 +13,10 @@
 #include "../../AlgorithmProc.h"
 #include "./HnswProcDefine.h"
 
-using namespace hnswlib;
-using HNSW_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>;
 
 class HnswProc : public AlgorithmProc {
 
 public:
-    std::list<std::string>                 result_words_;
-    std::list<CAISS_FLOAT>                 result_distance_;    // 查找到的距离
 
     explicit HnswProc();
     ~HnswProc() override;
@@ -47,20 +43,20 @@ protected:
     CAISS_RET_TYPE reset();
     CAISS_RET_TYPE loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
     CAISS_RET_TYPE trainModel(std::vector<CaissDataNode> &datas, unsigned int showSpan);
-    CAISS_RET_TYPE buildResult(const CAISS_FLOAT *query, CAISS_SEARCH_TYPE searchType,
-                               HNSW_RET_TYPE &predResult);
+    CAISS_RET_TYPE buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, ALOG_WORD2RESULT_MAP &word2ResultMap);
     CAISS_RET_TYPE loadModel(const char *modelPath);
     CAISS_RET_TYPE createDistancePtr(CAISS_DIST_FUNC distFunc);
     CAISS_RET_TYPE innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
-                                    unsigned int filterEditDistance);
-    CAISS_RET_TYPE searchInLruCache(const char *word, CAISS_SEARCH_TYPE searchType, unsigned int topK, CAISS_BOOL &isGet);
+                                     unsigned int filterEditDistance);
+    CAISS_RET_TYPE processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams);
 
     /* 函数过滤条件 */
-    CAISS_RET_TYPE filterByRules(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result, unsigned int topK,
+    CAISS_RET_TYPE filterByRules(void *info, CAISS_SEARCH_TYPE searchType, ALOG_RET_TYPE &result, unsigned int topK,
                                  unsigned int filterEditDistance);
-    CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, HNSW_RET_TYPE &result,
+    CAISS_RET_TYPE filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, ALOG_RET_TYPE &result,
                                         unsigned int filterEditDistance);
-    CAISS_RET_TYPE filterByIgnoreTrie(HNSW_RET_TYPE &result);
+    CAISS_RET_TYPE filterByIgnoreTrie(ALOG_RET_TYPE &result);
+
 
     // 静态成员变量
 private:

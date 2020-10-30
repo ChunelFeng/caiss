@@ -184,7 +184,7 @@ CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOO
  */
 CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
                                           const char *sql,
-                                          CAISS_SQL_CALLBACK sqlCBFunc,
+                                          CAISS_SEARCH_CALLBACK sqlCBFunc,
                                           const void *sqlParams) {
     CAISS_FUNCTION_BEGIN
 

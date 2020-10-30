@@ -90,7 +90,7 @@ extern "C" {
                                                    CAISS_UINT maxDataSize,
                                                    CAISS_BOOL normalize,
                                                    CAISS_UINT maxIndexSize = 64,
-                                                   float precision = 0.95,
+                                                   CAISS_FLOAT precision = 0.95,
                                                    CAISS_UINT fastRank = 5,
                                                    CAISS_UINT realRank = 5,
                                                    CAISS_UINT step = 1,

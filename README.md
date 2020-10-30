@@ -9,7 +9,7 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
 &ensp;&ensp;&ensp;&ensp; 我们把这套解决方案，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
@@ -38,8 +38,8 @@
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize,
-                                                     CAISS_ALGO_TYPE algoType,
-                                                     CAISS_MANAGE_TYPE manageType);
+                               CAISS_ALGO_TYPE algoType,
+                               CAISS_MANAGE_TYPE manageType);
 
 /**
  * 创建句柄信息
@@ -59,11 +59,11 @@ CAISS_STATUS CAISS_CreateHandle(void **handle);
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_Init(void *handle,
-                                              CAISS_MODE mode,
-                                              CAISS_DISTANCE_TYPE distanceType,
-                                              CAISS_UINT dim,
-                                              const char *modelPath,
-                                              CAISS_DIST_FUNC distFunc = nullptr);
+                        CAISS_MODE mode,
+                        CAISS_DISTANCE_TYPE distanceType,
+                        CAISS_UINT dim,
+                        const char *modelPath,
+                        CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
  * 模型训练功能
@@ -82,16 +82,16 @@ CAISS_STATUS CAISS_Init(void *handle,
  * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
  */
 CAISS_STATUS CAISS_Train(void *handle,
-                                               const char *dataPath,
-                                               CAISS_UINT maxDataSize,
-                                               CAISS_BOOL normalize,
-                                               CAISS_UINT maxIndexSize = 64,
-                                               float precision = 0.95,
-                                               CAISS_UINT fastRank = 5,
-                                               CAISS_UINT realRank = 5,
-                                               CAISS_UINT step = 1,
-                                               CAISS_UINT maxEpoch = 5,
-                                               CAISS_UINT showSpan = 1000);
+                         const char *dataPath,
+                         CAISS_UINT maxDataSize,
+                         CAISS_BOOL normalize,
+                         CAISS_UINT maxIndexSize = 64,
+                         CAISS_FLOAT precision = 0.95,
+                         CAISS_UINT fastRank = 5,
+                         CAISS_UINT realRank = 5,
+                         CAISS_UINT step = 1,
+                         CAISS_UINT maxEpoch = 5,
+                         CAISS_UINT showSpan = 1000);
 
 /**
  * 查询功能
@@ -109,12 +109,12 @@ CAISS_STATUS CAISS_Train(void *handle,
  *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
  */
 CAISS_STATUS CAISS_Search(void *handle,
-                                                void *info,
-                                                CAISS_SEARCH_TYPE searchType,
-                                                CAISS_UINT topK,
-                                                CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
-                                                CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                                                const void *cbParams = nullptr);
+                          void *info,
+                          CAISS_SEARCH_TYPE searchType,
+                          CAISS_UINT topK,
+                          CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+                          CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                          const void *cbParams = nullptr);
 
 /**
  * 获取结果字符串长度
@@ -123,7 +123,7 @@ CAISS_STATUS CAISS_Search(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_GetResultSize(void *handle,
-                                                       CAISS_UINT &size);
+                                 CAISS_UINT &size);
 
 /**
  * 获取查询结果信息
@@ -133,8 +133,8 @@ CAISS_STATUS CAISS_GetResultSize(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_GetResult(void *handle,
-                                                   char *result,
-                                                   CAISS_UINT size);
+                             char *result,
+                             CAISS_UINT size);
 
 /**
  * 插入信息
@@ -146,9 +146,9 @@ CAISS_STATUS CAISS_GetResult(void *handle,
  * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
  */
 CAISS_STATUS CAISS_Insert(void *handle,
-                                                CAISS_FLOAT *node,
-                                                const char *label,
-                                                CAISS_INSERT_TYPE insertType);
+                          CAISS_FLOAT *node,
+                          const char *label,
+                          CAISS_INSERT_TYPE insertType);
 
 /**
  * 忽略信息
@@ -158,8 +158,8 @@ CAISS_STATUS CAISS_Insert(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_Ignore(void *handle,
-                                                const char *label,
-                                                CAISS_BOOL isIgnore = CAISS_TRUE);
+                          const char *label,
+                          CAISS_BOOL isIgnore = CAISS_TRUE);
 
 /**
  * 保存模型
@@ -168,7 +168,7 @@ CAISS_STATUS CAISS_Ignore(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_Save(void *handle,
-                                              const char *modelPath = nullptr);
+                        const char *modelPath = nullptr);
 
 /**
  * 执行sql指令
@@ -179,9 +179,9 @@ CAISS_STATUS CAISS_Save(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
 CAISS_STATUS CAISS_ExecuteSQL(void *handle,
-                                                    const char *sql,
-                                                    CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
-                                                    const void *sqlParams = nullptr);
+                              const char *sql,
+                              CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
+                              const void *sqlParams = nullptr);
 
 /**
  * 销毁句柄信息
@@ -192,7 +192,6 @@ CAISS_STATUS CAISS_DestroyHandle(void *handle);
 ```
 
 ## 4. 使用Demo
-
 ```cpp
 /*
 * 更多使用样例，请参考caissDemo文件夹中内容。
@@ -290,39 +289,44 @@ int main() {
 ## 5. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[water,wine,mud,food,soup]这5个词语，具体结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[wine,mud,food,soup,glass]这5个词语，具体结果信息如下：
 
 ```json
 {
-    "version":"1.2.0",
+    "version":"2.4.0",
     "size":5,
     "distance_type":"inner",
     "search_type":"ann_search",
-    "details":[
+    "result":[
         {
-            "distance":0,
-            "index":287,
-            "label":"water"
-        },
-        {
-            "distance":0.07434636354446411,
-            "index":3102,
-            "label":"wine"
-        },
-        {
-            "distance":0.10038524866104126,
-            "index":6950,
-            "label":"mud"
-        },
-        {
-            "distance":0.10039275884628296,
-            "index":641,
-            "label":"food"
-        },
-        {
-            "distance":0.10307157039642334,
-            "index":7153,
-            "label":"soup"
+            "query":"water",
+            "detail":[
+                {
+                    "distance":0.07434624433517456,
+                    "index":3102,
+                    "label":"wine"
+                },
+                {
+                    "distance":0.10038518905639649,
+                    "index":6950,
+                    "label":"mud"
+                },
+                {
+                    "distance":0.10039234161376953,
+                    "index":641,
+                    "label":"food"
+                },
+                {
+                    "distance":0.10307157039642334,
+                    "index":7153,
+                    "label":"soup"
+                },
+                {
+                    "distance":0.10391676425933838,
+                    "index":1812,
+                    "label":"glass"
+                }
+            ]
         }
     ]
 }
@@ -398,6 +402,6 @@ int main() {
 * 提供C#版本的SDK接口及其对应的使用demo
 
 [2020.10.31 - v2.4.0 - Chunel]
-* 提供多词查询功能
-* 内部缓存优化
+* 提供批量查询功能
+* 优化内部缓存结构
 * 修改输出json格式

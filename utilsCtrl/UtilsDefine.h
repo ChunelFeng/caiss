@@ -84,7 +84,7 @@ inline void CAISS_ECHO(const char *cmd, ...) {
 
 
 #define CAISS_FUNCTION_BEGIN    \
-    CAISS_RET_TYPE ret = CAISS_RET_OK;    \
+    CAISS_STATUS ret = CAISS_RET_OK;    \
 
 #define CAISS_ASSERT_ENVIRONMENT_INIT    \
     if (CAISS_TRUE != g_init) {    \

@@ -28,7 +28,7 @@ ManageProc::~ManageProc() {
 }
 
 
-CAISS_RET_TYPE ManageProc::createHandle(void **handle) {
+CAISS_STATUS ManageProc::createHandle(void **handle) {
     CAISS_FUNCTION_BEGIN
 
     this->lock_.writeLock();    // 如果内部还有句柄信息的话，开始分配句柄操作
@@ -48,7 +48,7 @@ CAISS_RET_TYPE ManageProc::createHandle(void **handle) {
 }
 
 
-CAISS_RET_TYPE ManageProc::destroyHandle(void* handle) {
+CAISS_STATUS ManageProc::destroyHandle(void* handle) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(handle);
 
@@ -68,8 +68,8 @@ CAISS_RET_TYPE ManageProc::destroyHandle(void* handle) {
 }
 
 
-CAISS_RET_TYPE ManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
-                            CAISS_DIST_FUNC distFunc) {
+CAISS_STATUS ManageProc::init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
+                              CAISS_DIST_FUNC distFunc) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

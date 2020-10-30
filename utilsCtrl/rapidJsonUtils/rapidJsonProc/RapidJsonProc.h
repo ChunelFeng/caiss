@@ -22,12 +22,12 @@ public:
     explicit RapidJsonProc();
     ~RapidJsonProc();
 
-    static CAISS_RET_TYPE parseInputData(const char *line, CaissDataNode& node);
-    static CAISS_RET_TYPE buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
-                                                           CAISS_DISTANCE_TYPE distanceType,
-                                                           const std::string& searchType,
-                                                           const unsigned int topK,
-                                                           std::string &result);
+    static CAISS_STATUS parseInputData(const char *line, CaissDataNode& node);
+    static CAISS_STATUS buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
+                                          CAISS_DISTANCE_TYPE distanceType,
+                                          const std::string& searchType,
+                                          const unsigned int topK,
+                                          std::string &result);
 };
 
 

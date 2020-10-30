@@ -22,7 +22,7 @@ SqlProc::~SqlProc()= default;
  * @param sqlParams
  * @return
  */
-CAISS_RET_TYPE SqlProc::parseSql(const char *sql, const void *sqlParams) {
+CAISS_STATUS SqlProc::parseSql(const char *sql, const void *sqlParams) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(sql)
 

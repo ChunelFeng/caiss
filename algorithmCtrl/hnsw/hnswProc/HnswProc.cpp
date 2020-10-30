@@ -65,7 +65,7 @@ HnswProc::~HnswProc() {
 
 
 /************************ 以下是重写的算法基类接口内容 ************************/
-CAISS_RET_TYPE
+CAISS_STATUS
 HnswProc::init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
                const CAISS_DIST_FUNC distFunc = nullptr) {
     CAISS_FUNCTION_BEGIN
@@ -92,7 +92,7 @@ HnswProc::init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, co
 }
 
 
-CAISS_RET_TYPE HnswProc::reset() {
+CAISS_STATUS HnswProc::reset() {
     CAISS_FUNCTION_BEGIN
 
     CAISS_DELETE_PTR(distance_ptr_)
@@ -106,10 +106,10 @@ CAISS_RET_TYPE HnswProc::reset() {
 }
 
 
-CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                               const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                               const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
-                               const unsigned int showSpan) {
+CAISS_STATUS HnswProc::train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
+                             const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                             const unsigned int realRank, const unsigned int step, const unsigned int maxEpoch,
+                             const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(dataPath)
     CAISS_ASSERT_NOT_NULL(this->distance_ptr_)
@@ -154,12 +154,12 @@ CAISS_RET_TYPE HnswProc::train(const char *dataPath, const unsigned int maxDataS
 }
 
 
-CAISS_RET_TYPE HnswProc::search(void *info,
-                                const CAISS_SEARCH_TYPE searchType,
-                                const unsigned int topK,
-                                const unsigned int filterEditDistance,
-                                const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                const void *cbParams) {
+CAISS_STATUS HnswProc::search(void *info,
+                              const CAISS_SEARCH_TYPE searchType,
+                              const unsigned int topK,
+                              const unsigned int filterEditDistance,
+                              const CAISS_SEARCH_CALLBACK searchCBFunc,
+                              const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -188,7 +188,7 @@ CAISS_RET_TYPE HnswProc::search(void *info,
 }
 
 
-CAISS_RET_TYPE HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) {
+CAISS_STATUS HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(node)
     CAISS_ASSERT_NOT_NULL(index)
@@ -231,7 +231,7 @@ CAISS_RET_TYPE HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSE
 }
 
 
-CAISS_RET_TYPE HnswProc::save(const char *modelPath) {
+CAISS_STATUS HnswProc::save(const char *modelPath) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -251,7 +251,7 @@ CAISS_RET_TYPE HnswProc::save(const char *modelPath) {
 }
 
 
-CAISS_RET_TYPE HnswProc::getResultSize(unsigned int &size) {
+CAISS_STATUS HnswProc::getResultSize(unsigned int &size) {
     CAISS_FUNCTION_BEGIN
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
 
@@ -261,7 +261,7 @@ CAISS_RET_TYPE HnswProc::getResultSize(unsigned int &size) {
 }
 
 
-CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
+CAISS_STATUS HnswProc::getResult(char *result, unsigned int size) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(result)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
@@ -273,7 +273,7 @@ CAISS_RET_TYPE HnswProc::getResult(char *result, unsigned int size) {
 }
 
 
-CAISS_RET_TYPE HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
+CAISS_STATUS HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(label)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行
@@ -300,7 +300,7 @@ CAISS_RET_TYPE HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
  * @param datas
  * @return
  */
-CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &datas) {
+CAISS_STATUS HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &datas) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(dataPath);
 
@@ -330,7 +330,7 @@ CAISS_RET_TYPE HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &
 }
 
 
-CAISS_RET_TYPE HnswProc::trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan) {
+CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -351,9 +351,9 @@ CAISS_RET_TYPE HnswProc::trainModel(std::vector<CaissDataNode> &datas, const uns
 }
 
 
-CAISS_RET_TYPE HnswProc::buildResult(unsigned int topK,
-                                     CAISS_SEARCH_TYPE searchType,
-                                     ALOG_WORD2RESULT_MAP &word2ResultMap) {
+CAISS_STATUS HnswProc::buildResult(unsigned int topK,
+                                   CAISS_SEARCH_TYPE searchType,
+                                   ALOG_WORD2RESULT_MAP &word2ResultMap) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -384,7 +384,7 @@ CAISS_RET_TYPE HnswProc::buildResult(unsigned int topK,
 }
 
 
-CAISS_RET_TYPE HnswProc::loadModel(const char *modelPath) {
+CAISS_STATUS HnswProc::loadModel(const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(modelPath)
@@ -398,7 +398,7 @@ CAISS_RET_TYPE HnswProc::loadModel(const char *modelPath) {
 }
 
 
-CAISS_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
+CAISS_STATUS HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_DELETE_PTR(this->distance_ptr_)    // 先删除，确保不会出现重复new的情况
@@ -421,7 +421,7 @@ CAISS_RET_TYPE HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
 }
 
 
-CAISS_RET_TYPE
+CAISS_STATUS
 HnswProc::filterByRules(void *info,
                         const CAISS_SEARCH_TYPE searchType,
                         ALOG_RET_TYPE &result,
@@ -446,7 +446,7 @@ HnswProc::filterByRules(void *info,
 }
 
 
-CAISS_RET_TYPE
+CAISS_STATUS
 HnswProc::filterByEditDistance(void *info,
                                CAISS_SEARCH_TYPE searchType,
                                ALOG_RET_TYPE &result,
@@ -490,7 +490,7 @@ HnswProc::filterByEditDistance(void *info,
  * @param result
  * @return
  */
-CAISS_RET_TYPE HnswProc::filterByIgnoreTrie(ALOG_RET_TYPE &result) {
+CAISS_STATUS HnswProc::filterByIgnoreTrie(ALOG_RET_TYPE &result) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(AlgorithmProc::getIgnoreTrie())
 
@@ -521,13 +521,13 @@ CAISS_RET_TYPE HnswProc::filterByIgnoreTrie(ALOG_RET_TYPE &result) {
  * @param normalize
  * @return
  */
-CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr,
-                                             unsigned int maxDataSize,
-                                             CAISS_BOOL normalize,
-                                             const unsigned int maxIndexSize,
-                                             const unsigned int maxNeighbor,
-                                             const unsigned int efSearch,
-                                             const unsigned int efConstruction) {
+CAISS_STATUS HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distance_ptr,
+                                           unsigned int maxDataSize,
+                                           CAISS_BOOL normalize,
+                                           const unsigned int maxIndexSize,
+                                           const unsigned int maxNeighbor,
+                                           const unsigned int efSearch,
+                                           const unsigned int efConstruction) {
     CAISS_FUNCTION_BEGIN
 
     if (nullptr == HnswProc::hnsw_algo_ptr_) {
@@ -547,8 +547,8 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT>* distan
  * @param modelPath
  * @return
  */
-CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr,
-                                             const std::string &modelPath) {
+CAISS_STATUS HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distance_ptr,
+                                           const std::string &modelPath) {
     CAISS_FUNCTION_BEGIN
 
     if (nullptr == HnswProc::hnsw_algo_ptr_) {
@@ -564,7 +564,7 @@ CAISS_RET_TYPE HnswProc::createHnswSingleton(SpaceInterface<CAISS_FLOAT> *distan
 }
 
 
-CAISS_RET_TYPE HnswProc::destroyHnswSingleton() {
+CAISS_STATUS HnswProc::destroyHnswSingleton() {
     CAISS_FUNCTION_BEGIN
 
     HnswProc::hnsw_algo_lock_.writeLock();
@@ -580,9 +580,9 @@ HierarchicalNSW<CAISS_FLOAT> *HnswProc::getHnswSingleton() {
 }
 
 
-CAISS_RET_TYPE HnswProc::insertByOverwrite(CAISS_FLOAT *node,
-                                           unsigned int label,
-                                           const char *index) {
+CAISS_STATUS HnswProc::insertByOverwrite(CAISS_FLOAT *node,
+                                         unsigned int label,
+                                         const char *index) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(node)    // 传入的信息，已经是normalize后的信息了
@@ -603,7 +603,7 @@ CAISS_RET_TYPE HnswProc::insertByOverwrite(CAISS_FLOAT *node,
 }
 
 
-CAISS_RET_TYPE HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, const char *index) {
+CAISS_STATUS HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, const char *index) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(node)
@@ -630,10 +630,10 @@ CAISS_RET_TYPE HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, 
  * @param filterEditDistance
  * @return
  */
-CAISS_RET_TYPE HnswProc::innerSearchResult(void *info,
-                                           const CAISS_SEARCH_TYPE searchType,
-                                           const unsigned int topK,
-                                           const unsigned int filterEditDistance) {
+CAISS_STATUS HnswProc::innerSearchResult(void *info,
+                                         const CAISS_SEARCH_TYPE searchType,
+                                         const unsigned int topK,
+                                         const unsigned int filterEditDistance) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -720,8 +720,8 @@ CAISS_RET_TYPE HnswProc::innerSearchResult(void *info,
 }
 
 
-CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
-                                                   const vector<CaissDataNode> &datas, float &calcPrecision) {
+CAISS_STATUS HnswProc::checkModelPrecisionEnable(const float targetPrecision, const unsigned int fastRank, const unsigned int realRank,
+                                                 const vector<CaissDataNode> &datas, float &calcPrecision) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -757,8 +757,8 @@ CAISS_RET_TYPE HnswProc::checkModelPrecisionEnable(const float targetPrecision, 
 }
 
 
-CAISS_RET_TYPE HnswProc::processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                         const void *cbParams) {
+CAISS_STATUS HnswProc::processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                       const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     if (nullptr != searchCBFunc) {

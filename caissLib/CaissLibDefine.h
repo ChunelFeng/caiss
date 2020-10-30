@@ -25,7 +25,7 @@
 #include <string>
 
 /* 数据类型定义 */
-using CAISS_RET_TYPE = int;
+using CAISS_STATUS = int;
 using CAISS_VOID = void;
 using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;

@@ -35,7 +35,7 @@ RapidJsonProc::~RapidJsonProc() {
 }
 
 
-CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& dataNode) {
+CAISS_STATUS RapidJsonProc::parseInputData(const char *line, CaissDataNode& dataNode) {
     CAISS_ASSERT_NOT_NULL(line)
 
     CAISS_FUNCTION_BEGIN
@@ -64,11 +64,11 @@ CAISS_RET_TYPE RapidJsonProc::parseInputData(const char *line, CaissDataNode& da
 }
 
 
-CAISS_RET_TYPE RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
-                                                CAISS_DISTANCE_TYPE distanceType,
-                                                const std::string& searchType,
-                                                const unsigned int topK,
-                                                std::string &result) {
+CAISS_STATUS RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
+                                              CAISS_DISTANCE_TYPE distanceType,
+                                              const std::string& searchType,
+                                              const unsigned int topK,
+                                              std::string &result) {
     CAISS_FUNCTION_BEGIN
 
     Document dom;

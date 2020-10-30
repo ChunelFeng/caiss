@@ -45,11 +45,11 @@ public:
      * @param func
      * @return
      */
-    virtual CAISS_RET_TYPE init(CAISS_MODE mode,
-                                const CAISS_DISTANCE_TYPE distanceType,
-                                const unsigned int dim,
-                                const char *modelPath,
-                                CAISS_DIST_FUNC func) = 0;
+    virtual CAISS_STATUS init(CAISS_MODE mode,
+                              const CAISS_DISTANCE_TYPE distanceType,
+                              const unsigned int dim,
+                              const char *modelPath,
+                              CAISS_DIST_FUNC func) = 0;
 
     // train_mode
     /**
@@ -66,11 +66,11 @@ public:
      * @param showSpan
      * @return
      */
-    virtual CAISS_RET_TYPE train(const char *dataPath, unsigned int maxDataSize, const CAISS_BOOL normalize,
-                                 unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 unsigned int realRank, const unsigned int step=DEFAULT_STEP,
-                                 unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
-                                 unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
+    virtual CAISS_STATUS train(const char *dataPath, unsigned int maxDataSize, const CAISS_BOOL normalize,
+                               unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                               unsigned int realRank, const unsigned int step=DEFAULT_STEP,
+                               unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                               unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
     /**
@@ -83,12 +83,12 @@ public:
      * @param cbParams
      * @return
      */
-    virtual CAISS_RET_TYPE search(void *info,
-                                  CAISS_SEARCH_TYPE searchType,
-                                  unsigned int topK,
-                                  unsigned int filterEditDistance = 0,
-                                  CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                                  const void *cbParams = nullptr) = 0;
+    virtual CAISS_STATUS search(void *info,
+                                CAISS_SEARCH_TYPE searchType,
+                                unsigned int topK,
+                                unsigned int filterEditDistance = 0,
+                                CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                const void *cbParams = nullptr) = 0;
 
     /**
      * 插入结果信息
@@ -97,21 +97,21 @@ public:
      * @param insertType
      * @return
      */
-    virtual CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
+    virtual CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
 
     /**
      * 保存模型信息
      * @param modelPath
      * @return
      */
-    virtual CAISS_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
+    virtual CAISS_STATUS save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
 
     /**
      * 获取结果的长度
      * @param size
      * @return
      */
-    virtual CAISS_RET_TYPE getResultSize(unsigned int& size) = 0;
+    virtual CAISS_STATUS getResultSize(unsigned int& size) = 0;
 
     /**
      * 获取结果
@@ -119,7 +119,7 @@ public:
      * @param size
      * @return
      */
-    virtual CAISS_RET_TYPE getResult(char *result, unsigned int size) = 0;
+    virtual CAISS_STATUS getResult(char *result, unsigned int size) = 0;
 
 
     /**
@@ -128,7 +128,7 @@ public:
      * @param isIgnore 放入忽略列表/从忽略列表中取出
      * @return
      */
-    virtual CAISS_RET_TYPE ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
+    virtual CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
 
 
 protected:
@@ -139,7 +139,7 @@ protected:
      * @param dim
      * @return
      */
-    CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
+    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
         if (CAISS_FALSE == this->normalize_) {
             return CAISS_RET_OK;    // 如果不需要归一化，直接返回
         }

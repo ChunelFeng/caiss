@@ -11,7 +11,7 @@ const static unsigned int NEIGHBOR_NUMS_DEFAULT = 64;
 const static unsigned int EF_SEARCH_DEFAULT = 200;
 const static unsigned int EF_CONSTRUCTOR_DEFAULT = 200;
 const static std::string CAISS_SEPARATOR = "|";
-const static std::string QUERY_RESULT = "query-result";
+const static std::string QUERY_VIA_ARRAY = "";
 
 
 struct HnswTrainParams {

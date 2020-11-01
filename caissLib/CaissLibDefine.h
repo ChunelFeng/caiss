@@ -1,6 +1,10 @@
-//
-// Created by Chunel on 2020/5/23.
-//
+/**
+ * @author Chunel
+ * @Name CaissLibDefine.h
+ * @date 2020/5/15 1:23 上午
+ * @Desc Caiss库类型定义头文件
+ * @Version 2.4.0
+ */
 
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
@@ -26,10 +30,12 @@
 
 /* 数据类型定义 */
 using CAISS_STATUS = int;
+using CAISS_HANDLE = void*;
 using CAISS_VOID = void;
 using CAISS_UINT = unsigned int;
 using CAISS_FLOAT = float;
 using CAISS_BOOL = int;
+using CAISS_STRING = const char*;
 
 using CAISS_FLOAT_ARRAY = std::vector<CAISS_FLOAT>;
 using CAISS_STRING_ARRAY = std::vector<std::string>;

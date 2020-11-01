@@ -18,17 +18,12 @@
 ## 2. 使用流程
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
-
 2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)
-
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
-
 4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置（embedding_file_path），bert模型的位置（bert_model_path）。函数执行完毕后，会在result_path位置，生成可用于caiss库训练的文本内容。
-
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 ## 3. 相关接口定义
-
 ```cpp
 /**
  * 初始化环境信息
@@ -46,7 +41,7 @@ CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize,
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_CreateHandle(void **handle);
+CAISS_STATUS CAISS_CreateHandle(CAISS_HANDLE *handle);
 
 /**
  * 初始化信息
@@ -58,11 +53,11 @@ CAISS_STATUS CAISS_CreateHandle(void **handle);
  * @param distFunc 距离计算函数（仅针对自定义距离计算生效）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Init(void *handle,
+CAISS_STATUS CAISS_Init(CAISS_HANDLE handle,
                         CAISS_MODE mode,
                         CAISS_DISTANCE_TYPE distanceType,
                         CAISS_UINT dim,
-                        const char *modelPath,
+                        CAISS_STRING modelPath,
                         CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
@@ -81,8 +76,8 @@ CAISS_STATUS CAISS_Init(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
  */
-CAISS_STATUS CAISS_Train(void *handle,
-                         const char *dataPath,
+CAISS_STATUS CAISS_Train(CAISS_HANDLE handle,
+                         CAISS_STRING dataPath,
                          CAISS_UINT maxDataSize,
                          CAISS_BOOL normalize,
                          CAISS_UINT maxIndexSize = 64,
@@ -102,13 +97,13 @@ CAISS_STATUS CAISS_Train(void *handle,
  * @param filterEditDistance 需要过滤的最小词语编辑距离
  * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
  * @param cbParams 回调函数中，传入的参数信息
- * @return 运行成功返回0，警告返回1，词查询模式下，没有找到单词返回2，其他异常值，参考错误码定义
+ * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice filterEditDistance仅针对根据单词过滤的情况下生效。
  *         =-1表示不过滤；=0表示过滤跟当前词语完全相同的；
  *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
  *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
  */
-CAISS_STATUS CAISS_Search(void *handle,
+CAISS_STATUS CAISS_Search(CAISS_HANDLE handle,
                           void *info,
                           CAISS_SEARCH_TYPE searchType,
                           CAISS_UINT topK,
@@ -122,7 +117,7 @@ CAISS_STATUS CAISS_Search(void *handle,
  * @param size 结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_GetResultSize(void *handle,
+CAISS_STATUS CAISS_GetResultSize(CAISS_HANDLE handle,
                                  CAISS_UINT &size);
 
 /**
@@ -132,7 +127,7 @@ CAISS_STATUS CAISS_GetResultSize(void *handle,
  * @param size 对应结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_GetResult(void *handle,
+CAISS_STATUS CAISS_GetResult(CAISS_HANDLE handle,
                              char *result,
                              CAISS_UINT size);
 
@@ -145,9 +140,9 @@ CAISS_STATUS CAISS_GetResult(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
  */
-CAISS_STATUS CAISS_Insert(void *handle,
+CAISS_STATUS CAISS_Insert(CAISS_HANDLE handle,
                           CAISS_FLOAT *node,
-                          const char *label,
+                          CAISS_STRING label,
                           CAISS_INSERT_TYPE insertType);
 
 /**
@@ -157,8 +152,8 @@ CAISS_STATUS CAISS_Insert(void *handle,
  * @param isIgnore 表示忽略（true）或者不再忽略（false）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Ignore(void *handle,
-                          const char *label,
+CAISS_STATUS CAISS_Ignore(CAISS_HANDLE handle,
+                          CAISS_STRING label,
                           CAISS_BOOL isIgnore = CAISS_TRUE);
 
 /**
@@ -167,8 +162,8 @@ CAISS_STATUS CAISS_Ignore(void *handle,
  * @param modelPath 模型保存路径（默认值是覆盖当前模型）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Save(void *handle,
-                        const char *modelPath = nullptr);
+CAISS_STATUS CAISS_Save(CAISS_HANDLE handle,
+                        CAISS_STRING modelPath = nullptr);
 
 /**
  * 执行sql指令
@@ -178,8 +173,8 @@ CAISS_STATUS CAISS_Save(void *handle,
  * @param sqlParams 传入的条件信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_ExecuteSQL(void *handle,
-                              const char *sql,
+CAISS_STATUS CAISS_ExecuteSQL(CAISS_HANDLE handle,
+                              CAISS_STRING sql,
                               CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
                               const void *sqlParams = nullptr);
 
@@ -188,7 +183,7 @@ CAISS_STATUS CAISS_ExecuteSQL(void *handle,
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_DestroyHandle(void *handle);
+CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
 ```
 
 ## 4. 使用Demo
@@ -205,28 +200,28 @@ CAISS_STATUS CAISS_DestroyHandle(void *handle);
 
 using namespace std;
 
-static const unsigned int max_thread_num_ = 1;    // 线程数量
+static const CAISS_UINT max_thread_num_ = 1;    // 线程数量
 static const CAISS_ALGO_TYPE algo_type_ = CAISS_ALGO_HNSW;
 static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
-static const unsigned int dim_ = 768;    // 向量维度
+static const CAISS_UINT dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static const char *info_ = "water";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
-static const unsigned int top_k_ = 5;
+static const CAISS_UINT top_k_ = 5;
 
 static const char *data_path_ = "demo_2500words_768dim.txt";
-static const unsigned int max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
+static const CAISS_UINT max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
-static const unsigned int max_index_size_ = 64;     // 标签的最大长度
-static const float precision_ = 0.95;               // 模型精确度
-static const unsigned int fast_rank_ = 5;
-static const unsigned int real_rank_ = 5;
-static const unsigned int step_ = 1;
-static const unsigned int max_epoch_ = 3;
-static const unsigned int show_span_ = 1000;
+static const CAISS_UINT max_index_size_ = 64;     // 标签的最大长度
+static const CAISS_FLOAT precision_ = 0.95f;               // 模型精确度
+static const CAISS_UINT fast_rank_ = 5;
+static const CAISS_UINT real_rank_ = 5;
+static const CAISS_UINT step_ = 1;
+static const CAISS_UINT max_epoch_ = 3;
+static const CAISS_UINT show_span_ = 1000;
 
 static int train() {
     /* 训练功能 */

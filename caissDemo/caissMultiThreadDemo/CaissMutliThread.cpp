@@ -118,7 +118,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms.", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
+    CAISS_ECHO("[%d] thread process [%d] times query, cost [%d] ms.", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_DestroyHandle(handle);

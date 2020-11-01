@@ -1,5 +1,5 @@
 /**
- * @author junfeng.fj
+ * @author Chunel
  * @Name JavaCaissDefine.java
  * @date 2020/9/15 12:53 下午
  * @Desc

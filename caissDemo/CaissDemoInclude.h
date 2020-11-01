@@ -1,5 +1,6 @@
 //
 // Created by Chunel on 2020/6/20.
+// demo参数配置
 //
 
 #ifndef CAISS_CAISSDEMOINCLUDE_H
@@ -22,7 +23,7 @@
 #define dim_ (768)
 #define model_path_ ("bert_71290words_768dim.caiss")
 #define dist_func_ (nullptr)
-#define info_ ("water")
+#define info_ ("hello|world")
 #define search_type_ (CAISS_SEARCH_WORD)
 #define top_k_ (5)
 #define filter_edit_distance_ (0)

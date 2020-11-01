@@ -6,7 +6,6 @@
 
 
 int demo_sql_search(){
-
     CAISS_ECHO("enter sql search demo...");
     CAISS_FUNCTION_BEGIN
 

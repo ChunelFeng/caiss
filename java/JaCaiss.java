@@ -1,5 +1,5 @@
 /**
- * @author junfeng.fj
+ * @author Chunel
  * @Name JavaCaiss.java
  * @date 2020/9/15 1:23 上午
  * @Desc 具体函数功能，请参考说明文档
@@ -35,7 +35,7 @@ public class JaCaiss {
         int CAISS_DestroyHandle(Pointer handle);
     }
 
-    public int Environment(int maxThreadSize, int algoType, int manageType) {
+    public synchronized static int Environment(int maxThreadSize, int algoType, int manageType) {
         return JnaCaiss.instance.CAISS_Environment(maxThreadSize, algoType, manageType);
     }
 

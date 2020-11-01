@@ -11,7 +11,7 @@
  * @param size
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
+CAISS_STATUS SyncManageProc::getResultSize(void *handle, unsigned int &size) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -31,7 +31,7 @@ CAISS_RET_TYPE SyncManageProc::getResultSize(void *handle, unsigned int &size) {
  * @param size
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
+CAISS_STATUS SyncManageProc::getResult(void *handle, char *result, const unsigned int size) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -55,8 +55,8 @@ CAISS_RET_TYPE SyncManageProc::getResult(void *handle, char *result, const unsig
  * @param cbParams
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
-        const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
+CAISS_STATUS SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
+                                    const unsigned int filterEditDistance, const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -88,10 +88,10 @@ CAISS_RET_TYPE SyncManageProc::search(void *handle, void *info, CAISS_SEARCH_TYP
  * @param showSpan
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize,
-        CAISS_BOOL normalize, const unsigned int maxIndexSize, const float precision,
-        const unsigned int fastRank, const unsigned int realRank, const unsigned int step,
-        const unsigned int maxEpoch, const unsigned int showSpan) {
+CAISS_STATUS SyncManageProc::train(void *handle, const char *dataPath, const unsigned int maxDataSize,
+                                   CAISS_BOOL normalize, const unsigned int maxIndexSize, const float precision,
+                                   const unsigned int fastRank, const unsigned int realRank, const unsigned int step,
+                                   const unsigned int maxEpoch, const unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -113,7 +113,7 @@ CAISS_RET_TYPE SyncManageProc::train(void *handle, const char *dataPath, const u
  * @param modelPath
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
+CAISS_STATUS SyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -136,7 +136,7 @@ CAISS_RET_TYPE SyncManageProc::save(void *handle, const char *modelPath) {
  * @param insertType
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+CAISS_STATUS SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
 
     /* 插入逻辑设计到写锁，还是使用同步的方式进行 */
@@ -159,7 +159,7 @@ CAISS_RET_TYPE SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const cha
  * @param isIgnore
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
+CAISS_STATUS SyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);
@@ -182,10 +182,10 @@ CAISS_RET_TYPE SyncManageProc::ignore(void *handle, const char *label, CAISS_BOO
  * @param sqlParams
  * @return
  */
-CAISS_RET_TYPE SyncManageProc::executeSQL(void *handle,
-                                          const char *sql,
-                                          CAISS_SQL_CALLBACK sqlCBFunc,
-                                          const void *sqlParams) {
+CAISS_STATUS SyncManageProc::executeSQL(void *handle,
+                                        const char *sql,
+                                        CAISS_SEARCH_CALLBACK sqlCBFunc,
+                                        const void *sqlParams) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(sql)

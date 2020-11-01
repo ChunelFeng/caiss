@@ -26,9 +26,9 @@ RWLock AsyncManageProc::memory_pool_lock_;
  * @param showSpan
  * @return
  */
-CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
-                                      unsigned int maxIndexSize, float precision, unsigned int fastRank, unsigned int realRank,
-                                      unsigned int step, unsigned int maxEpoch, unsigned int showSpan) {
+CAISS_STATUS AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+                                    unsigned int maxIndexSize, float precision, unsigned int fastRank, unsigned int realRank,
+                                    unsigned int step, unsigned int maxEpoch, unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -68,13 +68,13 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
  * @param cbParams
  * @return
  */
-CAISS_RET_TYPE AsyncManageProc::search(void *handle,
-                                       void *info,
-                                       CAISS_SEARCH_TYPE searchType,
-                                       unsigned int topK,
-                                       const unsigned int filterEditDistance,
-                                       const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                       const void *cbParams) {
+CAISS_STATUS AsyncManageProc::search(void *handle,
+                                     void *info,
+                                     CAISS_SEARCH_TYPE searchType,
+                                     unsigned int topK,
+                                     const unsigned int filterEditDistance,
+                                     const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                     const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -114,7 +114,7 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
  * @param modelPath
  * @return
  */
-CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
+CAISS_STATUS AsyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -145,7 +145,7 @@ CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
  * @param insertType 数据第几个信息
  * @return
  */
-CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+CAISS_STATUS AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -181,7 +181,7 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
  * @param isIgnore
  * @return
  */
-CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
+CAISS_STATUS AsyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);

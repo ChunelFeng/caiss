@@ -9,7 +9,7 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
 &ensp;&ensp;&ensp;&ensp; 我们把这套解决方案，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
@@ -17,9 +17,9 @@
 
 ## 2. 使用流程
 
-1，安装python3环境，安装TensorFlow，安装keras-bert库，安装numpy库。
+1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
 
-2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert模型下载说明](https://blog.csdn.net/qq_34832393/article/details/90414293)
+2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 
@@ -28,7 +28,6 @@
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 ## 3. 相关接口定义
-
 ```cpp
 /**
  * 初始化环境信息
@@ -37,16 +36,16 @@
  * @param manageType 并发类型（详见CaissLibDefine.h文件）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_Environment(unsigned int maxThreadSize,
-        CAISS_ALGO_TYPE algoType,
-        CAISS_MANAGE_TYPE manageType);
+CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize,
+                               CAISS_ALGO_TYPE algoType,
+                               CAISS_MANAGE_TYPE manageType);
 
 /**
  * 创建句柄信息
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_CreateHandle(void **handle);
+CAISS_STATUS CAISS_CreateHandle(CAISS_HANDLE *handle);
 
 /**
  * 初始化信息
@@ -58,12 +57,12 @@ CAISS_RET_TYPE CAISS_CreateHandle(void **handle);
  * @param distFunc 距离计算函数（仅针对自定义距离计算生效）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_Init(void *handle,
-        CAISS_MODE mode,
-        CAISS_DISTANCE_TYPE distanceType,
-        unsigned int dim,
-        const char *modelPath,
-        CAISS_DIST_FUNC distFunc = nullptr);
+CAISS_STATUS CAISS_Init(CAISS_HANDLE handle,
+                        CAISS_MODE mode,
+                        CAISS_DISTANCE_TYPE distanceType,
+                        CAISS_UINT dim,
+                        CAISS_STRING modelPath,
+                        CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
  * 模型训练功能
@@ -81,17 +80,17 @@ CAISS_RET_TYPE CAISS_Init(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
  */
-CAISS_RET_TYPE CAISS_Train(void *handle,
-        const char *dataPath,
-        unsigned int maxDataSize,
-        CAISS_BOOL normalize,
-        unsigned int maxIndexSize = 64,
-        float precision = 0.95,
-        unsigned int fastRank = 5,
-        unsigned int realRank = 5,
-        unsigned int step = 1,
-        unsigned int maxEpoch = 5,
-        unsigned int showSpan = 1000);
+CAISS_STATUS CAISS_Train(CAISS_HANDLE handle,
+                         CAISS_STRING dataPath,
+                         CAISS_UINT maxDataSize,
+                         CAISS_BOOL normalize,
+                         CAISS_UINT maxIndexSize = 64,
+                         CAISS_FLOAT precision = 0.95,
+                         CAISS_UINT fastRank = 5,
+                         CAISS_UINT realRank = 5,
+                         CAISS_UINT step = 1,
+                         CAISS_UINT maxEpoch = 5,
+                         CAISS_UINT showSpan = 1000);
 
 /**
  * 查询功能
@@ -102,19 +101,19 @@ CAISS_RET_TYPE CAISS_Train(void *handle,
  * @param filterEditDistance 需要过滤的最小词语编辑距离
  * @param searchCBFunc 查询到结果后，执行回调函数，传入的是查询到结果的word信息和distance信息
  * @param cbParams 回调函数中，传入的参数信息
- * @return 运行成功返回0，警告返回1，词查询模式下，没有找到单词返回2，其他异常值，参考错误码定义
+ * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice filterEditDistance仅针对根据单词过滤的情况下生效。
  *         =-1表示不过滤；=0表示过滤跟当前词语完全相同的；
  *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
  *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
  */
-CAISS_RET_TYPE CAISS_Search(void *handle,
-        void *info,
-        CAISS_SEARCH_TYPE searchType,
-        unsigned int topK,
-        unsigned int filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
-        CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-        const void *cbParams = nullptr);
+CAISS_STATUS CAISS_Search(CAISS_HANDLE handle,
+                          void *info,
+                          CAISS_SEARCH_TYPE searchType,
+                          CAISS_UINT topK,
+                          CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+                          CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                          const void *cbParams = nullptr);
 
 /**
  * 获取结果字符串长度
@@ -122,8 +121,8 @@ CAISS_RET_TYPE CAISS_Search(void *handle,
  * @param size 结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_GetResultSize(void *handle,
-        unsigned int &size);
+CAISS_STATUS CAISS_GetResultSize(CAISS_HANDLE handle,
+                                 CAISS_UINT &size);
 
 /**
  * 获取查询结果信息
@@ -132,9 +131,9 @@ CAISS_RET_TYPE CAISS_GetResultSize(void *handle,
  * @param size 对应结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_GetResult(void *handle,
-        char *result,
-        unsigned int size);
+CAISS_STATUS CAISS_GetResult(CAISS_HANDLE handle,
+                             char *result,
+                             CAISS_UINT size);
 
 /**
  * 插入信息
@@ -145,10 +144,10 @@ CAISS_RET_TYPE CAISS_GetResult(void *handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
  */
-CAISS_RET_TYPE CAISS_Insert(void *handle,
-        CAISS_FLOAT *node,
-        const char *label,
-        CAISS_INSERT_TYPE insertType);
+CAISS_STATUS CAISS_Insert(CAISS_HANDLE handle,
+                          CAISS_FLOAT *node,
+                          CAISS_STRING label,
+                          CAISS_INSERT_TYPE insertType);
 
 /**
  * 忽略信息
@@ -157,9 +156,9 @@ CAISS_RET_TYPE CAISS_Insert(void *handle,
  * @param isIgnore 表示忽略（true）或者不再忽略（false）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_Ignore(void *handle,
-        const char *label,
-        CAISS_BOOL isIgnore = CAISS_TRUE);
+CAISS_STATUS CAISS_Ignore(CAISS_HANDLE handle,
+                          CAISS_STRING label,
+                          CAISS_BOOL isIgnore = CAISS_TRUE);
 
 /**
  * 保存模型
@@ -167,8 +166,8 @@ CAISS_RET_TYPE CAISS_Ignore(void *handle,
  * @param modelPath 模型保存路径（默认值是覆盖当前模型）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_Save(void *handle,
-        const char *modelPath = nullptr);
+CAISS_STATUS CAISS_Save(CAISS_HANDLE handle,
+                        CAISS_STRING modelPath = nullptr);
 
 /**
  * 执行sql指令
@@ -178,21 +177,20 @@ CAISS_RET_TYPE CAISS_Save(void *handle,
  * @param sqlParams 传入的条件信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_ExecuteSQL(void *handle,
-        const char *sql,
-        CAISS_SQL_CALLBACK sqlCBFunc = nullptr,
-        const void *sqlParams = nullptr);
+CAISS_STATUS CAISS_ExecuteSQL(CAISS_HANDLE handle,
+                              CAISS_STRING sql,
+                              CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
+                              const void *sqlParams = nullptr);
 
 /**
  * 销毁句柄信息
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_RET_TYPE CAISS_DestroyHandle(void *handle);
+CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
 ```
 
 ## 4. 使用Demo
-
 ```cpp
 /*
 * 更多使用样例，请参考caissDemo文件夹中内容。
@@ -206,32 +204,32 @@ CAISS_RET_TYPE CAISS_DestroyHandle(void *handle);
 
 using namespace std;
 
-static const unsigned int max_thread_num_ = 1;    // 线程数量
+static const CAISS_UINT max_thread_num_ = 1;    // 线程数量
 static const CAISS_ALGO_TYPE algo_type_ = CAISS_ALGO_HNSW;
 static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
-static const unsigned int dim_ = 768;    // 向量维度
+static const CAISS_UINT dim_ = 768;    // 向量维度
 static const char *model_path_ = "demo_2500words_768dim.caiss";
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static const char *info_ = "water";
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
-static const unsigned int top_k_ = 5;
+static const CAISS_UINT top_k_ = 5;
 
 static const char *data_path_ = "demo_2500words_768dim.txt";
-static const unsigned int max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
+static const CAISS_UINT max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
-static const unsigned int max_index_size_ = 64;     // 标签的最大长度
-static const float precision_ = 0.95;               // 模型精确度
-static const unsigned int fast_rank_ = 5;
-static const unsigned int real_rank_ = 5;
-static const unsigned int step_ = 1;
-static const unsigned int max_epoch_ = 3;
-static const unsigned int show_span_ = 1000;
+static const CAISS_UINT max_index_size_ = 64;     // 标签的最大长度
+static const CAISS_FLOAT precision_ = 0.95f;               // 模型精确度
+static const CAISS_UINT fast_rank_ = 5;
+static const CAISS_UINT real_rank_ = 5;
+static const CAISS_UINT step_ = 1;
+static const CAISS_UINT max_epoch_ = 3;
+static const CAISS_UINT show_span_ = 1000;
 
 static int train() {
     /* 训练功能 */
-    int ret = CAISS_RET_OK;
+    CAISS_STATUS ret = CAISS_RET_OK;
 
     void *handle = nullptr;
     ret = CAISS_CreateHandle(&handle);
@@ -247,7 +245,7 @@ static int train() {
 
 static int search() {
     /* 查询功能 */
-    int ret = CAISS_RET_OK;
+    CAISS_STATUS ret = CAISS_RET_OK;
 
     void *handle = nullptr;
     ret = CAISS_CreateHandle(&handle);
@@ -272,8 +270,11 @@ static int search() {
 
 int main() {
     /* 使用过程中，请注意添加针对返回值ret的判定 */
-    int ret = 0;
+    CAISS_STATUS ret = CAISS_RET_OK;
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
+    if (CAISS_RET_OK != ret) {
+        return ret;    // 针对CAISS_*函数返回值，进行异常判定
+    }
 
     ret = train();
     // ret = search();
@@ -287,39 +288,44 @@ int main() {
 ## 5. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[water,wine,mud,food,soup]这5个词语，具体结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[wine,mud,food,soup,glass]这5个词语，具体结果信息如下：
 
 ```json
 {
-    "version":"1.2.0",
+    "version":"2.4.0",
     "size":5,
     "distance_type":"inner",
     "search_type":"ann_search",
-    "details":[
+    "result":[
         {
-            "distance":0,
-            "index":287,
-            "label":"water"
-        },
-        {
-            "distance":0.07434636354446411,
-            "index":3102,
-            "label":"wine"
-        },
-        {
-            "distance":0.10038524866104126,
-            "index":6950,
-            "label":"mud"
-        },
-        {
-            "distance":0.10039275884628296,
-            "index":641,
-            "label":"food"
-        },
-        {
-            "distance":0.10307157039642334,
-            "index":7153,
-            "label":"soup"
+            "query":"water",
+            "details":[
+                {
+                    "distance":0.07434624433517456,
+                    "index":3102,
+                    "label":"wine"
+                },
+                {
+                    "distance":0.10038518905639649,
+                    "index":6950,
+                    "label":"mud"
+                },
+                {
+                    "distance":0.10039234161376953,
+                    "index":641,
+                    "label":"food"
+                },
+                {
+                    "distance":0.10307157039642334,
+                    "index":7153,
+                    "label":"soup"
+                },
+                {
+                    "distance":0.10391676425933838,
+                    "index":1812,
+                    "label":"glass"
+                }
+            ]
         }
     ]
 }
@@ -329,21 +335,21 @@ int main() {
 ## 6. 编译说明
 
 * 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
-
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
   $ cmake .    
   $ make  
   即可完成编译（前提：环境中支持cmake命令）。
+* IDE为Visual Studio的开发者，如果在编译过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
 ## 7. 补充说明
 
-* 训练文本样式，请参考文档中的内容
-* 训练功能仅支持单线程。查询和插入功能，支持多线程并发
-* 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法
-* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止
-* doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练，或者联系微信：Chunel_Fung
-* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss 。欢迎随时交流指导
+* 训练文本样式，请参考/doc/文档中的内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
+* 训练功能仅支持单线程。查询和插入功能，支持多线程并发。
+* 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法。
+* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
+* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
+
 
 ## 8. 版本信息
 
@@ -373,7 +379,7 @@ int main() {
 * 优化异步查询过程中，查询单词信息内存自动释放的问题
 
 [2020.08.01 - v1.5.2 - Chunel]
-* mac版本中，提供并行计算方法，进一步减少查询耗时
+* 提供并行计算方法，进一步减少查询耗时
 * 解决跨平台兼容性问题
 
 [2020.08.22 - v1.6.0 - Chunel]
@@ -389,3 +395,12 @@ int main() {
 
 [2020.09.19 - v2.1.0 - Chunel]
 * 提供Java版本的SDK接口及其对应的使用demo
+
+[2020.10.01 - v2.2.0 - Chunel]
+* 优化文本训练方式，解决了针对tensorflow-v2.0及其以上版本的兼容性问题
+* 提供C#版本的SDK接口及其对应的使用demo
+
+[2020.10.31 - v2.4.0 - Chunel]
+* 提供批量查询功能
+* 优化内部缓存结构
+* 修改输出json格式

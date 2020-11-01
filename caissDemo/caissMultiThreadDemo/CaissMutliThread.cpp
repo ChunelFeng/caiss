@@ -1,18 +1,22 @@
 //
 // Created by Chunel on 2020/6/20.
-// 包含同步调用和异步调用的多线程demo
+// 多线程版本demo，介绍同步/异步多线程调用方法
 //
 
 
 #include <functional>
 #include <future>
+
 #include "../CaissDemoInclude.h"
 
 const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-static int SEARCH_TIMES = 100;
+static int SEARCH_TIMES = 1000;
 
-void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& distances, const void *params) {
-    cout << "The query word is [" << (char *)params << "], and the match words may be : ";
+void STDCALL searchCallbackFunc(const char *query,
+                                const CAISS_STRING_ARRAY& words,
+                                const CAISS_FLOAT_ARRAY& distances,
+                                const void *params) {
+    cout << "The query word is [" << query << "], and the match words may be : ";
     for (const auto& word : words) {
         cout << word << " ";
     }
@@ -26,7 +30,7 @@ void STDCALL searchCallbackFunc(CAISS_LIST_STRING& words, CAISS_LIST_FLOAT& dist
  */
 int demo_asyncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
-    printf("[caiss] enter demo_asyncMultiThreadSearch function ... \n");
+    CAISS_ECHO("enter demo_asyncMultiThreadSearch function ...");
 
     vector<void *> hdlsVec;
     for (int i = 0; i < max_thread_num_ ; i++) {
@@ -64,7 +68,6 @@ int syncSearch(void *handle) {
     int times = SEARCH_TIMES;
     while (times--) {
         // 查询SEARCH_TIMES次，结束之后正常退出
-        // 由于样本原因，可能会出现，输入的词语在模型中无法查到的问题。这种情况会返回非0的值
         int i = (int)rand() % (int)WORDS.size();
         ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, filter_edit_distance_, searchCallbackFunc, nullptr);
         CAISS_FUNCTION_CHECK_STATUS
@@ -91,7 +94,7 @@ int syncSearch(void *handle) {
  */
 int demo_syncMultiThreadSearch() {
     CAISS_FUNCTION_BEGIN
-    printf("[caiss] enter demo_syncMultiThreadSearch function ... \n");
+    CAISS_ECHO("enter demo_syncMultiThreadSearch function ...");
 
     vector<void *> hdlsVec;
     vector<std::future<int>> futVec;
@@ -115,7 +118,7 @@ int demo_syncMultiThreadSearch() {
         CAISS_FUNCTION_CHECK_STATUS
     }
 
-    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms. \n", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
+    CAISS_ECHO("[caiss] [%d] thread process [%d] times query, cost [%d] ms.", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_DestroyHandle(handle);

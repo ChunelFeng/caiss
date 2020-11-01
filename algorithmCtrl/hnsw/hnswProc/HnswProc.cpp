@@ -14,7 +14,7 @@
 #include "HnswProc.h"
 
 #ifdef _USE_OPENMP_
-#include <omp.h>    // 如果有openmp加速
+    #include <omp.h>    // 如果有openmp加速
 #endif
 
 using namespace std;
@@ -653,12 +653,12 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
             ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
             CAISS_FUNCTION_CHECK_STATUS
 
-            word2VecMap[QUERY_RESULT] = vec;
+            word2VecMap[QUERY_VIA_ARRAY] = vec;
             break;
         }
         case CAISS_SEARCH_WORD:
         case CAISS_LOOP_WORD: {
-            vector<string> strArr;    // 存放切分后的单词
+            std::set<string> strArr;    // 存放切分后的单词
             boost::split(strArr, std::string((const char *)info),
                          boost::is_any_of(CAISS_SEPARATOR),
                          boost::token_compress_off);    // 空字符不会被推入向量中

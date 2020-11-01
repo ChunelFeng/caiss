@@ -45,8 +45,11 @@ public:
      * @param func
      * @return
      */
-    virtual CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-                                const CAISS_DIST_FUNC func) = 0;
+    virtual CAISS_STATUS init(CAISS_MODE mode,
+                              const CAISS_DISTANCE_TYPE distanceType,
+                              const unsigned int dim,
+                              const char *modelPath,
+                              CAISS_DIST_FUNC func) = 0;
 
     // train_mode
     /**
@@ -63,11 +66,11 @@ public:
      * @param showSpan
      * @return
      */
-    virtual CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                                 const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP,
-                                 const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
-                                 const unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
+    virtual CAISS_STATUS train(const char *dataPath, unsigned int maxDataSize, const CAISS_BOOL normalize,
+                               unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                               unsigned int realRank, const unsigned int step=DEFAULT_STEP,
+                               unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                               unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
     /**

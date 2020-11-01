@@ -18,9 +18,13 @@
 ## 2. 使用流程
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
+
 2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)
+
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
+
 4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置（embedding_file_path），bert模型的位置（bert_model_path）。函数执行完毕后，会在result_path位置，生成可用于caiss库训练的文本内容。
+
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 ## 3. 相关接口定义

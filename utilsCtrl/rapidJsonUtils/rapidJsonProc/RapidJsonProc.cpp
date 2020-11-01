@@ -108,7 +108,7 @@ CAISS_STATUS RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2
             array.PushBack(obj, alloc);
         }
 
-        info.AddMember("detail", array, alloc);
+        info.AddMember("details", array, alloc);
         detailsArray.PushBack(info, alloc);
     }
 

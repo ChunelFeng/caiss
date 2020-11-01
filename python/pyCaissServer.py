@@ -18,9 +18,23 @@ MAX_THREAD_SIZE = 1    # caiss最大并发数量（推荐不超过cpu核数）
 DIM = 768              # 数据维度
 
 
+def show_info(tnd, info):
+    # 展示信息
+    search_result = json.loads(info)
+    result_list = search_result.get('result')
+    for result in result_list:
+        tnd.write('The query info is : [{0}], '.format(result.get('query')))
+
+        result_words = []
+        for detail in result.get('details'):
+            result_words.append(detail.get('label'))
+        tnd.write('and the info you may also want to query maybe : {}.'.format(result_words))
+        tnd.write('<br>')
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("Hello, welcome to the world of Caiss")
+        self.write("Hello, welcome to the world of Caiss.")
 
 
 class CaissWordHandler(tornado.web.RequestHandler):
@@ -32,23 +46,11 @@ class CaissWordHandler(tornado.web.RequestHandler):
         top_k = self.get_argument('top', '5')
 
         ret, result_str = caiss.sync_search(handle, query_word, CAISS_SEARCH_WORD, int(top_k), 0)
-        if 2 == ret:
-            self.write('this is not a word : [' + query_word + ']')
-            return
-        elif 0 != ret:
+        if 0 != ret:
             self.write('search failed for the reason of : [' + ret + ']')
             return
 
-        result_dict = json.loads(result_str)
-        word_list = list()
-        for info in result_dict['details']:
-            word_list.append(info['label'])
-
-        self.write('the query word is [' + query_word + '].')
-        self.write('<br>')
-        self.write('the word you also want to know maybe : ')
-        self.write(str(word_list))
-        self.write('.<br>')
+        show_info(self, result_str)
 
 
 class CaissSentenceHandler(tornado.web.RequestHandler):
@@ -72,18 +74,7 @@ class CaissSentenceHandler(tornado.web.RequestHandler):
             self.write('search failed for the reason of : ' + ret)
             return
 
-        result_dict = json.loads(result_str)
-        sent_list = list()
-        for info in result_dict['details']:
-            sent_list.append(info['label'])
-
-        self.write('the query sentence is [' + query_sent + '].')
-        self.write('<br>')
-        self.write('the info you also want to know maybe : ')
-        self.write('<br>')
-        for i in sent_list:
-            self.write('****' + i)
-            self.write('<br>')
+        show_info(self, result_str)
 
 
 def make_app():

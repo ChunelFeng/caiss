@@ -299,7 +299,7 @@ int main() {
     "result":[
         {
             "query":"water",
-            "detail":[
+            "details":[
                 {
                     "distance":0.07434624433517456,
                     "index":3102,

@@ -13,26 +13,22 @@
 #include "../../AlgorithmProc.h"
 #include "./HnswProcDefine.h"
 
-using namespace hnswlib;
-using HNSW_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, labeltype>>;
 
 class HnswProc : public AlgorithmProc {
 
 public:
-    std::list<std::string>                 result_words_;
-    std::list<CAISS_FLOAT>                 result_distance_;    // 查找到的距离
 
     explicit HnswProc();
     ~HnswProc() override;
 
-    CAISS_RET_TYPE init(CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
-                        unsigned int dim, const char *modelPath, CAISS_DIST_FUNC distFunc) override;
+    CAISS_STATUS init(CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
+                      unsigned int dim, const char *modelPath, CAISS_DIST_FUNC distFunc) override;
 
     // train_mode
-    CAISS_RET_TYPE train(const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
-                         unsigned int maxIndexSize, float precision, unsigned int fastRank,
-                         unsigned int realRank, unsigned int step, unsigned int maxEpoch,
-                         unsigned int showSpan) override;
+    CAISS_STATUS train(const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+                       unsigned int maxIndexSize, float precision, unsigned int fastRank,
+                       unsigned int realRank, unsigned int step, unsigned int maxEpoch,
+                       unsigned int showSpan) override;
 
     // process_mode
     CAISS_RET_TYPE search(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;

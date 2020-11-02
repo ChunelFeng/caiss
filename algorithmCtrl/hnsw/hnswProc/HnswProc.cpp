@@ -278,7 +278,7 @@ CAISS_STATUS HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
     CAISS_ASSERT_NOT_NULL(label)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行
 
-    string info = std::string(label);
+    const string& info = std::string(label);
     if (isIgnore) {
         // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
         AlgorithmProc::getIgnoreTrie()->insert(info);
@@ -358,7 +358,7 @@ CAISS_STATUS HnswProc::buildResult(unsigned int topK,
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
 
-    for (auto word2Result : word2ResultMap) {
+    for (const auto& word2Result : word2ResultMap) {
         // 依次遍历每个请求对应的值
         std::list<CaissResultDetail> detailsList;
         auto result = word2Result.second;
@@ -658,12 +658,12 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
         }
         case CAISS_SEARCH_WORD:
         case CAISS_LOOP_WORD: {
-            std::set<string> strArr;    // 存放切分后的单词
-            boost::split(strArr, std::string((const char *)info),
+            std::set<string> strSet;    // 存放切分后的单词
+            boost::split(strSet, std::string((const char *)info),
                          boost::is_any_of(CAISS_SEPARATOR),
                          boost::token_compress_off);    // 空字符不会被推入向量中
 
-            for (const auto& str : strArr) {
+            for (const auto& str : strSet) {
                 int label = ptr->findWordLabel(str.c_str());
                 if (-1 != label) {
                     // 找到word的情况，这种情况下，不需要做normalize。因为存入的时候，已经设定好了
@@ -762,7 +762,7 @@ CAISS_STATUS HnswProc::processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc,
     CAISS_FUNCTION_BEGIN
 
     if (nullptr != searchCBFunc) {
-        for (auto node : word_details_map_) {
+        for (const auto& node : word_details_map_) {
             const char* query = node.first.c_str();    // 记录查询单词信息
             CAISS_STRING_ARRAY infos;
             CAISS_FLOAT_ARRAY distances;

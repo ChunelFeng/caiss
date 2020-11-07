@@ -25,8 +25,8 @@ public:
     explicit SqlProc();
     virtual ~SqlProc();
 
-    CAISS_RET_TYPE parseSql(const char *sql,
-            const void *sqlParams = nullptr);
+    CAISS_STATUS parseSql(const char *sql,
+                          const void *sqlParams = nullptr);
 
     const char *getQueryWord() const {
         return search_info_.c_str();

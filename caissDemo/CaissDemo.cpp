@@ -1,5 +1,6 @@
 //
 // Created by Chunel on 2020/6/14.
+// demo入口
 //
 
 #include "CaissDemoInclude.h"
@@ -11,12 +12,13 @@ int CaissDemo() {
     CAISS_FUNCTION_CHECK_STATUS
 
     //ret = demo_train();
-    //ret = demo_search();
+    ret = demo_search();
+
     //ret = demo_insert();
     //ret = demo_ignore();
     //ret = demo_asyncMultiThreadSearch();
     //ret = demo_syncMultiThreadSearch();
-    ret = demo_sql_search();
+    //ret = demo_sql_search();
     CAISS_FUNCTION_CHECK_STATUS
 
     return 0;

@@ -893,7 +893,7 @@ namespace hnswlib {
             //return cur_c;
         };
 
-        std::priority_queue<std::pair<dist_t, labeltype > > searchKnn(const void *query_data, size_t k) const {
+        std::priority_queue<std::pair<dist_t, labeltype>> searchKnn(const void *query_data, size_t k) const {
             tableint currObj = enterpoint_node_;    // 进入点，是一个随机值，相当于最上层的入口点
             dist_t curdist = fstdistfunc_(query_data, getDataByInternalId(enterpoint_node_), dist_func_param_);    // 计算入口点和查询点的距离
 

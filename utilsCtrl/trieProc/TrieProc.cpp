@@ -35,6 +35,13 @@ void TrieProc::clear() {
 }
 
 
+/**
+ * 在字典树上查找word
+ * @param node
+ * @param word
+ * @param index
+ * @return
+ */
 bool TrieProc::innerFind(TrieNode* node, const string& word, int index) {
     if (nullptr == node) {
         return false;
@@ -57,6 +64,13 @@ bool TrieProc::innerFind(TrieNode* node, const string& word, int index) {
     return ret;
 }
 
+
+/**
+ * 插入字典树
+ * @param node
+ * @param word
+ * @param index
+ */
 void TrieProc::innerInsert(TrieNode* node, const string& word, int index) {
     if (nullptr == node) {
         return;
@@ -79,6 +93,10 @@ void TrieProc::innerInsert(TrieNode* node, const string& word, int index) {
 }
 
 
+/**
+ * 清空字典树
+ * @param node
+ */
 void TrieProc::innerClear(TrieNode* node) {
     if (nullptr == node) {
         return;
@@ -94,6 +112,10 @@ void TrieProc::innerClear(TrieNode* node) {
 }
 
 
+/**
+ * 获取字典树的头结点
+ * @return
+ */
 TrieNode* TrieProc::getHeadNode() {
     if (nullptr == head_) {
         lock_.writeLock();
@@ -141,6 +163,10 @@ list<string> TrieProc::getAllWords() {
 }
 
 
+/**
+ *
+ * @param word
+ */
 void TrieProc::eraser(const string &word) {
     bool isErased = false;    // 标识是否已经被忽略了
     innerEraser(getHeadNode(), word, 0, isErased);

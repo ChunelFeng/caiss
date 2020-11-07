@@ -20,52 +20,52 @@ public:
     explicit ManageProc(unsigned int maxSize, CAISS_ALGO_TYPE algoType);
     virtual ~ManageProc();
     /* 以下这些函数，是同步/异步走相同的流程 */
-    virtual CAISS_RET_TYPE createHandle(void **handle);
-    virtual CAISS_RET_TYPE destroyHandle(void *handle);
-    virtual CAISS_RET_TYPE init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
-                                CAISS_DIST_FUNC distFunc);
+    virtual CAISS_STATUS createHandle(void **handle);
+    virtual CAISS_STATUS destroyHandle(void *handle);
+    virtual CAISS_STATUS init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
+                              CAISS_DIST_FUNC distFunc);
 
     /* 以下几个函数，同步和异步需要区分实现 */
-    virtual CAISS_RET_TYPE train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
-                                 unsigned int maxIndexSize, float precision, unsigned int fastRank,
-                                 unsigned int realRank, unsigned int step, unsigned int maxEpoch,
-                                 unsigned int showSpan) {
+    virtual CAISS_STATUS train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+                               unsigned int maxIndexSize, float precision, unsigned int fastRank,
+                               unsigned int realRank, unsigned int step, unsigned int maxEpoch,
+                               unsigned int showSpan) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE search(void *handle, void *info, CAISS_SEARCH_TYPE searchType,
-                                  unsigned int topK, const unsigned int filterEditDistance,
-                                  CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
+    virtual CAISS_STATUS search(void *handle, void *info, CAISS_SEARCH_TYPE searchType,
+                                unsigned int topK, const unsigned int filterEditDistance,
+                                CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE getResultSize(void *handle, unsigned int &size) {
+    virtual CAISS_STATUS getResultSize(void *handle, unsigned int &size) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE getResult(void *handle, char *result, unsigned int size) {
+    virtual CAISS_STATUS getResult(void *handle, char *result, unsigned int size) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE save(void *handle, const char *modelPath) {
+    virtual CAISS_STATUS save(void *handle, const char *modelPath) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
     // label 是数据标签，index表示数据第几个信息
-    virtual CAISS_RET_TYPE insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+    virtual CAISS_STATUS insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
-    virtual CAISS_RET_TYPE ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
+    virtual CAISS_STATUS ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 
     // 在这里可以执行sql指令信息。执行的方式，就是解析出来参数，然后通过这里的接口，进行crud
     // 暂时仅支持同步模式
-    virtual CAISS_RET_TYPE executeSQL(void *handle,
-            const char *sql,
-            CAISS_SQL_CALLBACK sqlCBFunc,
-            const void *sqlParams) {
+    virtual CAISS_STATUS executeSQL(void *handle,
+                                    const char *sql,
+                                    CAISS_SEARCH_CALLBACK sqlCBFunc,
+                                    const void *sqlParams) {
         CAISS_FUNCTION_NO_SUPPORT
     }
 

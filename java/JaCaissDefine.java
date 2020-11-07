@@ -1,5 +1,5 @@
 /**
- * @author junfeng.fj
+ * @author Chunel
  * @Name JavaCaissDefine.java
  * @date 2020/9/15 12:53 下午
  * @Desc
@@ -32,20 +32,20 @@ public class JaCaissDefine {
         int CAISS_ALGO_DEFAULT = 1;
         int CAISS_ALGO_HNSW = 1;    // hnsw算法（准确度高，空间复杂度较大）
         int CAISS_ALGO_NSG = 2;     // nsg算法（准确度较高，空间复杂度小，暂不支持）
-    };
+    }
 
     public interface CAISS_DISTANCE_TYPE {
         int CAISS_DISTANCE_DEFAULT = 1;
         int CAISS_DISTANCE_EUC = 1;         // 欧氏距离
         int CAISS_DISTANCE_INNER = 2;       // 内积距离
         int CAISS_DISTANCE_JACCARD = 3;     // 杰卡德距离
-    };
+    }
 
     public interface CAISS_MODE {
         int CAISS_MODE_DEFAULT = 0;    // 无效模式
         int CAISS_MODE_TRAIN = 1;      // 训练模式
         int CAISS_MODE_PROCESS = 2;    // 处理模式
-    };
+    }
 
     public interface CAISS_SEARCH_TYPE {
         int CAISS_SEARCH_DEFAULT = 0;
@@ -53,12 +53,12 @@ public class JaCaissDefine {
         int CAISS_SEARCH_WORD = 2;      // 通过快速检索的方式，查询word信息
         int CAISS_LOOP_QUERY = 3;       // 通过暴力循环的方式，查询query信息
         int CAISS_LOOP_WORD = 4;        // 通过暴力循环的方式，查询word信息
-    };
+    }
 
     public interface  CAISS_INSERT_TYPE {
         // 如果插入相同的数据
         int CAISS_INSERT_DEFAULT = 1;
         int CAISS_INSERT_OVERWRITE = 1;   // 覆盖模型中原有的数据
         int CAISS_INSERT_DISCARD = 2;     // 丢弃当前插入的数据
-    };
+    }
 }

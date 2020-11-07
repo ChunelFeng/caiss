@@ -9,15 +9,16 @@
 #include <utility>
 using namespace std;
 
-const static unsigned int DEFAULT_CAPACITY = 5;
+const static unsigned int DEFAULT_CAPACITY = 10;
 
 struct LruNode {
+public:
     string word;    // 被查询的单词
-    string result;    // 对应的结果信息
+    ALOG_RET_TYPE result{};
 
-    LruNode(string word, string result) {
-        this->word = std::move(word);
-        this->result = std::move(result);
+    LruNode(const string &word, const ALOG_RET_TYPE &result) {
+        this->word = word;
+        this->result = result;
     }
 };
 

@@ -1,11 +1,11 @@
 /**
- * @author junfeng.fj
+ * @author Chunel
  * @Name JavaCaiss.java
  * @date 2020/9/15 1:23 上午
  * @Desc 具体函数功能，请参考说明文档
  */
 
-import com.sun.jna.Native;
+import com.sun.jna.Native;    // 使用前，请自行引入相关依赖。具体可参考给定pom.xml文件
 import com.sun.jna.*;
 import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -35,7 +35,7 @@ public class JaCaiss {
         int CAISS_DestroyHandle(Pointer handle);
     }
 
-    public int Environment(int maxThreadSize, int algoType, int manageType) {
+    public synchronized static int Environment(int maxThreadSize, int algoType, int manageType) {
         return JnaCaiss.instance.CAISS_Environment(maxThreadSize, algoType, manageType);
     }
 
@@ -57,6 +57,13 @@ public class JaCaiss {
     // 查询接口，适用于同步模式下的查询(单词查询)
     public String SyncSearch(Pointer handle, String info, int searchType, int topK,
                              int filterEditDistance , NativeLongByReference ref) {
+        if (searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_SEARCH_WORD
+                && searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_LOOP_WORD) {
+            // 如果不是单词查询的方式，则返回错误码
+            ref.setValue(new NativeLong(JaCaissDefine.CAISS_RET_PARAM));
+            return "";
+        }
+
         int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
                 filterEditDistance, null, null);
 
@@ -70,6 +77,13 @@ public class JaCaiss {
 
     public String SyncSearch(Pointer handle, float[] info, int searchType, int topK,
                              int filterEditDistance , NativeLongByReference ref) {
+        if (searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_SEARCH_QUERY
+                && searchType != JaCaissDefine.CAISS_SEARCH_TYPE.CAISS_LOOP_QUERY) {
+            // 如果不是向量查询的方式，则返回错误码
+            ref.setValue(new NativeLong(JaCaissDefine.CAISS_RET_PARAM));
+            return "";
+        }
+
         int ret = JnaCaiss.instance.CAISS_Search(handle, info, searchType, topK,
                 filterEditDistance, null, null);
 
@@ -81,7 +95,7 @@ public class JaCaiss {
         return getResultString(handle, ref);
     }
 
-    String SyncExecuteSQL(Pointer handle, String sql, NativeLongByReference ref) {
+    public String SyncExecuteSQL(Pointer handle, String sql, NativeLongByReference ref) {
         int ret = JnaCaiss.instance.CAISS_ExecuteSQL(handle, sql, null, null);
         if (JaCaissDefine.CAISS_RET_OK != ret) {
             ref.setValue(new NativeLong(ret));

@@ -15,10 +15,10 @@ public:
     virtual ~UtilsProc() {
     }
 
-    virtual CAISS_RET_TYPE init() {
+    virtual CAISS_STATUS init() {
         return 0;
     }
-    virtual CAISS_RET_TYPE deinit() {
+    virtual CAISS_STATUS deinit() {
         return 0;
     }
 };

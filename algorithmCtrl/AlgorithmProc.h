@@ -45,8 +45,11 @@ public:
      * @param func
      * @return
      */
-    virtual CAISS_RET_TYPE init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, const unsigned int dim, const char *modelPath,
-                                const CAISS_DIST_FUNC func) = 0;
+    virtual CAISS_STATUS init(CAISS_MODE mode,
+                              const CAISS_DISTANCE_TYPE distanceType,
+                              const unsigned int dim,
+                              const char *modelPath,
+                              CAISS_DIST_FUNC func) = 0;
 
     // train_mode
     /**
@@ -63,11 +66,11 @@ public:
      * @param showSpan
      * @return
      */
-    virtual CAISS_RET_TYPE train(const char *dataPath, const unsigned int maxDataSize, const CAISS_BOOL normalize,
-                                 const unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
-                                 const unsigned int realRank, const unsigned int step=DEFAULT_STEP,
-                                 const unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
-                                 const unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
+    virtual CAISS_STATUS train(const char *dataPath, unsigned int maxDataSize, const CAISS_BOOL normalize,
+                               unsigned int maxIndexSize, const float precision, const unsigned int fastRank,
+                               unsigned int realRank, const unsigned int step=DEFAULT_STEP,
+                               unsigned int maxEpoch=DEFAULT_MAX_EPOCH,
+                               unsigned int showSpan=DEFAULT_SHOW_SPAN) = 0;
 
     // process_mode
     /**
@@ -80,12 +83,12 @@ public:
      * @param cbParams
      * @return
      */
-    virtual CAISS_RET_TYPE search(void *info,
-                                  const CAISS_SEARCH_TYPE searchType,
-                                  const unsigned int topK,
-                                  const unsigned int filterEditDistance = 0,
-                                  const CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                                  const void *cbParams = nullptr) = 0;
+    virtual CAISS_STATUS search(void *info,
+                                CAISS_SEARCH_TYPE searchType,
+                                unsigned int topK,
+                                unsigned int filterEditDistance = 0,
+                                CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                                const void *cbParams = nullptr) = 0;
 
     /**
      * 插入结果信息
@@ -94,21 +97,21 @@ public:
      * @param insertType
      * @return
      */
-    virtual CAISS_RET_TYPE insert(CAISS_FLOAT *node, const char *index, const CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
+    virtual CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
 
     /**
      * 保存模型信息
      * @param modelPath
      * @return
      */
-    virtual CAISS_RET_TYPE save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
+    virtual CAISS_STATUS save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
 
     /**
      * 获取结果的长度
      * @param size
      * @return
      */
-    virtual CAISS_RET_TYPE getResultSize(unsigned int& size) = 0;
+    virtual CAISS_STATUS getResultSize(unsigned int& size) = 0;
 
     /**
      * 获取结果
@@ -116,7 +119,7 @@ public:
      * @param size
      * @return
      */
-    virtual CAISS_RET_TYPE getResult(char *result, unsigned int size) = 0;
+    virtual CAISS_STATUS getResult(char *result, unsigned int size) = 0;
 
 
     /**
@@ -125,17 +128,18 @@ public:
      * @param isIgnore 放入忽略列表/从忽略列表中取出
      * @return
      */
-    virtual CAISS_RET_TYPE ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
+    virtual CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
 
 
 protected:
+
     /**
-     * 从lru中查询
-     * @param word
-     * @param isGet
+     * 将向量归一化
+     * @param node
+     * @param dim
      * @return
      */
-    CAISS_RET_TYPE normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
+    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
         if (CAISS_FALSE == this->normalize_) {
             return CAISS_RET_OK;    // 如果不需要归一化，直接返回
         }
@@ -157,8 +161,12 @@ protected:
         return CAISS_RET_OK;
     }
 
+    /**
+     * 快速求平方根
+     * @param x
+     * @return
+     */
     float fastSqrt(float x) {
-        /* 快速开平方计算方式 */
         float half = 0.5f * x;
         int i = *(int*)&x;     // get bits for floating VALUE
         i = 0x5f375a86 - (i >> 1);    // gives initial guess y0
@@ -167,6 +175,10 @@ protected:
         return 1 / x;
     }
 
+    /**
+     * 获取挂有忽略信息的trie树
+     * @return
+     */
     static TrieProc* getIgnoreTrie() {
         if (nullptr == AlgorithmProc::ignore_trie_ptr_) {
             AlgorithmProc::trie_lock_.writeLock();
@@ -182,10 +194,11 @@ protected:
 
 protected:
     std::string model_path_;
-    unsigned int dim_;
+    unsigned int dim_{};
     CAISS_MODE cur_mode_;
-    CAISS_BOOL normalize_;    // 是否需要标准化数据
+    CAISS_BOOL normalize_{};    // 是否需要标准化数据
     std::string result_;
+    ALOG_WORD2DETAILS_MAP word_details_map_;    // 记录结果使用的信息
     CAISS_DISTANCE_TYPE distance_type_;
 
     LruProc lru_cache_;    // 最近N次的查询记录

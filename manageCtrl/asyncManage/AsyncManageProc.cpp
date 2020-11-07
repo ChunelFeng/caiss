@@ -11,9 +11,24 @@ MemoryPool* AsyncManageProc::memory_pool_ = nullptr;
 RWLock AsyncManageProc::memory_pool_lock_;
 
 
-CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
-                                      unsigned int maxIndexSize, float precision, unsigned int fastRank, unsigned int realRank,
-                                      unsigned int step, unsigned int maxEpoch, unsigned int showSpan) {
+/**
+ *
+ * @param handle
+ * @param dataPath
+ * @param maxDataSize
+ * @param normalize
+ * @param maxIndexSize
+ * @param precision
+ * @param fastRank
+ * @param realRank
+ * @param step
+ * @param maxEpoch
+ * @param showSpan
+ * @return
+ */
+CAISS_STATUS AsyncManageProc::train(void *handle, const char *dataPath, unsigned int maxDataSize, CAISS_BOOL normalize,
+                                    unsigned int maxIndexSize, float precision, unsigned int fastRank, unsigned int realRank,
+                                    unsigned int step, unsigned int maxEpoch, unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -33,21 +48,33 @@ CAISS_RET_TYPE AsyncManageProc::train(void *handle, const char *dataPath, unsign
     memcpy(ptr, dataPath, strlen(dataPath) + 1);
 
     // 绑定训练的流程到线程池中去
-    ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize, normalize, maxIndexSize, precision,
-                                  fastRank, realRank, step, maxEpoch, showSpan), this->getRWLock(algo), true,
-                                          memoryPool, block);
+    ThreadTaskInfo task(std::bind(&AlgorithmProc::train, algo, dataPath, maxDataSize,
+                                  normalize, maxIndexSize, precision, fastRank, realRank,
+                                  step, maxEpoch, showSpan),
+                        this->getRWLock(algo), true, memoryPool, block);
     threadPool->appendTask(task);
     CAISS_FUNCTION_END
 }
 
 
-CAISS_RET_TYPE AsyncManageProc::search(void *handle,
-                                       void *info,
-                                       CAISS_SEARCH_TYPE searchType,
-                                       unsigned int topK,
-                                       const unsigned int filterEditDistance,
-                                       const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                       const void *cbParams) {
+/**
+ *
+ * @param handle
+ * @param info
+ * @param searchType
+ * @param topK
+ * @param filterEditDistance
+ * @param searchCBFunc
+ * @param cbParams
+ * @return
+ */
+CAISS_STATUS AsyncManageProc::search(void *handle,
+                                     void *info,
+                                     CAISS_SEARCH_TYPE searchType,
+                                     unsigned int topK,
+                                     const unsigned int filterEditDistance,
+                                     const CAISS_SEARCH_CALLBACK searchCBFunc,
+                                     const void *cbParams) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -81,7 +108,13 @@ CAISS_RET_TYPE AsyncManageProc::search(void *handle,
 }
 
 
-CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
+/**
+ *
+ * @param handle
+ * @param modelPath
+ * @return
+ */
+CAISS_STATUS AsyncManageProc::save(void *handle, const char *modelPath) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -104,8 +137,15 @@ CAISS_RET_TYPE AsyncManageProc::save(void *handle, const char *modelPath) {
 }
 
 
-// label 是数据标签，index表示数据第几个信息
-CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+/**
+ *
+ * @param handle
+ * @param node
+ * @param label 数据标签
+ * @param insertType 数据第几个信息
+ * @return
+ */
+CAISS_STATUS AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -134,7 +174,14 @@ CAISS_RET_TYPE AsyncManageProc::insert(void *handle, CAISS_FLOAT *node, const ch
 }
 
 
-CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
+/**
+ *
+ * @param handle
+ * @param label
+ * @param isIgnore
+ * @return
+ */
+CAISS_STATUS AsyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *algo = getInstance(handle);
@@ -162,6 +209,11 @@ CAISS_RET_TYPE AsyncManageProc::ignore(void *handle, const char *label, CAISS_BO
 }
 
 
+/**
+ * 获取句柄对应的读写锁
+ * @param handle
+ * @return
+ */
 RWLock* AsyncManageProc::getRWLock(AlgorithmProc *handle) {
     if (!handle) {
         return nullptr;    // 理论传入的handle不会为空

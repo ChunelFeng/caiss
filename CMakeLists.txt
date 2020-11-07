@@ -26,7 +26,7 @@ ELSEIF(APPLE)
     include_directories(${BLAS_INC_DIR} ${EIGEN_DIR})
     link_directories(${BLAS_LINK_DIR})
 
-    link_libraries(libopenblas.a)    # import openblas static lib
+    #link_libraries(libopenblas.a)    # import openblas static lib
 
     find_package(Eigen3 REQUIRED)    # check if env support eigen
     if (EIGEN3_FOUND)

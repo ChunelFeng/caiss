@@ -659,7 +659,8 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
         case CAISS_SEARCH_WORD:
         case CAISS_LOOP_WORD: {
             std::set<string> strSet;    // 存放切分后的单词
-            boost::split(strSet, std::string((const char *)info),
+            std::string inputInfo = (char *)info;
+            boost::split(strSet, inputInfo,
                          boost::is_any_of(CAISS_SEPARATOR),
                          boost::token_compress_off);    // 空字符不会被推入向量中
 

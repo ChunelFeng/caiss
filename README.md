@@ -1,6 +1,6 @@
 # <center> Caiss说明文档 </center>
 
-## 1. 简介
+## 一. 简介
 
 &ensp;&ensp;&ensp;&ensp; 随着人工智能技术的普及，海量高维度向量的相似度查询技术在研究和生产中的作用和重要性与日俱增。目前，市面有许多优秀开源的解决方案，但是，在使用过程中发现了一些问题。比如：
 * 由于对于各种算法原理的了解不深，不会调整参数，导致的训练模型结果偏差较大。
@@ -11,11 +11,11 @@
 
 &ensp;&ensp;&ensp;&ensp; 在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
-&ensp;&ensp;&ensp;&ensp; 我们把这套解决方案，命名为Caiss (Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&ensp;&ensp;&ensp;&ensp; 我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-![caiss架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
+![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
-## 2. 使用流程
+## 二. 使用流程
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
 
@@ -23,11 +23,13 @@
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 
-4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置（embedding_file_path），bert模型的位置（bert_model_path）。函数执行完毕后，会在result_path位置，生成可用于caiss库训练的文本内容。
+4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置(embedding_file_path)，bert模型的位置(bert_model_path)。函数执行完毕后，会在result_path位置，生成可用于Caiss训练的文本内容。
 
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
-## 3. 相关接口定义
+![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
+
+## 三. 相关接口定义
 ```cpp
 /**
  * 初始化环境信息
@@ -190,7 +192,7 @@ CAISS_STATUS CAISS_ExecuteSQL(CAISS_HANDLE handle,
 CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
 ```
 
-## 4. 使用Demo
+## 四. 使用Demo
 ```cpp
 /*
 * 更多使用样例，请参考caissDemo文件夹中内容。
@@ -210,13 +212,13 @@ static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const CAISS_UINT dim_ = 768;    // 向量维度
-static const char *model_path_ = "demo_2500words_768dim.caiss";
+static const CAISS_STRING model_path_ = "demo_2500words_768dim.caiss";    // caiss模型路径
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
-static const char *info_ = "water";
+static const CAISS_STRING info_ = "water";    // 多词查询的情况下，输入使用"|"分隔。例："hello|world"
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const CAISS_UINT top_k_ = 5;
 
-static const char *data_path_ = "demo_2500words_768dim.txt";
+static const CAISS_STRING data_path_ = "demo_2500words_768dim.txt";    // caiss训练文件路径
 static const CAISS_UINT max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
 static const CAISS_UINT max_index_size_ = 64;     // 标签的最大长度
@@ -285,7 +287,7 @@ int main() {
 
  
 
-## 5. 输出内容
+## 五. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
 * 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[wine,mud,food,soup,glass]这5个词语，具体结果信息如下：
@@ -332,26 +334,27 @@ int main() {
 ```
 
 
-## 6. 编译说明
+## 六. 编译说明
 
-* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。编译依赖boost库，本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
-* Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt同级目录），输入：   
+* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
+* Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt和README.md同级目录），输入：   
   $ cmake .    
   $ make  
-  即可完成编译（前提：环境中支持cmake命令）。
-* IDE为Visual Studio的开发者，如果在编译过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+  即可完成编译（前提：环境支持cmake命令）。
+* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-stdio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
+* 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
-## 7. 补充说明
+## 七. 补充说明
 
-* 训练文本样式，请参考/doc/文档中的内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
-* 训练功能仅支持单线程。查询和插入功能，支持多线程并发。
-* 新增数据实时生效。进程重启后是否生效，取决于是否调用save方法。
-* 在异步模式下，插入、查询等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
-* 本库的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
+* 训练文件格式，请参考/doc/demo_2500words_768dim.txt中内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
+* 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
+* 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
+* 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
+* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 
 
-## 8. 版本信息
+## 八. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 
 * 新建，第一个功能版本
@@ -404,3 +407,5 @@ int main() {
 * 提供批量查询功能
 * 优化内部缓存结构
 * 修改输出json格式
+
+![Caiss 作者微信](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)

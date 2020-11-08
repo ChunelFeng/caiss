@@ -13,8 +13,7 @@
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
-
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
 ## 二. 使用流程
 
@@ -345,7 +344,7 @@ int main() {
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
-## 七. 补充说明
+## 七. 其他
 
 * 训练文件格式，请参考/doc/demo_2500words_768dim.txt中内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
 * 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
@@ -410,7 +409,10 @@ int main() {
 * 修改输出json格式
 
 ------------
-#### 附录-2. 联系方式（微信）: 
+#### 附录-2. 联系方式: 
+* 微信： Chunel_Fung
+* 邮箱： chunel@foxmail.com
+* 源码： https://github.com/ChunelFeng/caiss
+* 论坛： www.chunel.cn
 
-![Caiss 作者联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
-------------
+![Caiss 作者微信二维码](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)

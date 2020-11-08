@@ -340,7 +340,7 @@ int main() {
   $ cmake .    
   $ make  
   即可完成编译（前提：环境支持cmake命令）。
-* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-stdio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
+* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（微信：Chunel_Fung，邮箱：chunel@foxmail.com）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 

@@ -223,7 +223,7 @@ static const CAISS_STRING data_path_ = "demo_2500words_768dim.txt";    // caiss�
 static const CAISS_UINT max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
 static const CAISS_UINT max_index_size_ = 64;     // 标签的最大长度
-static const CAISS_FLOAT precision_ = 0.95f;               // 模型精确度
+static const CAISS_FLOAT precision_ = 0.95f;    // 模型精确度
 static const CAISS_UINT fast_rank_ = 5;
 static const CAISS_UINT real_rank_ = 5;
 static const CAISS_UINT step_ = 1;
@@ -263,7 +263,7 @@ static int search() {
     char *result = new char[size + 1];
     memset(result, 0, size + 1);
     ret = CAISS_GetResult(handle, result, size);
-    std::cout << result << std::endl;
+    std::cout << result << std::endl;    // 输出结果格式，见下文
     delete [] result;
 
     ret = CAISS_DestroyHandle(handle);
@@ -335,7 +335,7 @@ int main() {
 
 ## 六. 编译说明
 
-* 本人在Windows（Win10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
+* 本人在Windows（Windows-10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt和README.md同级目录），输入：   
   $ cmake .    
   $ make  

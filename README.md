@@ -13,20 +13,23 @@
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
-
+<div align=center>
+	<img src="https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg" width="632" height="488">
+</div>
 
 ## 二. 使用流程
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
 
-2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)
+2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)。
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 
 4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置(embedding_file_path)，bert模型的位置(bert_model_path)。函数执行完毕后，会在result_path位置，生成可用于Caiss训练的文本内容。
 
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
+
+![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 
 ## 三. 接口定义
@@ -352,7 +355,7 @@ int main() {
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 
 
-## 八. 版本信息
+### 附录-1. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 
 * 新建，第一个功能版本
@@ -406,10 +409,7 @@ int main() {
 * 优化内部缓存结构
 * 修改输出json格式
 
-![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
-
-
-----------
-Contact me:  
-
+------------
+#### Contact me by WeChart:  
 ![Caiss 联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
+------------

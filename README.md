@@ -2,18 +2,18 @@
 
 ## 一. 简介
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;随着人工智能技术的普及，海量高维度向量的相似度查询技术在研究和生产中的作用和重要性与日俱增。目前，市面有许多优秀开源的解决方案，但是，在使用过程中发现了一些问题，比如：
+&emsp;&emsp;随着人工智能技术的普及，海量高维度向量的相似度查询技术在研究和生产中的作用和重要性与日俱增。目前，市面有许多优秀开源的解决方案，但是，在使用过程中遇到了一些问题，比如：
 * 由于对于各种算法原理的了解不深，不会调整参数，导致的训练模型结果偏差较大。
 * 开源库对于各种距离的支持有限，无法满足随时变化的实验需求。
 * 标签信息和向量的分离，导致标记和查询需要在不同的步骤中完成。
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&emsp;&emsp;在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
+![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 
 ## 二. 使用流程
@@ -27,8 +27,6 @@
 4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置(embedding_file_path)，bert模型的位置(bert_model_path)。函数执行完毕后，会在result_path位置，生成可用于Caiss训练的文本内容。
 
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
-
-![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 
 ## 三. 接口定义
@@ -408,6 +406,10 @@ int main() {
 * 优化内部缓存结构
 * 修改输出json格式
 
+![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
+
+
 ----------
-Contact me：
-![Caiss 作者微信](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
+Contact me:  
+
+![Caiss 联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)

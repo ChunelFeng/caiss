@@ -1,4 +1,4 @@
-# <center><b> Caiss说明文档 </b></center>
+# <center><b> Caiss使用说明文档 </b></center>
 
 ## 一. 简介
 
@@ -14,7 +14,7 @@
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
 <div align=center>
-	<img src="https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg" width="632" height="488">
+        <img src="https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg" width="636" height="490">
 </div>
 
 ## 二. 使用流程
@@ -355,7 +355,8 @@ int main() {
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 
 
-### 附录-1. 版本信息
+------------
+#### 附录-1. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 
 * 新建，第一个功能版本
@@ -410,6 +411,6 @@ int main() {
 * 修改输出json格式
 
 ------------
-#### Contact me by WeChart:  
-![Caiss 联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
+#### 附录-2. 联系方式（微信）:  
+![Caiss 作者联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
 ------------

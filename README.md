@@ -13,9 +13,8 @@
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-<div align=center>
-        <img src="https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg" width="636" height="490">
-</div>
+![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
+
 
 ## 二. 使用流程
 
@@ -411,6 +410,7 @@ int main() {
 * 修改输出json格式
 
 ------------
-#### 附录-2. 联系方式（微信）:  
+#### 附录-2. 联系方式（微信）: 
+
 ![Caiss 作者联系方式](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
 ------------

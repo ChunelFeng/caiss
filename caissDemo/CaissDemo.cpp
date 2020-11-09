@@ -5,8 +5,9 @@
 
 #include "CaissDemoInclude.h"
 
+
 int CaissDemo() {
-    int ret = 0;
+    CAISS_STATUS ret = CAISS_RET_OK;
     // 无论何种使用情况，使用caiss前，请调用环境函数
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
     CAISS_FUNCTION_CHECK_STATUS
@@ -21,11 +22,11 @@ int CaissDemo() {
     //ret = demo_sql_search();
     CAISS_FUNCTION_CHECK_STATUS
 
-    return 0;
+    return ret;
 }
 
 int main() {
-    int ret = CaissDemo();
+    CaissDemo();
 
     return 0;
 }

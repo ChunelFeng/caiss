@@ -18,17 +18,16 @@
 #define manage_type_ (CAISS_MANAGE_SYNC)
 
 #define algo_type_ (CAISS_ALGO_HNSW)
-#define mode_ (CAISS_MODE_PROCESS)
 #define dist_type_ (CAISS_DISTANCE_INNER)
 #define dim_ (768)
-#define model_path_ ("bert_71290words_768dim.caiss")
+#define model_path_ ("../../doc/demo_2500words_768dim.caiss")
 #define dist_func_ (nullptr)
-#define info_ ("hello|world")
+#define info_ ("water")
 #define search_type_ (CAISS_SEARCH_WORD)
 #define top_k_ (5)
 #define filter_edit_distance_ (0)
 
-#define data_path_ ("bert_71290words_768dim.txt")
+#define data_path_ ("../../doc/demo_2500words_768dim.txt")
 #define max_data_size_ (5000)    // 不小于文本最大行数。建议设定为文本行数的1.5倍~2倍，方便今后插入信息。
 #define normalize_ (CAISS_TRUE)
 #define max_index_size_ (64)
@@ -36,7 +35,7 @@
 #define fast_rank_ (5)
 #define real_rank_ (5)
 #define step_ (1)
-#define max_epoch_ (1)
+#define max_epoch_ (3)
 #define show_span_ (1000)
 
 

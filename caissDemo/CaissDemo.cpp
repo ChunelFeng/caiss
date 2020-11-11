@@ -8,13 +8,14 @@
 
 int CaissDemo() {
     CAISS_STATUS ret = CAISS_RET_OK;
-    // 无论何种使用情况，使用caiss前，请调用环境函数
+    // 无论何种使用模式，使用caiss前，请调用环境函数
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
     CAISS_FUNCTION_CHECK_STATUS
 
-    //ret = demo_train();
-    ret = demo_search();
+    ret = demo_train();
+    CAISS_FUNCTION_CHECK_STATUS
 
+    //ret = demo_search();
     //ret = demo_insert();
     //ret = demo_ignore();
     //ret = demo_asyncMultiThreadSearch();

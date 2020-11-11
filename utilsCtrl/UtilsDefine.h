@@ -91,13 +91,14 @@ inline void CAISS_ECHO(const char *cmd, ...) {
         return CAISS_RET_ERR;    \
     }    \
 
-#define CAISS_FUNCTION_SHOW_RESULT    \
-    std::cout << __FILE__ << " | " << __LINE__ << " | " << __FUNCTION__ << ", ret : " << ret << std::endl;    \
+#define CAISS_FUNCTION_SHOW_RESULT \
+    CAISS_ECHO("%s | %s | line = [%d], ret = [%d].", __FILE__, __FUNCTION__, __LINE__, ret);                             \
 
 #define CAISS_FUNCTION_CHECK_STATUS    \
     if (CAISS_RET_OK != ret)   \
     {    \
-        return ret;  \
+        CAISS_FUNCTION_SHOW_RESULT    \
+        return ret;    \
     }    \
 
 #define CAISS_FUNCTION_NO_SUPPORT    \

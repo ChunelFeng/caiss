@@ -289,7 +289,7 @@ int main() {
 ## 五. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[wine,mud,food,soup,glass]这5个词语，具体结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语，具体结果信息如下：
 
 ```json
 {
@@ -302,29 +302,29 @@ int main() {
             "query":"water",
             "details":[
                 {
-                    "distance":0.07434624433517456,
-                    "index":3102,
-                    "label":"wine"
-                },
-                {
-                    "distance":0.10038518905639649,
-                    "index":6950,
-                    "label":"mud"
-                },
-                {
                     "distance":0.10039234161376953,
                     "index":641,
                     "label":"food"
                 },
                 {
-                    "distance":0.10307157039642334,
-                    "index":7153,
-                    "label":"soup"
-                },
-                {
                     "distance":0.10391676425933838,
                     "index":1812,
                     "label":"glass"
+                },
+                {
+                    "distance":0.11682319641113281,
+                    "index":361,
+                    "label":"light"
+                },
+                {
+                    "distance":0.12232834100723267,
+                    "index":2163,
+                    "label":"alcohol"
+                },
+                {
+                    "distance":0.12482547760009766,
+                    "index":2281,
+                    "label":"liquid"
                 }
             ]
         }

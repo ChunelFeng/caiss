@@ -741,10 +741,10 @@ namespace hnswlib {
           label_c = search->second;
 
           char* data_ptrv = getDataByInternalId(label_c);
-          int dim = (int)*((size_t *) dist_func_param_);    // 不转成int，会出偶现的问题
+          unsigned int dim = *((unsigned *) dist_func_param_);    // 不转成int，会出偶现的问题
           std::vector<data_t> data;
           data_t* data_ptr = (data_t*) data_ptrv;
-          for (int i = 0; i < dim; i++) {
+          for (unsigned int i = 0; i < dim; i++) {
             data.push_back(*data_ptr);
             data_ptr += 1;
           }

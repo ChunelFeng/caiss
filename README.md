@@ -338,7 +338,7 @@ int main() {
 * 本人在Windows（Windows-10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt和README.md同级目录），输入： 
   ```shell
-  $ ./caiss-linux-env.sh            # 一键安装Caiss运行环境
+  $ ./caiss-linux-env.sh            # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
   $ cmake .                         # 注意，cmake后面有一个"."，表示当前目录    
   $ make                            # 即可完成编译    
   $ cd caissDemo/    

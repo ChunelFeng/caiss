@@ -230,11 +230,11 @@ static const CAISS_UINT step_ = 1;
 static const CAISS_UINT max_epoch_ = 3;
 static const CAISS_UINT show_span_ = 1000;
 
-static int train() {
+static CAISS_STATUS train() {
     /* 训练功能 */
     CAISS_STATUS ret = CAISS_RET_OK;
 
-    void *handle = nullptr;
+    CAISS_HANDLE handle = nullptr;
     ret = CAISS_CreateHandle(&handle);
 
     ret = CAISS_Init(handle, CAISS_MODE_TRAIN, dist_type_, dim_, model_path_, dist_func_);
@@ -246,11 +246,11 @@ static int train() {
     return ret;
 }
 
-static int search() {
+static CAISS_STATUS search() {
     /* 查询功能 */
     CAISS_STATUS ret = CAISS_RET_OK;
 
-    void *handle = nullptr;
+    CAISS_HANDLE handle = nullptr;
     ret = CAISS_CreateHandle(&handle);
 
     ret = CAISS_Init(handle, CAISS_MODE_PROCESS, dist_type_, dim_, model_path_, dist_func_);

@@ -61,6 +61,7 @@ HnswProc::HnswProc() {
 
 HnswProc::~HnswProc() {
     this->reset();
+    CAISS_DELETE_PTR(distance_ptr_)
 }
 
 
@@ -95,7 +96,6 @@ HnswProc::init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, co
 CAISS_STATUS HnswProc::reset() {
     CAISS_FUNCTION_BEGIN
 
-    CAISS_DELETE_PTR(distance_ptr_)
     this->dim_ = 0;
     this->cur_mode_ = CAISS_MODE_DEFAULT;
     this->normalize_ = 0;
@@ -400,8 +400,10 @@ CAISS_STATUS HnswProc::loadModel(const char *modelPath) {
 
 CAISS_STATUS HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
     CAISS_FUNCTION_BEGIN
+    if (this->distance_ptr_) {
+        CAISS_FUNCTION_END    // 如果有了距离指针，则直接返回，避免出现指针炸弹
+    }
 
-    CAISS_DELETE_PTR(this->distance_ptr_)    // 先删除，确保不会出现重复new的情况
     switch (this->distance_type_) {
         case CAISS_DISTANCE_EUC :
             this->distance_ptr_ = new L2Space(this->dim_);

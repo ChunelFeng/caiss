@@ -5,6 +5,9 @@
 # @Desc Caiss对应CMakeList文件
 #**************************************************************/
 
+message("[caiss] welcome to the world of Caiss.")
+message("[caiss] please run caiss-linux-env.sh before compile the project.")
+
 cmake_minimum_required(VERSION 3.5.1)
 project(Caiss)
 

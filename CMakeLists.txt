@@ -20,8 +20,8 @@ add_definitions(-D_CAISS_EXPORTS_)
 find_package(OpenMP)
 
 # linux下安装Eigen3指令：
-# 1：sudo apt-get install libeigen3-dev
-# 2：sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include
+# 1：apt-get install libeigen3-dev
+# 2：cp -r /usr/include/eigen3/Eigen/ /usr/local/include/
 find_package(Eigen3)    # check if env support eigen
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)

@@ -729,6 +729,7 @@ CAISS_STATUS HnswProc::checkModelPrecisionEnable(const float targetPrecision, co
 
     unsigned int suitableTimes = 0;
     #ifdef _USE_OPENMP_
+        CAISS_ECHO("check model precision speed up by openmp.");
         unsigned int calcTimes = min((int)datas.size(), 10000);    // 如果开启了open-mp，则计算10000次
     #else
         unsigned int calcTimes = min((int)datas.size(), 3000);

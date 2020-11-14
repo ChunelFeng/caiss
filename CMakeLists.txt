@@ -1,3 +1,10 @@
+#**************************************************************
+# @author Chunel
+# @Name CMakeList.txt
+# @date 2020/11/15 1:25 上午
+# @Desc Caiss对应CMakeList文件
+#**************************************************************/
+
 cmake_minimum_required(VERSION 3.5.1)
 project(Caiss)
 
@@ -8,8 +15,14 @@ aux_source_directory(. DIRSRCS)
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CAISS_EXPORTS_)
 
+# linux下安装openmp指令：
+# sudo apt-get install libomp-dev
 find_package(OpenMP)
 
+# linux下安装Eigen3指令：
+# 1：sudo apt-get install libeigen3-dev
+# 2：sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include
+find_package(Eigen3)    # check if env support eigen
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
 IF (WIN32)
@@ -28,25 +41,43 @@ ELSEIF(APPLE)
 
     #link_libraries(libopenblas.a)    # import openblas static lib
 
-    find_package(Eigen3 REQUIRED)    # check if env support eigen
     if (EIGEN3_FOUND)
         add_definitions(-D_USE_EIGEN3_)
-        message("eigen support")
+        message("[caiss] mac Eigen3 support.")
+    else()
+        message("[caiss] mac Eigen3 no support, please install for speed up.")
     endif()
 
     if (OPENMP_FOUND)
-        message("openmp support")
         link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
         include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp -lomp -mavx2")
         add_definitions(-D_USE_OPENMP_)
+        message("[caiss] mac openmp support.")
     else()
-        message("no openmp support")
+        message("[caiss] mac openmp no support, please install for speed up.")
     endif()
 ELSEIF(UNIX)
     set(CMAKE_CXX_FLAGS -m64)    # 设置64位系统
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread")    # set multi thread in Linux platform
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
+
+    if (EIGEN3_FOUND)
+        add_definitions(-D_USE_EIGEN3_)
+        message("[caiss] linux Eigen3 support.")
+    else()
+        message("[caiss] linux Eigen3 no support, please install for speed up.")
+    endif()
+
+    if (OPENMP_FOUND)
+        link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
+        include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -mavx2")
+        add_definitions(-D_USE_OPENMP_)
+        message("[caiss] linux openmp support.")
+    else()
+        message("[caiss] linux openmp no support, please install for speed up.")
+    endif()
 ENDIF()
 
 #添加头文件搜索路径

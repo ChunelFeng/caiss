@@ -337,10 +337,10 @@ int main() {
 
 * 本人在Windows（Windows-10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
 * Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt和README.md同级目录），输入：   
-  $ cmake .    
-  $ make &emsp;&emsp;# 即可完成编译（前提：环境支持cmake命令）    
+  $ cmake . &emsp;&emsp; # 注意，cmake后面有一个"."，表示当前目录    
+  $ make &emsp;&emsp;# 即可完成编译    
   $ cd caissDemo/    
-  $ ./CaissDemo &emsp;&emsp;# 即可查看运行结果    
+  $ ./CaissDemo &emsp;&emsp;# 即可查看demo的运行结果    
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式，见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 

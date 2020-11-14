@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <cstdarg>
 
-#define CAISS_VERSION       ("2.4.0")    // 版本信息外部不可改变
+#define CAISS_VERSION       ("2.4.1")    // 版本信息外部不可改变
 
 
 struct CaissDataNode {

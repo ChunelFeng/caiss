@@ -11,6 +11,7 @@
 #include <queue>
 #include <unordered_map>
 #include <cstdarg>
+#include <ctime>
 
 #define CAISS_VERSION       ("2.4.1")    // 版本信息外部不可改变
 
@@ -60,7 +61,11 @@ using ALOG_WORD2DETAILS_MAP = std::unordered_map<std::string, std::list<CaissRes
 
 
 inline void CAISS_ECHO(const char *cmd, ...) {
-    std::cout << "[caiss] ";
+    time_t cur_time = time(nullptr);
+    std::string ct = ctime(&cur_time);
+    std::cout << "[caiss] ["
+              << ct.assign(ct.begin(), ct.end()-1)    // 去掉时间的最后一位\n信息
+              << "] ";
     va_list args;
     va_start(args, cmd);
     vprintf(cmd, args);

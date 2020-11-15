@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
+# @Author Chunel
+# @Name pyCaiss.py
+# @Date 2020/9/15 12:53 下午
+# @Desc Caiss的python版本
 
 from ctypes import *
 
@@ -25,12 +29,26 @@ CAISS_DISTANCE_EDITION = 99
 
 CAISS_ALGO_HNSW = 1
 
-CAISS_RET_OK = 0    # 返回值，正常
+# 异常值信息
+CAISS_RET_WARNING = 1         # 流程告警
+CAISS_RET_OK = 0              # 流程正常
+CAISS_RET_ERR = -1            # 流程异常
+CAISS_RET_RES = -2            # 资源问题
+CAISS_RET_MODE = -3           # 模式选择问题
+CAISS_RET_PATH = -4           # 路径问题
+CAISS_RET_JSON = -5           # json解析问题
+CAISS_RET_PARAM = -6          # 参数问题
+CAISS_RET_HANDLE = -7         # 句柄申请问题
+CAISS_RET_DIM = -8            # 维度问题
+CAISS_RET_MODEL_SIZE = -9     # 模型尺寸限制问题
+CAISS_RET_WORD_SIZE = -10     # 词语长度限制问题
+CAISS_RET_SQL_PARSE = -11     # 传入的sql无法解析
+CAISS_RET_NO_SUPPORT = -99    # 暂不支持该功能
 
 
 class PyCaiss:
     def __init__(self, path, max_thread_size, algo_type, manage_type):
-        self._caiss = CDLL(path)
+        self._caiss = CDLL(path)    # 如有路径报错问题，请尝试使用绝对路径
         self._dim = 0
         self._caiss.CAISS_Environment(max_thread_size, algo_type, manage_type)
 
@@ -55,7 +73,7 @@ class PyCaiss:
         if search_type == CAISS_SEARCH_QUERY or search_type == CAISS_LOOP_QUERY:
             # 如果传入的是数组信息，需要将数组转成指针传递下去
             if self._dim != len(info):
-                return -8, ''    # -8表示维度问题
+                return CAISS_RET_DIM, ''
 
             vec = (c_float * self._dim)()
             for i in range(0, self._dim):
@@ -97,6 +115,25 @@ class PyCaiss:
             return ret, ''
 
         return ret, result.value.decode()
+
+    def insert(self, handle, node, label, insert_type):
+        if self._dim != len(node):
+            return CAISS_RET_DIM
+
+        vec = (c_float * self._dim)()
+        for i in range(0, self._dim):
+            vec[i] = node[i]
+
+        label_ = create_string_buffer(label.encode(), len(label)+1)
+        return self._caiss.CAISS_Insert(handle, vec, label_, insert_type)
+
+    def ignore(self, handle, label, is_ignore=True):
+        label_ = create_string_buffer(label.encode(), len(label)+1)
+        return self._caiss.CAISS_Ignore(handle, label_, is_ignore)
+
+    def save(self, handle, model_path=None):
+        model_path_ = create_string_buffer(model_path.encode(), len(model_path)+1) if model_path else None
+        return self._caiss.CAISS_Save(handle, model_path_)
 
     def destroy(self, handle):
         return self._caiss.CAISS_DestroyHandle(handle)

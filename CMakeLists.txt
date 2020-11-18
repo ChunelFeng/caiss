@@ -5,8 +5,18 @@
 # @Desc Caiss对应CMakeList文件
 #**************************************************************/
 
+message("*********************************")
+message("*   _________    ______________ *")
+message("*  / ____/   |  /  _/ ___/ ___/ *")
+message("* / /   / /| |  / / \\__ \\\\__ \   *")
+message("*/ /___/ ___ |_/ / ___/ /__/ /  *")
+message("*\\____/_/  |_/___//____/____/   *")
+message("*                               *")
+message("*********************************")
+
+
 message("[caiss] welcome to the world of Caiss.")
-message("[caiss] please run caiss-linux-env.sh before compile the project.")
+message("[caiss] please run caiss-linux-env.sh before compile the project on ubuntu system for the first time.")
 
 cmake_minimum_required(VERSION 3.5.1)
 project(Caiss)
@@ -17,6 +27,9 @@ aux_source_directory(. DIRSRCS)
 
 # 以下是加入编译的时候，需要的宏
 add_definitions(-D_CAISS_EXPORTS_)
+
+# 如果开启此宏定义，则Caiss执行过程中，不会在控制台打印任何信息
+# add_definitions(-D_CAISS_SILENCE_)
 
 # linux下安装openmp指令：
 # sudo apt-get install libomp-dev

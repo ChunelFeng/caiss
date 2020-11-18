@@ -65,6 +65,12 @@ using ALOG_WORD2DETAILS_MAP = std::unordered_map<std::string, std::list<CaissRes
 
 
 inline void CAISS_ECHO(const char *cmd, ...) {
+#ifdef _CAISS_SILENCE_
+    // 如果开启此宏定义，则Caiss静默执行
+    return;
+#endif
+
+
 #ifndef _WIN32
     // 非windows系统，打印到ms
     timeb cur_time{};

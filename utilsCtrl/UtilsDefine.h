@@ -13,6 +13,10 @@
 #include <cstdarg>
 #include <ctime>
 
+#ifndef _WIN32
+    #include <sys/timeb.h>
+#endif
+
 #define CAISS_VERSION       ("2.4.1")    // 版本信息外部不可改变
 
 
@@ -61,11 +65,26 @@ using ALOG_WORD2DETAILS_MAP = std::unordered_map<std::string, std::list<CaissRes
 
 
 inline void CAISS_ECHO(const char *cmd, ...) {
-    time_t cur_time = time(nullptr);
-    std::string ct = ctime(&cur_time);
-    std::cout << "[caiss] ["
-              << ct.assign(ct.begin(), ct.end()-1)    // 去掉时间的最后一位\n信息
-              << "] ";
+    #ifndef _WIN32
+        // 非windows系统，打印到ms
+        tm *ptm;
+        timeb cur_time{};
+        char time[32] = {0};
+
+        ftime(&cur_time);
+        ptm = localtime(&cur_time.time);
+        sprintf(time, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
+                ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday,
+                ptm->tm_hour, ptm->tm_min, ptm->tm_sec, cur_time.millitm);
+        std::cout << "[caiss] [" << time << "] ";
+    #else
+        time_t cur_time = time(nullptr);
+        std::string ct = ctime(&cur_time);
+        std::cout << "[caiss] ["
+                  << ct.assign(ct.begin(), ct.end()-1)    // 去掉时间的最后一位\n信息
+                  << "] ";
+    #endif
+
     va_list args;
     va_start(args, cmd);
     vprintf(cmd, args);

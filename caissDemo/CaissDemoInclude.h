@@ -31,11 +31,11 @@
 #define max_data_size_ (5000)    // 不小于文本最大行数。建议设定为文本行数的1.5倍~2倍，方便今后插入信息。
 #define normalize_ (CAISS_TRUE)
 #define max_index_size_ (64)
-#define precision_ (0.95)
+#define precision_ (0.98)
 #define fast_rank_ (5)
 #define real_rank_ (5)
 #define step_ (1)
-#define max_epoch_ (3)
+#define max_epoch_ (5)
 #define show_span_ (1000)
 
 

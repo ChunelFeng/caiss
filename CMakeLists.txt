@@ -5,18 +5,17 @@
 # @Desc Caiss对应CMakeList文件
 #**************************************************************/
 
-message("*********************************")
-message("*   _________    ______________ *")
-message("*  / ____/   |  /  _/ ___/ ___/ *")
-message("* / /   / /| |  / / \\__ \\\\__ \   *")
-message("*/ /___/ ___ |_/ / ___/ /__/ /  *")
-message("*\\____/_/  |_/___//____/____/   *")
-message("*                               *")
-message("*********************************")
+message("**************************************")
+message("*    ______ ___     ____ _____ _____ *")
+message("*   / ____//   |   /  _// ___// ___/ *")
+message("*  / /    / /| |   / /  \\__ \\ \\__ \\  *")
+message("* / /___ / ___ | _/ /  ___/ /___/ /  *")
+message("* \\____//_/  |_|/___/ /____//____/   *")
+message("*                                    *")
+message("**************************************")
 
 
 message("[caiss] welcome to the world of Caiss.")
-message("[caiss] please run caiss-linux-env.sh before compile the project on ubuntu system for the first time.")
 
 cmake_minimum_required(VERSION 3.5.1)
 project(Caiss)
@@ -31,14 +30,8 @@ add_definitions(-D_CAISS_EXPORTS_)
 # 如果开启此宏定义，则Caiss执行过程中，不会在控制台打印任何信息
 # add_definitions(-D_CAISS_SILENCE_)
 
-# linux下安装openmp指令：
-# sudo apt-get install libomp-dev
 find_package(OpenMP)
-
-# linux下安装Eigen3指令：
-# 1：apt-get install libeigen3-dev
-# 2：cp -r /usr/include/eigen3/Eigen/ /usr/local/include/
-find_package(Eigen3)    # check if env support eigen
+find_package(Eigen3)
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
 IF (WIN32)

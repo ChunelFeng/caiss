@@ -42,7 +42,8 @@ public:
 protected:
     CAISS_STATUS reset();
     CAISS_STATUS loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
-    CAISS_STATUS trainModel(std::vector<CaissDataNode> &datas, unsigned int showSpan);
+    CAISS_STATUS
+    trainModel(std::vector<CaissDataNode> &datas, unsigned int curEpoch, unsigned int maxEpoch, unsigned int showSpan);
     CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, ALOG_WORD2RESULT_MAP &word2ResultMap);
     CAISS_STATUS loadModel(const char *modelPath);
     CAISS_STATUS createDistancePtr(CAISS_DIST_FUNC distFunc);

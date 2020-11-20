@@ -130,14 +130,14 @@ CAISS_STATUS HnswProc::train(const char *dataPath, const unsigned int maxDataSiz
     unsigned int epoch = 0;
     while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
         CAISS_ECHO("start to train caiss model for [%d] in [%d] epochs.", ++epoch, maxEpoch);
-        ret = trainModel(datas, showSpan);
+        ret = trainModel(datas, epoch, maxEpoch, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
         CAISS_ECHO("model build finished, check model precision automatic, please wait for a moment...");
 
         float calcPrecision = 0.0f;
         ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
-            CAISS_ECHO("train success, precision is [%0.4f] , model is saved to path [%s].", calcPrecision,
+            CAISS_ECHO("train success, precision is [%0.4f], model is saved to path [%s].", calcPrecision,
                        this->model_path_.c_str());
             break;
         } else if (CAISS_RET_WARNING == ret) {
@@ -330,7 +330,10 @@ CAISS_STATUS HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &da
 }
 
 
-CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas, const unsigned int showSpan) {
+CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
+                                  unsigned int curEpoch,
+                                  unsigned int maxEpoch,
+                                  unsigned int showSpan) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -341,7 +344,7 @@ CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas, const unsig
         CAISS_FUNCTION_CHECK_STATUS
 
         if (showSpan != 0 && i % showSpan == 0) {
-            CAISS_ECHO("train [%d] node, total size is [%d].", i, (int)datas.size());
+            CAISS_ECHO("[%d] in total [%d] epoch, train [%d] node, total size is [%d].", curEpoch, maxEpoch, i, (int)datas.size());
         }
     }
 
@@ -423,8 +426,7 @@ CAISS_STATUS HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
 }
 
 
-CAISS_STATUS
-HnswProc::filterByRules(void *info,
+CAISS_STATUS HnswProc::filterByRules(void *info,
                         const CAISS_SEARCH_TYPE searchType,
                         ALOG_RET_TYPE &result,
                         unsigned int topK,
@@ -448,8 +450,7 @@ HnswProc::filterByRules(void *info,
 }
 
 
-CAISS_STATUS
-HnswProc::filterByEditDistance(void *info,
+CAISS_STATUS HnswProc::filterByEditDistance(void *info,
                                CAISS_SEARCH_TYPE searchType,
                                ALOG_RET_TYPE &result,
                                unsigned int filterEditDistance) {
@@ -732,16 +733,16 @@ CAISS_STATUS HnswProc::checkModelPrecisionEnable(const float targetPrecision, co
     unsigned int suitableTimes = 0;
     #ifdef _USE_OPENMP_
         CAISS_ECHO("check model precision speed up by openmp.");
-        unsigned int calcTimes = min((int)datas.size(), 10000);    // 如果开启了open-mp，则计算10000次
+        int calcTimes = min((int)datas.size(), 10000);    // 如果开启了open-mp，则计算10000次
     #else
-        unsigned int calcTimes = min((int)datas.size(), 3000);
+        int calcTimes = min((int)datas.size(), 3000);
     #endif
 
     {
         #ifdef _USE_OPENMP_
             #pragma omp parallel for num_threads(4) reduction(+:suitableTimes)
         #endif
-        for (unsigned int i = 0; i < calcTimes; i++) {
+        for (int i = 0; i < calcTimes; i++) {
             auto fastResult = ptr->searchKnn((void *)datas[i].node.data(), fastRank);    // 记住，fastResult是倒叙的
             auto realResult = ptr->forceLoop((void *)datas[i].node.data(), realRank);
             float fastFarDistance = fastResult.top().first;

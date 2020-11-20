@@ -336,13 +336,24 @@ int main() {
 ## 六. 编译说明
 
 * 本人在Windows（Windows-10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
-* Linux命令行模式下，进入caiss文件夹下（与CMakeList.txt和README.md同级目录），输入： 
+* Linux环境开发者（以C++为例），命令行模式下，输入:
   ```shell
+  $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
+  $ cd caiss/
   $ ./caiss-linux-env.sh            # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
   $ cmake .                         # 注意，cmake后面有一个"."，表示当前目录    
   $ make                            # 即可完成编译    
   $ cd caissDemo/    
-  $ ./CaissDemo                     # 即可查看demo的运行结果    
+  $ ./CaissDemo                     # 即可查看C++版本demo的运行结果    
+  ```
+* Docker环境开发者（以python为例），输入:
+  ```shell
+  $ docker pull chunelfeng/caiss:latest                 # 获取Caiss的最新Docker版本
+  $ docker run -it --name CaissDemo chunelfeng/caiss    # 启动容器，并进入内部环境
+  $ cmake .                                             # 注意，cmake后面有一个"."，表示当前目录
+  $ make 
+  $ cd python/    
+  $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式，见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。

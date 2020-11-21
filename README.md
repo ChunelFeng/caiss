@@ -15,11 +15,38 @@
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
-## 二. 使用流程
+
+## 二. 编译说明
+
+* 本人在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中MY_BOOST_PATH修改为新环境中boost库的位置，即可完成编译。本人的boost库是boost-1.67.0，建议使用不低于此版本的boost库，以免出现编译问题。
+* Linux环境开发者（以C++为例），命令行模式下，输入:
+  ```shell
+  $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
+  $ cd caiss/
+  $ ./caiss-linux-env.sh                                            # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
+  $ cmake .                                                         # 注意，cmake后面有一个"."，表示当前目录    
+  $ make                                                            # 即可完成编译    
+  $ cd caissDemo/    
+  $ ./CaissDemo                                                     # 即可查看C++版本demo的运行结果    
+  ```
+* Docker环境开发者（以python为例），输入:
+  ```shell
+  $ docker pull chunelfeng/caiss:latest                             # 获取Caiss的最新Docker版本
+  $ docker run -it --name CaissDemo chunelfeng/caiss                # 启动容器，并进入内部环境
+  $ cmake .                                                         # 注意，cmake后面有一个"."，表示当前目录
+  $ make 
+  $ cd python/    
+  $ python3 pyCaissDemo.py                                          # 即可查看python版本demo的运行结果
+  ```
+* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
+* 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+
+
+## 三. 训练流程
 
 1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库，安装pprint库。
 
-2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)。
+2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/knowledge-of-bert)。
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 
@@ -30,7 +57,7 @@
 ![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 
-## 三. 接口定义
+## 四. 接口定义
 ```cpp
 /**
  * 初始化环境信息
@@ -193,7 +220,7 @@ CAISS_STATUS CAISS_ExecuteSQL(CAISS_HANDLE handle,
 CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
 ```
 
-## 四. 使用Demo
+## 五. 使用Demo
 ```cpp
 /*
 * 更多使用样例，请参考caissDemo文件夹中内容。
@@ -286,7 +313,7 @@ int main() {
 ```
 
 
-## 五. 输出内容
+## 六. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
 * 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语，具体结果信息如下：
@@ -331,32 +358,6 @@ int main() {
     ]
 }
 ```
-
-
-## 六. 编译说明
-
-* 本人在Windows（Windows-10），Linux（Ubuntu-16.04）和Mac(MacOS-10.15)上开发，使用的IDE均是CLion。直接通过Clion读取CMakeList.txt文件，配置本地boost库路径，即可完成编译。本人的库是boost-1.67.0。建议使用不低于此版本的boost库，以免出现编译问题。
-* Linux环境开发者（以C++为例），命令行模式下，输入:
-  ```shell
-  $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
-  $ cd caiss/
-  $ ./caiss-linux-env.sh            # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
-  $ cmake .                         # 注意，cmake后面有一个"."，表示当前目录    
-  $ make                            # 即可完成编译    
-  $ cd caissDemo/    
-  $ ./CaissDemo                     # 即可查看C++版本demo的运行结果    
-  ```
-* Docker环境开发者（以python为例），输入:
-  ```shell
-  $ docker pull chunelfeng/caiss:latest                 # 获取Caiss的最新Docker版本
-  $ docker run -it --name CaissDemo chunelfeng/caiss    # 启动容器，并进入内部环境
-  $ cmake .                                             # 注意，cmake后面有一个"."，表示当前目录
-  $ make 
-  $ cd python/    
-  $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
-  ```
-* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
-* 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式，见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
 ## 七. 其他
@@ -427,6 +428,10 @@ int main() {
 * 提供Linux中一键安装加速环境功能
 * 优化Python版本及其对应的使用Demo
 * 修复已知问题，异常流程添加主动报错信息，优化使用体验
+
+[2020.11.21 - v2.5.0 - Chunel]
+* 提供Docker版本
+* 提供静默运行功能，优化提示信息
 
 ------------
 #### 附录-2. 联系方式: 

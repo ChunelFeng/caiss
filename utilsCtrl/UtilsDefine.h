@@ -14,10 +14,10 @@
 #include <ctime>
 
 #ifndef _WIN32
-#include <sys/timeb.h>
+    #include <sys/timeb.h>
 #endif
 
-#define CAISS_VERSION       ("2.4.1")    // 版本信息外部不可改变
+#define CAISS_VERSION       ("2.5.0")    // 版本信息外部不可改变
 
 
 struct CaissDataNode {
@@ -70,21 +70,20 @@ inline void CAISS_ECHO(const char *cmd, ...) {
     return;
 #endif
 
-
 #ifndef _WIN32
-    // 非windows系统，打印到ms
+    // 非windows系统，打印到毫秒
     timeb cur_time{};
-    char time[24] = {0};
+    char timeInfo[32] = {0};
 
     ftime(&cur_time);
     tm *ptm = localtime(&cur_time.time);
-    sprintf(time, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
+    sprintf(timeInfo, " [%04d-%02d-%02d %02d:%02d:%02d.%03d] ",
             ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday,
             ptm->tm_hour, ptm->tm_min, ptm->tm_sec, cur_time.millitm);
-    std::cout << "[caiss] [" << time << "] ";
+    std::cout << "[caiss]" << timeInfo;
 #else
-    // windows系统，打印到s
-    time_t cur_time = time(nullptr);
+    // windows系统，打印到秒
+    time_t cur_time = timeInfo(nullptr);
         std::string ct = ctime(&cur_time);
         std::cout << "[caiss] ["
                   << ct.assign(ct.begin(), ct.end()-1)    // 去掉时间的最后一位\n信息
@@ -112,7 +111,6 @@ inline void CAISS_ECHO(const char *cmd, ...) {
         return CAISS_RET_RES;    \
     }    \
 
-
 #define CAISS_FUNCTION_BEGIN    \
     CAISS_STATUS ret = CAISS_RET_OK;    \
 
@@ -139,7 +137,6 @@ inline void CAISS_ECHO(const char *cmd, ...) {
 
 #define CAISS_CHECK_MODE_ENABLE(mode)    \
     if ((mode) != this->cur_mode_)    { return CAISS_RET_MODE; }    \
-
 
 #define CAISS_RETURN_IF_NOT_SUCCESS(ret)    \
     if (CAISS_RET_OK != ret)    {return ret;}    \

@@ -3,7 +3,7 @@
 * @Name CaissLib.h
 * @Date 2020/11/15 1:29 上午
 * @Desc Caiss库函数定义头文件
-* @Version 2.4.1
+* @Version 2.5.0
 *　　　　　　　　┏┓　 ┏┓+ +
 *　　　　　　　┏┛┻━━━┛┻┓ + +
 *　　　　　　　┃　　　　　　  ┃

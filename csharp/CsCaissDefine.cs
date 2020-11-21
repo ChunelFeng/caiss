@@ -12,7 +12,6 @@ namespace CsCaissSpace
 {
     public class CsCaissDefine {
         /* 函数返回值定义 */
-        public const int CAISS_RET_NO_WORD      = 2;     // 模型词库中无对应词语问题
         public const int CAISS_RET_WARNING      = 1;     // 流程告警
         public const int CAISS_RET_OK           = 0;     // 流程正常
         public const int CAISS_RET_ERR          = -1;    // 流程异常

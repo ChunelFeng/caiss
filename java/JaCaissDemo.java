@@ -10,8 +10,8 @@ import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 public class JaCaissDemo {
-    public static String DATA_PATH = "bert_71290words_768dim.txt";
-    public static int MAX_DATA_SIZE = 100000;
+    public static String DATA_PATH = "../doc/demo_2500words_768dim.txt";
+    public static int MAX_DATA_SIZE = 5000;
     public static int NORMALIZE = 1;    // 是否将向量信息标准化
     public static int MAX_INDEX_SIZE = 64;
     public static float PRECISION = 0.95f;
@@ -21,13 +21,13 @@ public class JaCaissDemo {
     public static int MAX_EPOCH = 5;
     public static int SHOW_SPAN = 1000;
 
-    public static String MODEL_PATH = "bert_71290words_768dim.caiss";
+    public static String MODEL_PATH = "../doc/demo_2500words_768dim.caiss";
     public static int MAX_THREAD_SIZE = 1;
     public static int TOP_K = 5;
     public static int FILTER_EDIT_DISTANCE = 0;
     public static int DIM = 768;
     public static String QUERY_WORD = "water";
-    public static String QUERY_SQL = "SELECT * FROM bert_71290words_768dim WHERE word LIKE 'water' limit 5";
+    public static String QUERY_SQL = "SELECT * FROM demo_2500words_768dim WHERE word LIKE 'water' limit 5";
 
     public static int TrainDemo() {
         // 训练demo

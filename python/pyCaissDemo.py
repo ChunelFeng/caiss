@@ -7,9 +7,9 @@
 
 from python.pyCaiss import *
 
-LIB_PATH = 'libCaiss.dylib'    # Caiss动态库对应的路径
-MODEL_FILE_PATH = 'demo_2500words_768dim.caiss'    # 最终生成的模型文件
-TRAIN_FILE_PATH = 'demo_2500words_768dim.txt'    # 用于训练的样本文件
+LIB_PATH = '../libCaiss.so'    # Caiss动态库对应的路径
+MODEL_FILE_PATH = '../doc/demo_2500words_768dim.caiss'    # 最终生成的模型文件
+TRAIN_FILE_PATH = '../doc/demo_2500words_768dim.txt'    # 用于训练的样本文件
 MAX_THREAD_SIZE = 1
 DIM = 768
 WORD = 'water'

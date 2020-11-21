@@ -11,8 +11,8 @@ namespace CsCaissSpace
 {
     internal class CsCaissDemo
     {
-        private static string DATA_PATH = "bert_71290words_768dim.txt";
-        private static uint MAX_DATA_SIZE = 100000;
+        private static string DATA_PATH = "../doc/demo_2500words_768dim.txt";
+        private static uint MAX_DATA_SIZE = 5000;
         private static int NORMALIZE = 1;    // 是否将向量信息标准化
         private static uint MAX_INDEX_SIZE = 64;
         private static float PRECISION = 0.95f;
@@ -22,13 +22,13 @@ namespace CsCaissSpace
         private static uint MAX_EPOCH = 5;
         private static uint SHOW_SPAN = 1000;
 
-        private static string MODEL_PATH = "bert_71290words_768dim.caiss";
+        private static string MODEL_PATH = "../doc/demo_2500words_768dim.caiss";
         private static uint MAX_THREAD_SIZE = 1;
         private static uint TOP_K = 5;
         private static int FILTER_EDIT_DISTANCE = 0;
         private static uint DIM = 768;
         private static string QUERY_WORD = "water";
-        private static string QUERY_SQL = "SELECT * FROM bert_71290words_768dim WHERE word LIKE 'water' limit 5";
+        private static string QUERY_SQL = "SELECT * FROM demo_2500words_768dim WHERE word LIKE 'water' limit 5";
 
         
         private static int TrainDemo()

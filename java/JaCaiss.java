@@ -11,7 +11,7 @@ import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 public class JaCaiss {
-    public static String CAISS_PATH = "caiss";    // 请设置正确caiss动态库的路径信息
+    public static String CAISS_PATH = "../libCaiss.so";    // 请设置正确caiss动态库的路径信息
 
     private interface JnaCaiss extends Library {
         JnaCaiss instance = (JnaCaiss) Native.loadLibrary(CAISS_PATH, JnaCaiss.class);

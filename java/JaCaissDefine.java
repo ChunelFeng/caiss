@@ -6,7 +6,7 @@
  */
 
 public class JaCaissDefine {
-    public static int CAISS_RET_NO_WORD     =  2;     // 模型词库中无对应词语问题
+
     public static int CAISS_RET_WARNING     =  1;     // 流程告警
     public static int CAISS_RET_OK          =  0;     // 流程正常
     public static int CAISS_RET_ERR         =  -1;    // 流程异常

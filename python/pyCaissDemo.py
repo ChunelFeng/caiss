@@ -5,11 +5,13 @@
 # @Date 2020/9/15 12:56 下午
 # @Desc Caiss的python版本Demo
 
+import json
+import pprint
 from python.pyCaiss import *
 
-LIB_PATH = '../libCaiss.so'    # Caiss动态库对应的路径
-MODEL_FILE_PATH = '../doc/demo_2500words_768dim.caiss'    # 最终生成的模型文件
-TRAIN_FILE_PATH = '../doc/demo_2500words_768dim.txt'    # 用于训练的样本文件
+LIB_PATH = r'../libCaiss.so'    # Caiss动态库对应的路径
+MODEL_FILE_PATH = r'../doc/demo_2500words_768dim.caiss'    # 最终生成的模型文件
+TRAIN_FILE_PATH = r'../doc/demo_2500words_768dim.txt'    # 用于训练的样本文件
 MAX_THREAD_SIZE = 1
 DIM = 768
 WORD = 'water'
@@ -66,7 +68,7 @@ def search_demo(caiss):
     if CAISS_RET_OK != ret:
         print('sync_search error, ret = {0}'.format(ret))
     else:
-        print(result)    # 如果查询ok，则返回结果信息
+        pprint.pprint(json.loads(result))    # 如果查询ok，则返回结果信息
 
     ret = caiss.destroy(handle)
     return ret

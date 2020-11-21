@@ -38,11 +38,12 @@ IF (WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 ELSEIF(APPLE)
-    set(CMAKE_CXX_FLAGS -m64)    # 设置64位系统
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wno-unused-command-line-argument")    # 设置64位系统
+
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
 
-    set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
-    set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
+    #set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
+    #set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
     set(EIGEN_DIR /usr/local/Cellar/eigen/3.3.7/include/eigen3/)
 
     include_directories(${BLAS_INC_DIR} ${EIGEN_DIR})

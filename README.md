@@ -17,7 +17,7 @@
 
 ## 二. 使用流程
 
-1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库。
+1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库，安装pprint库。
 
 2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/chun-xu-yuan-wei-ni-zheng-li-b-e-r-t-ru-men-xiang-guan-zi-liao)。
 

@@ -83,7 +83,7 @@ inline void CAISS_ECHO(const char *cmd, ...) {
     std::cout << "[caiss]" << timeInfo;
 #else
     // windows系统，打印到秒
-    time_t cur_time = timeInfo(nullptr);
+    time_t cur_time = time(nullptr);
         std::string ct = ctime(&cur_time);
         std::cout << "[caiss] ["
                   << ct.assign(ct.begin(), ct.end()-1)    // 去掉时间的最后一位\n信息

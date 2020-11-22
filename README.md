@@ -38,7 +38,7 @@
   $ cd python/    
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
-* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Stdio打开，即可完成编译。
+* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 

@@ -42,7 +42,7 @@ class MainHandler(tornado.web.RequestHandler):
 class CaissWordHandler(tornado.web.RequestHandler):
     def get(self):
         logs = SummaryLog()
-        query_word = self.get_argument('query', '')
+        query_word = self.get_argument('query', '').lower()
         if len(query_word) == 0:
             self.write('please enter query word.')
             return

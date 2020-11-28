@@ -54,6 +54,7 @@
 
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
+
 ![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)
 
 
@@ -367,6 +368,11 @@ int main() {
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
+* 想要直接查看效果的朋友，可以直接在浏览器的搜索框内输入：
+  ```shell
+  www.chunel.cn:8888/caiss/word?top=5&query=hello|world
+  ```
+  并点击回车，即可查看hello和world语义相近的词语。其中，hello和world可以换成其他任意英语单词。不同单词之间以"|"分隔，不区分大小写，例：Artificial|Intelligence|Similarity|Search
 
 
 ------------

@@ -1,9 +1,7 @@
 #pragma once
 #include "hnswlib.h"
 
-#if _USE_EIGEN3_
-    #include <Eigen/Core>
-#endif
+#include "../../AlgorithmDefine.h"
 
 namespace hnswlib {
 
@@ -18,14 +16,13 @@ namespace hnswlib {
     }
 
 # if _USE_EIGEN3_
-    typedef Eigen::Map<Eigen::Matrix<float, 1, Eigen::Dynamic>> DynamicMapType;
 
     static float
     InnerProductEigen(const void *pVect1, const void *pVect2, const void *qty_ptr) {
         int qty = *((size_t *) qty_ptr);    // 计算出来
-        DynamicMapType vec1((float *)pVect1, (const int)qty);
-        DynamicMapType vec2((float *)pVect2, (const int)qty);
-        auto x = vec1 * vec2.transpose();
+        DynamicArrayType vec1((float *)pVect1, (const int)qty);
+        DynamicArrayType vec2((float *)pVect2, (const int)qty);
+        auto x = (vec1 * vec2).sum();
         return 1 - x;
     }
 #endif

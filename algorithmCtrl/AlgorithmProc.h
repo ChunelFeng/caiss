@@ -8,6 +8,7 @@
 
 
 #include <string>
+#include "AlgorithmDefine.h"
 #include "../caissLib/CaissLib.h"
 #include "../utilsCtrl/UtilsInclude.h"
 #include "../threadCtrl/ThreadInclude.h"
@@ -17,7 +18,6 @@ const static unsigned int DEFAULT_STEP = 2;
 const static unsigned int DEFAULT_MAX_EPOCH = 5;
 const static unsigned int DEFAULT_SHOW_SPAN = 1000;    // 1000行会显示一次日志
 const static std::string MODEL_SUFFIX = ".caiss";   // 默认的模型后缀
-
 
 class AlgorithmProc {
 
@@ -148,16 +148,23 @@ protected:
             return CAISS_RET_DIM;    // 忽略维度不一致的情况
         }
 
+#ifdef _USE_EIGEN3_
+        // 如果有找到eigen的情况下，加速计算（只计算前dim个信息）
+        DynamicArrayType arr(node.data(), (const int)this->dim_);
+        auto denominator = 1 / sqrt((arr * arr).sum());
+        arr = arr * denominator;    // x 就是归一化之后的矩阵信息
+        node.assign(arr.data(), arr.data() + this->dim_);
+#else
         CAISS_FLOAT sum = 0.0;
         for (unsigned int i = 0; i < this->dim_; i++) {
             sum += (node[i] * node[i]);
         }
 
-        CAISS_FLOAT denominator = std::sqrt(sum);    // 分母信息
+        CAISS_FLOAT denominator = 1 / (float)std::sqrt(sum);    // 分母信息
         for (unsigned int i = 0; i < this->dim_; i++) {
-            node[i] = node[i] / denominator;
+            node[i] = node[i] * denominator;
         }
-
+#endif
         return CAISS_RET_OK;
     }
 

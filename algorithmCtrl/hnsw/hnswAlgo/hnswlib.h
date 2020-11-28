@@ -27,14 +27,11 @@
 #include <iostream>
 #include <queue>
 #include <list>
-
-#include <string.h>
-
+#include <cstring>
 
 
 namespace hnswlib {
     typedef size_t labeltype;
-
 
     template<typename T>
     static void writeBinaryPOD(std::ostream &out, const T &podRef) {

@@ -1,4 +1,4 @@
-# <center><b> Caiss使用说明文档 </b></center>
+# <center><b> Caiss说明文档 </b></center>
 
 ## 一. 简介
 
@@ -50,8 +50,13 @@
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。格式请参考/doc/文件夹下的english-words-71290.txt文件。
 
-4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置(embedding_file_path)，bert模型的位置(bert_model_path)。函数执行完毕后，会在result_path位置，生成可用于Caiss训练的文本内容。
-
+4，执行/python/dataProcess/pyCaissTrainDataBuilder.py中下的__main__方法。执行前，需要根据实际情况，修改待embedding文本的位置(embedding_file_path)，bert模型的位置(bert_model_path)。函数执行完毕后，会在result_path位置，生成可用于Caiss训练的文本内容。具体格式，如下所示：
+  ```json
+  {"one": ["1.0", "0.0", "0.0", "0.0"]}
+  {"two": ["0.0", "1.0", "0.0", "0.0"]}
+  {"three": ["0.0", "0.0", "1.0", "0.0"]}
+  {"four": ["0.0", "0.0", "0.0", "1.0"]}
+  ```
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 

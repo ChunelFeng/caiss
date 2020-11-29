@@ -30,8 +30,7 @@ def show_info(tnd, info):
         result_words = []
         for detail in result.get('details'):
             result_words.append(detail.get('label'))
-        tnd.write('and the info you may also want to query maybe : {}.'.format(result_words))
-        tnd.write('<br>')
+        tnd.write('and the similar words maybe : {} <br>'.format(result_words))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -54,6 +53,20 @@ class CaissWordHandler(tornado.web.RequestHandler):
             return
 
         show_info(self, result_str)
+
+        self.write('<br>')
+        self.write('有没前端大佬考虑加入我们，一起做个炫酷的展示页面啊哈哈哈！！！<br>')
+        self.write('请随时联系我们哈哈哈！！！<br>')
+        self.write('<br>')
+
+        self.write('微信： Chunel_Fung <br>')
+        self.write('邮箱： chunel@foxmail.com <br>')
+        self.write('源码： ')
+        self.write('<a href="https://www.github.com/ChunelFeng/caiss">www.github.com/ChunelFeng/cais</a><br />')
+        self.write('论坛： ')
+        self.write('<a href="http://www.chunel.cn">www.chunel.cn</a><br />')
+
+        self.write('<br>')
 
 
 class CaissSentenceHandler(tornado.web.RequestHandler):

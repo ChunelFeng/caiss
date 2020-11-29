@@ -62,7 +62,7 @@ class CaissWordHandler(tornado.web.RequestHandler):
         self.write('微信： Chunel_Fung <br>')
         self.write('邮箱： chunel@foxmail.com <br>')
         self.write('源码： ')
-        self.write('<a href="https://www.github.com/ChunelFeng/caiss">www.github.com/ChunelFeng/cais</a><br />')
+        self.write('<a href="https://www.github.com/ChunelFeng/caiss">www.github.com/ChunelFeng/caiss</a><br />')
         self.write('论坛： ')
         self.write('<a href="http://www.chunel.cn">www.chunel.cn</a><br />')
 

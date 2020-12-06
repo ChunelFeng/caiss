@@ -18,7 +18,7 @@
 
 ## 二. 编译说明
 
-* 本人在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中MY_BOOST_PATH修改为新环境中boost库的位置，即可完成编译。本人的boost库是boost-1.67.0，建议使用不低于此版本的boost库，以免出现编译问题。
+* Caiss在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中MY_BOOST_PATH（必须）和MY_EIGEN_PATH（非必须）修改为新环境中boost库和eigen库的位置，即可完成编译。建议boost库版本不低于v1.67.0，以免出现编译问题。
 * Linux环境开发者（以C++为例），命令行模式下，输入:
   ```shell
   $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
@@ -31,7 +31,7 @@
   ```
 * Docker环境开发者（以python为例），输入:
   ```shell
-  $ docker pull chunelfeng/caiss:latest                 # 获取Caiss的最新Docker版本
+  $ docker pull chunelfeng/caiss                        # 获取Caiss的最新Docker版本
   $ docker run -it --name CaissDemo chunelfeng/caiss    # 启动容器，并进入内部环境
   $ cmake .                                             # 注意，cmake后面有一个"."，表示当前目录
   $ make 
@@ -39,12 +39,12 @@
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
-* 如果在编译或使用过程中遇到任何问题，欢迎随时联系本人（联系方式见附录-2）。本人很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+* 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录-2）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
 ## 三. 训练流程
 
-1，安装python3环境，安装TensorFlow库，安装keras-bert库，安装numpy库，安装pprint库。
+1，安装python3环境，安装tensorflow库，安装keras库，安装keras-bert库，安装numpy库，安装pprint库。
 
 2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/knowledge-of-bert)。
 
@@ -57,6 +57,7 @@
   {"three": ["0.0", "0.0", "1.0", "0.0"]}
   {"four": ["0.0", "0.0", "0.0", "1.0"]}
   ```
+
 5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 
@@ -246,17 +247,17 @@ static const CAISS_MANAGE_TYPE manage_type_ = CAISS_MANAGE_SYNC;
 static const CAISS_MODE mode_ = CAISS_MODE_PROCESS;
 static const CAISS_DISTANCE_TYPE dist_type_ = CAISS_DISTANCE_INNER;
 static const CAISS_UINT dim_ = 768;    // 向量维度
-static const CAISS_STRING model_path_ = "demo_2500words_768dim.caiss";    // caiss模型路径
+static const CAISS_STRING model_path_ = "./demo_2500words_768dim.caiss";    // caiss模型路径
 static const CAISS_DIST_FUNC dist_func_ = nullptr;
 static const CAISS_STRING info_ = "water";    // 多词查询的情况下，输入使用"|"分隔。例："hello|world"
 static const CAISS_SEARCH_TYPE search_type_ = CAISS_SEARCH_WORD;
 static const CAISS_UINT top_k_ = 5;
 
-static const CAISS_STRING data_path_ = "demo_2500words_768dim.txt";    // caiss训练文件路径
+static const CAISS_STRING data_path_ = "./demo_2500words_768dim.txt";    // caiss训练文件路径
 static const CAISS_UINT max_data_size_ = 5000;    // 建议略大于训练样本中的行数，方便今后插入数据的更新
 static const CAISS_BOOL normalize_ = CAISS_TRUE;    // 是否对数据进行归一化处理（常用于计算cos距离）
 static const CAISS_UINT max_index_size_ = 64;     // 标签的最大长度
-static const CAISS_FLOAT precision_ = 0.95f;    // 模型精确度
+static const CAISS_FLOAT precision_ = 0.98f;    // 模型精确度
 static const CAISS_UINT fast_rank_ = 5;
 static const CAISS_UINT real_rank_ = 5;
 static const CAISS_UINT step_ = 1;
@@ -322,7 +323,7 @@ int main() {
 ## 六. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语，具体结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语，查询结果信息如下：
 
 ```json
 {
@@ -368,16 +369,15 @@ int main() {
 
 ## 七. 其他
 
-* 训练文件格式，请参考/doc/demo_2500words_768dim.txt中内容。doc文件夹中，提供了供测试使用的2500个常见英文单词的词向量（768维）文件，仅作为本库的测试样例使用，有很多常见的词语都没有包含，更无任何效果上的保证。如果需要完整的词向量文件，请自行训练或者联系本人。
 * 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
-* 想要直接查看效果的朋友，可以直接在浏览器的搜索框内输入：
+* 直接查看效果，可以直接在浏览器的搜索框内输入：
   ```shell
   www.chunel.cn:8888/caiss/word?top=5&query=hello|world
   ```
-  并点击回车，即可查看hello和world语义相近的词语。其中，hello和world可以换成其他任意英语单词。不同单词之间以"|"分隔，不区分大小写，例：Artificial|Intelligence|Similarity|Search
+  并点击回车，即可查看hello和world语义相近的词语。其中，hello和world可以换成其他任意英语单词。不同单词之间以"|"分隔，不区分大小写，例：Search|What|You|Want
 
 
 ------------

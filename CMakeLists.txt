@@ -44,9 +44,9 @@ ELSEIF(APPLE)
 
     #set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
     #set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
-    set(EIGEN_DIR /usr/local/Cellar/eigen/3.3.7/include/eigen3/)
+    set(MY_EIGEN_PATH /usr/local/Cellar/eigen/3.3.7/include/eigen3/)
 
-    include_directories(${BLAS_INC_DIR} ${EIGEN_DIR})
+    include_directories(${BLAS_INC_DIR} ${MY_EIGEN_PATH})
     link_directories(${BLAS_LINK_DIR})
 
     #link_libraries(libopenblas.a)    # import openblas static lib

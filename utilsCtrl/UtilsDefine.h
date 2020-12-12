@@ -17,12 +17,13 @@
     #include <sys/timeb.h>
 #endif
 
-#define CAISS_VERSION       ("2.5.0")    // 版本信息外部不可改变
+#define CAISS_VERSION       ("3.0.0")    // 版本信息外部不可改变
 
 
 struct CaissDataNode {
-    /* 读取待训练的文件的时候，表示每行的信息的数据结构 */
-    std::string index;
+    /* 读取待训练的文件的时候，表示每行的信息的数据结构
+     * label表示标签（如单词）信息，node表示向量信息 */
+    std::string label;
     std::vector<CAISS_FLOAT> node;
 };
 

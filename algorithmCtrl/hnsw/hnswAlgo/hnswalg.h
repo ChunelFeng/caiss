@@ -15,12 +15,12 @@
 #include <unordered_map>
 #include "./boost/bimap/bimap.hpp"
 
+#include "../../AlgorithmDefine.h"
 #include "../../../utilsCtrl/UtilsInclude.h"
 
 namespace hnswlib {
     typedef unsigned int tableint;
     typedef unsigned int linklistsizeint;
-    typedef boost::bimaps::bimap<labeltype, std::string> BOOST_BIMAP;
 
     template<typename dist_t>
     class HierarchicalNSW : public AlgorithmInterface<dist_t> {

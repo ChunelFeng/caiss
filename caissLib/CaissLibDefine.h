@@ -3,7 +3,7 @@
  * @Name CaissLibDefine.h
  * @date 2020/5/15 1:23 上午
  * @Desc Caiss库类型定义头文件
- * @Version 2.4.0
+ * @Version 3.0.0
  */
 
 #ifndef _CAISS_LIBRARY_DEFINE_H_
@@ -59,7 +59,9 @@ typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(const char *query, const CAI
 #define CAISS_RET_DIM           (-8)    // 维度问题
 #define CAISS_RET_MODEL_SIZE    (-9)    // 模型尺寸限制问题
 #define CAISS_RET_WORD_SIZE     (-10)   // 词语长度限制问题
-#define CAISS_RET_SQL_PARSE     (-11)   // 传入的sql无法解析
+#define CAISS_RET_SQL_PARSE     (-11)   // 传入的sql解析问题
+#define CAISS_RET_MODEL_DATA    (-12)   // 模型内容问题
+#define CAISS_RET_RESULT_SIZE   (-13)   // 结果长度问题
 #define CAISS_RET_NO_SUPPORT    (-99)   // 暂不支持该功能
 
 
@@ -104,8 +106,9 @@ enum CAISS_DISTANCE_TYPE {
 
 enum CAISS_ALGO_TYPE {
     CAISS_ALGO_DEFAULT = 1,
-    CAISS_ALGO_HNSW = 1,            // hnsw算法（准确度高，空间复杂度较大）
-    CAISS_ALGO_NSG = 2              // nsg算法（准确度较高，空间复杂度小）
+    CAISS_ALGO_HNSW = 1,            // hnsw算法（推荐）
+    CAISS_ALGO_NSG = 2,             // nsg算法
+    CAISS_ALGO_MRPT = 3             // mrpt算法
 };
 
 

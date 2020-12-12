@@ -15,5 +15,6 @@
 #include "./lruProc/LruProc.h"
 #include "./trieProc/TrieProc.h"
 #include "./editDistanceProc/EditDistanceProc.h"
+#include "./singletonUtils/SingletonProc.h"
 
 #endif    //CAISS_UTILSINCLUDE_H

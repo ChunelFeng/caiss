@@ -6,7 +6,7 @@
 #define CAISS_ALGORITHMINCLUDE_H
 
 #include "./hnsw/hnswProc/HnswProc.h"
-
+#include "./mrpt/mrptProc/MrptProc.h"
 
 
 

@@ -1,5 +1,6 @@
 //
 // Created by Chunel on 2020/5/23.
+// 改编自：https://github.com/nmslib/hnswlib
 //
 
 #ifndef CAISS_HNSWPROC_H
@@ -34,29 +35,18 @@ public:
     CAISS_STATUS search(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
     CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) override;
     CAISS_STATUS save(const char *modelPath) override;    // 默认写成是当前模型的
-    CAISS_STATUS getResultSize(unsigned int& size) override;
-    CAISS_STATUS getResult(char *result, unsigned int size) override;
     CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore) override;
 
 
 protected:
     CAISS_STATUS reset();
     CAISS_STATUS loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
-    CAISS_STATUS
-    trainModel(std::vector<CaissDataNode> &datas, unsigned int curEpoch, unsigned int maxEpoch, unsigned int showSpan);
-    CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, ALOG_WORD2RESULT_MAP &word2ResultMap);
-    CAISS_STATUS loadModel(const char *modelPath);
+    CAISS_STATUS trainModel(std::vector<CaissDataNode> &datas, unsigned int curEpoch, unsigned int maxEpoch, unsigned int showSpan);
+    CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, const ALOG_WORD2RESULT_MAP &word2ResultMap);
+    CAISS_STATUS loadModel();
     CAISS_STATUS createDistancePtr(CAISS_DIST_FUNC distFunc);
     CAISS_STATUS innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
                                    unsigned int filterEditDistance);
-    CAISS_STATUS processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams);
-
-    /* 函数过滤条件 */
-    CAISS_STATUS filterByRules(void *info, CAISS_SEARCH_TYPE searchType, ALOG_RET_TYPE &result, unsigned int topK,
-                               unsigned int filterEditDistance);
-    CAISS_STATUS filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType, ALOG_RET_TYPE &result,
-                                      unsigned int filterEditDistance);
-    CAISS_STATUS filterByIgnoreTrie(ALOG_RET_TYPE &result);
 
 
     // 静态成员变量

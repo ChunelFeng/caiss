@@ -34,6 +34,7 @@ find_package(OpenMP)
 find_package(Eigen3)
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
+# 设置当前eigen路径（MY_EIGEN_PATH为选填）
 IF (WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
@@ -105,7 +106,9 @@ add_library(Caiss SHARED
         threadCtrl/threadPool/ThreadPool.cpp
         manageCtrl/asyncManage/AsyncManageProc.cpp
         caissLib/CaissLib.cpp
+        algorithmCtrl/AlgorithmProc.cpp
         algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
+        algorithmCtrl/mrpt/mrptProc/MrptProc.cpp
         utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         threadCtrl/rwLock/RWLock.cpp
         manageCtrl/ManageProc.cpp

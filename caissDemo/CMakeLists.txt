@@ -12,7 +12,9 @@ set(SOURCE_FILES
         ../threadCtrl/rwLock/RWLock.cpp
         ../manageCtrl/asyncManage/AsyncManageProc.cpp
         ../manageCtrl/syncManage/SyncManageProc.cpp
+        ../algorithmCtrl/AlgorithmProc.cpp
         ../algorithmCtrl/hnsw/hnswProc/HnswProc.cpp
+        ../algorithmCtrl/mrpt/mrptProc/MrptProc.cpp
         ../utilsCtrl/rapidJsonUtils/rapidJsonProc/RapidJsonProc.cpp
         ../threadCtrl/threadPool/ThreadPool.cpp
         ../manageCtrl/ManageProc.cpp
@@ -28,6 +30,5 @@ set(SOURCE_FILES
         ../sqlCtrl/util/SQLParser.cpp
         ../sqlCtrl/parser/bison_parser.cpp
         ../sqlCtrl/parser/flex_lexer.cpp)
-
 
 add_executable(CaissDemo ${SOURCE_FILES})

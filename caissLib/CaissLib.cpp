@@ -23,12 +23,13 @@ static ManageProc* createManage(const CAISS_UINT maxThreadSize,
     return manage;
 }
 
+
 CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Environment(const CAISS_UINT maxThreadSize,
                                                      const CAISS_ALGO_TYPE algoType,
                                                      const CAISS_MANAGE_TYPE manageType) {
     CAISS_FUNCTION_BEGIN
-    if (algoType != CAISS_ALGO_HNSW) {
-        return CAISS_RET_NO_SUPPORT;    // 暂时不支持除了HNSW之外的算法
+    if (algoType != CAISS_ALGO_HNSW && algoType != CAISS_ALGO_MRPT) {
+        return CAISS_RET_NO_SUPPORT;    // 暂时仅支持hsnw和mrpt算法
     }
 
     if (nullptr == g_manage) {
@@ -79,6 +80,7 @@ CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Train(CAISS_HANDLE handle,
     return g_manage->train(handle, dataPath, maxDataSize, normalize, maxIndexSize, precision, fastRank, realRank, step, maxEpoch, showSpan);
 }
 
+
 CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Search(CAISS_HANDLE handle,
                                                 void *info,
                                                 const CAISS_SEARCH_TYPE searchType,
@@ -128,6 +130,7 @@ CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Save(CAISS_HANDLE handle,
     CAISS_ASSERT_ENVIRONMENT_INIT
     return g_manage->save(handle, modelPath);
 }
+
 
 CAISS_LIB_API CAISS_STATUS STDCALL CAISS_ExecuteSQL(CAISS_HANDLE handle,
                                                     CAISS_STRING sql,

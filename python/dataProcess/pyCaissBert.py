@@ -13,7 +13,6 @@ import os
 import codecs
 from keras_bert import *
 
-
 def build_bert_tokenizer(bert_model_path):
     # 根据传入的信息，构造bert的tokenizer信息
     token_dict = {}

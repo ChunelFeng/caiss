@@ -6,18 +6,23 @@
 #ifndef CAISS_ALGORITHMPROC_H
 #define CAISS_ALGORITHMPROC_H
 
-
 #include <string>
+#include <algorithm>
+#include <queue>
+#include <iomanip>
+#include <fstream>
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include "AlgorithmDefine.h"
-#include "../caissLib/CaissLib.h"
 #include "../utilsCtrl/UtilsInclude.h"
 #include "../threadCtrl/ThreadInclude.h"
 
-
-const static unsigned int DEFAULT_STEP = 2;
-const static unsigned int DEFAULT_MAX_EPOCH = 5;
-const static unsigned int DEFAULT_SHOW_SPAN = 1000;    // 1000行会显示一次日志
-const static std::string MODEL_SUFFIX = ".caiss";   // 默认的模型后缀
+#ifdef _USE_OPENMP_
+    #include <omp.h>    // 如果有openmp加速
+#endif
 
 class AlgorithmProc {
 
@@ -111,7 +116,14 @@ public:
      * @param size
      * @return
      */
-    virtual CAISS_STATUS getResultSize(unsigned int& size) = 0;
+    virtual CAISS_STATUS getResultSize(unsigned int& size) {
+        CAISS_FUNCTION_BEGIN
+        CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+        size = this->result_.size();
+
+        CAISS_FUNCTION_END
+    }
 
     /**
      * 获取结果
@@ -119,7 +131,20 @@ public:
      * @param size
      * @return
      */
-    virtual CAISS_STATUS getResult(char *result, unsigned int size) = 0;
+    virtual CAISS_STATUS getResult(char *result, unsigned int size) {
+        CAISS_FUNCTION_BEGIN
+        CAISS_ASSERT_NOT_NULL(result)
+        CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+        if (result_.size() > size) {
+            return CAISS_RET_RESULT_SIZE;    // 如果分配的尺寸小了，则返回异常
+        }
+
+        memset(result, 0, size);
+        memcpy(result, this->result_.data(), this->result_.size());
+
+        CAISS_FUNCTION_END
+    }
 
 
     /**
@@ -134,39 +159,37 @@ public:
 protected:
 
     /**
+     * 处理回调函数内容
+     * @param searchCBFunc
+     * @param cbParams
+     * @return
+     */
+    CAISS_STATUS processCallBack(CAISS_SEARCH_CALLBACK searchCBFunc,
+                                 const void *cbParams);
+
+    /**
      * 将向量归一化
      * @param node
      * @param dim
      * @return
      */
-    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim) {
-        if (CAISS_FALSE == this->normalize_) {
-            return CAISS_RET_OK;    // 如果不需要归一化，直接返回
-        }
+    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim);
 
-        if (dim != this->dim_) {
-            return CAISS_RET_DIM;    // 忽略维度不一致的情况
-        }
 
-#ifdef _USE_EIGEN3_
-        // 如果有找到eigen的情况下，加速计算（只计算前dim个信息）
-        DynamicArrayType arr(node.data(), (const int)this->dim_);
-        auto denominator = 1 / sqrt((arr * arr).sum());
-        arr = arr * denominator;    // x 就是归一化之后的矩阵信息
-        node.assign(arr.data(), arr.data() + this->dim_);
-#else
-        CAISS_FLOAT sum = 0.0;
-        for (unsigned int i = 0; i < this->dim_; i++) {
-            sum += (node[i] * node[i]);
-        }
+    /* 函数过滤条件 */
+    CAISS_STATUS filterByRules(void *info,
+                               const CAISS_SEARCH_TYPE searchType,
+                               ALOG_RET_TYPE &result,
+                               unsigned int topK,
+                               const unsigned int filterEditDistance,
+                               const BOOST_BIMAP &indexLabelLookup);
+    CAISS_STATUS filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType,
+                                      ALOG_RET_TYPE &result,
+                                      unsigned int filterEditDistance,
+                                      const BOOST_BIMAP &indexLabelLookup);
+    CAISS_STATUS filterByIgnoreTrie(ALOG_RET_TYPE &result,
+                                    const BOOST_BIMAP &indexLabelLookup);
 
-        CAISS_FLOAT denominator = 1 / (float)std::sqrt(sum);    // 分母信息
-        for (unsigned int i = 0; i < this->dim_; i++) {
-            node[i] = node[i] * denominator;
-        }
-#endif
-        return CAISS_RET_OK;
-    }
 
     /**
      * 快速求平方根
@@ -201,9 +224,9 @@ protected:
 
 protected:
     std::string model_path_;
-    unsigned int dim_{};
+    unsigned int dim_;
     CAISS_MODE cur_mode_;
-    CAISS_BOOL normalize_{};    // 是否需要标准化数据
+    CAISS_BOOL normalize_;    // 是否需要标准化数据
     std::string result_;
     ALOG_WORD2DETAILS_MAP word_details_map_;    // 记录结果使用的信息
     CAISS_DISTANCE_TYPE distance_type_;

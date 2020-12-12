@@ -1,7 +1,7 @@
 #pragma once
 #include "hnswlib.h"
 
-#include "../../AlgorithmDefine.h"
+#include "../../AlgorithmProc.h"
 
 namespace hnswlib {
 

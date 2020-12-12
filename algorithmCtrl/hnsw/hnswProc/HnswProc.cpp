@@ -4,20 +4,9 @@
 // 这里理论上是不能有加锁操作的，所有的锁在manage这一层保存
 //
 
-#include <algorithm>
-#include <queue>
-#include <iomanip>
-
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 
 #include "HnswProc.h"
 
-#ifdef _USE_OPENMP_
-    #include <omp.h>    // 如果有openmp加速
-#endif
-
-using namespace std;
 
 // 静态成员变量使用前，先初始化
 HierarchicalNSW<CAISS_FLOAT>* HnswProc::hnsw_algo_ptr_ = nullptr;
@@ -25,33 +14,6 @@ RWLock HnswProc::hnsw_algo_lock_;
 
 RWLock AlgorithmProc::trie_lock_;
 TrieProc* AlgorithmProc::ignore_trie_ptr_;
-
-inline static bool isAnnSuffix(const char *modelPath) {
-    string path = string(modelPath);
-    bool ret = (path.find(MODEL_SUFFIX) == path.length() - string(MODEL_SUFFIX).length());
-    return ret;
-}
-
-
-inline static bool isWordSearchType(CAISS_SEARCH_TYPE searchType) {
-    bool ret = false;
-    if (CAISS_SEARCH_WORD == searchType
-        || CAISS_LOOP_WORD == searchType) {
-        ret = true;
-    }
-    return ret;
-}
-
-inline static bool isAnnSearchType(CAISS_SEARCH_TYPE searchType) {
-    // 判定是否是快速查询类型
-    bool ret = false;
-    if (CAISS_SEARCH_WORD == searchType
-        || CAISS_SEARCH_QUERY == searchType) {
-        ret = true;
-    }
-    return ret;
-}
-
 
 HnswProc::HnswProc() {
     this->neighbors_ = 0;
@@ -85,7 +47,7 @@ HnswProc::init(const CAISS_MODE mode, const CAISS_DISTANCE_TYPE distanceType, co
     createDistancePtr(distFunc);
 
     if (this->cur_mode_ == CAISS_MODE_PROCESS) {
-        ret = loadModel(modelPath);    // 如果是处理模式的话，则读取模型内容信息
+        ret = loadModel();    // 如果是处理模式的话，则读取模型内容信息
         CAISS_FUNCTION_CHECK_STATUS
     }
 
@@ -117,11 +79,11 @@ CAISS_STATUS HnswProc::train(const char *dataPath, const unsigned int maxDataSiz
 
     // 设定训练参数
     this->normalize_ = normalize;
-    std::vector<CaissDataNode> datas;
-    datas.reserve(maxDataSize);    // 提前分配好内存信息
+    std::vector<CaissDataNode> dataSet;
+    dataSet.reserve(maxDataSize);    // 提前分配好内存信息
 
     CAISS_ECHO("start load data from [%s].", dataPath);
-    ret = loadDatas(dataPath, datas);
+    ret = loadDatas(dataPath, dataSet);
     CAISS_FUNCTION_CHECK_STATUS
 
     HnswProc::createHnswSingleton(this->distance_ptr_, maxDataSize, normalize, maxIndexSize);
@@ -130,12 +92,12 @@ CAISS_STATUS HnswProc::train(const char *dataPath, const unsigned int maxDataSiz
     unsigned int epoch = 0;
     while (epoch < maxEpoch) {    // 如果批量走完了，则默认返回
         CAISS_ECHO("start to train caiss model for [%d] in [%d] epochs.", ++epoch, maxEpoch);
-        ret = trainModel(datas, epoch, maxEpoch, showSpan);
+        ret = trainModel(dataSet, epoch, maxEpoch, showSpan);
         CAISS_FUNCTION_CHECK_STATUS
         CAISS_ECHO("model build finished, check model precision automatic, please wait for a moment...");
 
         float calcPrecision = 0.0f;
-        ret = checkModelPrecisionEnable(precision, fastRank, realRank, datas, calcPrecision);
+        ret = checkModelPrecisionEnable(precision, fastRank, realRank, dataSet, calcPrecision);
         if (CAISS_RET_OK == ret) {    // 如果训练的准确度符合要求，则直接退出
             CAISS_ECHO("train success, precision is [%0.4f], model is saved to path [%s].", calcPrecision,
                        this->model_path_.c_str());
@@ -251,28 +213,6 @@ CAISS_STATUS HnswProc::save(const char *modelPath) {
 }
 
 
-CAISS_STATUS HnswProc::getResultSize(unsigned int &size) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
-
-    size = this->result_.size();
-
-    CAISS_FUNCTION_END
-}
-
-
-CAISS_STATUS HnswProc::getResult(char *result, unsigned int size) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_ASSERT_NOT_NULL(result)
-    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
-
-    memset(result, 0, size);
-    memcpy(result, this->result_.data(), this->result_.size());
-
-    CAISS_FUNCTION_END
-}
-
-
 CAISS_STATUS HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(label)
@@ -294,42 +234,7 @@ CAISS_STATUS HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
 }
 
 
-/************************ 以下是本Proc类内部函数 ************************/
-/**
- * 读取文件中信息，并存至datas中
- * @param datas
- * @return
- */
-CAISS_STATUS HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &datas) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_ASSERT_NOT_NULL(dataPath);
-
-    std::ifstream in(dataPath);
-    if (!in) {
-        return CAISS_RET_PATH;
-    }
-
-    std::string line;
-    while (getline(in, line)) {
-        if (0 == line.length()) {
-            continue;    // 排除空格的情况
-        }
-
-        CaissDataNode dataNode;
-        ret = RapidJsonProc::parseInputData(line.data(), dataNode);
-        CAISS_FUNCTION_CHECK_STATUS
-
-        ret = normalizeNode(dataNode.node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
-        CAISS_FUNCTION_CHECK_STATUS
-
-        datas.push_back(dataNode);
-    }
-
-    in.close();
-    CAISS_FUNCTION_END
-}
-
-
+/************************ 以下是本Proc类内部函数 ************************/\
 CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
                                   unsigned int curEpoch,
                                   unsigned int maxEpoch,
@@ -340,7 +245,7 @@ CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
 
     unsigned int size = datas.size();
     for (unsigned int i = 0; i < size; i++) {
-        ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].index.c_str());
+        ret = insertByOverwrite(datas[i].node.data(), i, (char *)datas[i].label.c_str());
         CAISS_FUNCTION_CHECK_STATUS
 
         if (showSpan != 0 && i % showSpan == 0) {
@@ -356,7 +261,7 @@ CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
 
 CAISS_STATUS HnswProc::buildResult(unsigned int topK,
                                    CAISS_SEARCH_TYPE searchType,
-                                   ALOG_WORD2RESULT_MAP &word2ResultMap) {
+                                   const ALOG_WORD2RESULT_MAP &word2ResultMap) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -387,15 +292,55 @@ CAISS_STATUS HnswProc::buildResult(unsigned int topK,
 }
 
 
-CAISS_STATUS HnswProc::loadModel(const char *modelPath) {
+CAISS_STATUS HnswProc::loadModel() {
     CAISS_FUNCTION_BEGIN
 
-    CAISS_ASSERT_NOT_NULL(modelPath)
     CAISS_ASSERT_NOT_NULL(this->distance_ptr_)
 
     HnswProc::createHnswSingleton(this->distance_ptr_, this->model_path_);    // 读取模型的时候，使用的获取方式
     this->normalize_ = HnswProc::getHnswSingleton()->normalize_;    // 保存模型的时候，会写入是否被标准化的信息
     this->neighbors_ = HnswProc::getHnswSingleton()->ef_construction_;
+
+    CAISS_FUNCTION_END
+}
+
+
+/**
+ * 读取文件中信息，并存至datas中
+ * @param datas
+ * @return
+ */
+CAISS_STATUS HnswProc::loadDatas(const char *dataPath, vector<CaissDataNode> &datas) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(dataPath);
+
+    std::ifstream in(dataPath);
+    if (!in) {
+        return CAISS_RET_PATH;
+    }
+
+    std::string line;
+    while (getline(in, line)) {
+        if (0 == line.length()) {
+            continue;    // 排除空格的情况
+        }
+
+        CaissDataNode dataNode;
+        ret = RapidJsonProc::parseInputData(line.data(), dataNode);
+        if (CAISS_RET_OK != ret) {
+            break;    // 如果解析文件失败，退出循环，并且关闭读入文件流
+        }
+
+        ret = normalizeNode(dataNode.node, this->dim_);    // 在normalizeNode函数内部，判断是否需要归一化
+        if (CAISS_RET_OK != ret) {
+            break;
+        }
+
+        datas.push_back(dataNode);
+    }
+
+    in.close();
+    CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
 }
@@ -421,97 +366,6 @@ CAISS_STATUS HnswProc::createDistancePtr(CAISS_DIST_FUNC distFunc) {
         default:
             break;
     }
-
-    CAISS_FUNCTION_END
-}
-
-
-CAISS_STATUS HnswProc::filterByRules(void *info,
-                        const CAISS_SEARCH_TYPE searchType,
-                        ALOG_RET_TYPE &result,
-                        unsigned int topK,
-                        const unsigned int filterEditDistance) {
-    CAISS_FUNCTION_BEGIN
-
-    // 今后可能有多种规则
-    ret = filterByEditDistance(info, searchType, result, filterEditDistance);
-    CAISS_FUNCTION_CHECK_STATUS
-
-    // 过滤掉被删除的信息
-    ret = filterByIgnoreTrie(result);
-    CAISS_FUNCTION_CHECK_STATUS
-
-    // 所有的情况都过滤完了之后，保证不会超过topK个
-    while (result.size() > topK) {
-        result.pop();
-    }
-
-    CAISS_FUNCTION_END
-}
-
-
-CAISS_STATUS HnswProc::filterByEditDistance(void *info,
-                               CAISS_SEARCH_TYPE searchType,
-                               ALOG_RET_TYPE &result,
-                               unsigned int filterEditDistance) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_ASSERT_NOT_NULL(info)
-
-    if (!isWordSearchType(searchType)    // 如果不是根据word查询，则不需要走这一步
-        || (CAISS_MIN_EDIT_DISTANCE == filterEditDistance)) {   // 值=-1，不需要根据编辑距离来过滤
-        return CAISS_RET_OK;
-    }
-
-    if (CAISS_MAX_EDIT_DISTANCE < filterEditDistance) {
-        return CAISS_RET_PARAM;    // 如果值设置的太大了，则返回参数校验错误
-    }
-
-    auto ptr = HnswProc::getHnswSingleton();
-    CAISS_ASSERT_NOT_NULL(ptr)
-
-    string word = std::string((char *)info);    // 已经确定是查词语类型的了
-    ALOG_RET_TYPE resultBackUp;
-
-    while (!result.empty()) {
-        auto cur = result.top();
-        result.pop();
-        string candWord = ptr->index_lookup_.left.find(cur.second)->second;    // 这里的label，是单词信息
-        if (EditDistanceProc::BeyondEditDistance(candWord, word, filterEditDistance)) {
-            resultBackUp.push(cur);    // 仅添加超过范围的
-        }
-    }
-
-    result = resultBackUp;
-    CAISS_FUNCTION_END
-}
-
-
-/**
- * 通过忽略trie来做过滤
- * @param info
- * @param searchType
- * @param result
- * @return
- */
-CAISS_STATUS HnswProc::filterByIgnoreTrie(ALOG_RET_TYPE &result) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_ASSERT_NOT_NULL(AlgorithmProc::getIgnoreTrie())
-
-    auto ptr = HnswProc::getHnswSingleton();
-    CAISS_ASSERT_NOT_NULL(ptr)
-
-    ALOG_RET_TYPE resultBackUp;
-
-    while (!result.empty()) {
-        auto cur = result.top();
-        result.pop();
-        string candWord = ptr->index_lookup_.left.find(cur.second)->second;
-        if (!AlgorithmProc::getIgnoreTrie()->find(candWord)) {
-            resultBackUp.push(cur);    // 如果这些词语，不在过滤trie树上，就添加进来
-        }
-    }
-
-    result = resultBackUp;
 
     CAISS_FUNCTION_END
 }
@@ -651,7 +505,7 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
             std::vector<CAISS_FLOAT> vec;    // 向量查询的时候，使用的数据
             vec.reserve(this->dim_);
 
-            vec.assign((float *)info, (float *)info + sizeof(float) * dim_);
+            vec.assign((float *)info, (CAISS_FLOAT *)info + sizeof(CAISS_FLOAT) * dim_);
             ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
             CAISS_FUNCTION_CHECK_STATUS
 
@@ -662,11 +516,13 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
         case CAISS_LOOP_WORD: {
             std::set<string> strSet;    // 存放切分后的单词
             std::string inputInfo = (char *)info;
+            boost::algorithm::to_lower(inputInfo);    // 全部转成小写在做判断
+
             boost::split(strSet, inputInfo,
                          boost::is_any_of(CAISS_SEPARATOR),
                          boost::token_compress_off);    // 空字符不会被推入向量中
 
-            for (const auto& str : strSet) {
+            for (const auto &str : strSet) {
                 int label = ptr->findWordLabel(str.c_str());
                 if (-1 != label) {
                     // 找到word的情况，这种情况下，不需要做normalize。因为存入的时候，已经设定好了
@@ -689,7 +545,7 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
 
     unsigned int queryTopK = std::max(topK*7, this->neighbors_);    // 表示7分(*^▽^*)
     ALOG_WORD2RESULT_MAP word2ResultMap;
-    for (auto word2vec : word2VecMap) {
+    for (auto &word2vec : word2VecMap) {
         ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
         if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
@@ -703,7 +559,8 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
                          : ptr->forceLoop((void *)query, queryTopK);
 
                 // 需要加入一步过滤机制
-                ret = filterByRules((void *)word2vec.first.c_str(), searchType, result, topK, filterEditDistance);
+                ret = filterByRules((void *) word2vec.first.c_str(), searchType,
+                                    result, topK, filterEditDistance, ptr->index_lookup_);
                 CAISS_FUNCTION_CHECK_STATUS
 
                 if (isWordSearchType(searchType)) {
@@ -760,25 +617,3 @@ CAISS_STATUS HnswProc::checkModelPrecisionEnable(const float targetPrecision, co
     CAISS_FUNCTION_END
 }
 
-
-CAISS_STATUS HnswProc::processCallBack(const CAISS_SEARCH_CALLBACK searchCBFunc,
-                                       const void *cbParams) {
-    CAISS_FUNCTION_BEGIN
-
-    if (nullptr != searchCBFunc) {
-        for (const auto& node : word_details_map_) {
-            const char* query = node.first.c_str();    // 记录查询单词信息
-            CAISS_STRING_ARRAY infos;
-            CAISS_FLOAT_ARRAY distances;
-            for (const CaissResultDetail &detail : node.second) {
-                infos.push_back(detail.label);
-                distances.push_back(detail.distance);
-            }
-
-            // 每条信息通过一次处理函数
-            searchCBFunc(query, infos, distances, cbParams);
-        }
-    }
-
-    CAISS_FUNCTION_END
-}

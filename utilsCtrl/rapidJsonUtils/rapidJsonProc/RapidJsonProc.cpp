@@ -53,8 +53,8 @@ CAISS_STATUS RapidJsonProc::parseInputData(const char *line, CaissDataNode& data
     }
 
     for (Value::ConstMemberIterator itr = jsonObject.MemberBegin(); itr != jsonObject.MemberEnd(); ++itr) {
-        dataNode.index = itr->name.GetString();    // 获取行名称
-        rapidjson::Value& array = jsonObject[dataNode.index.c_str()];
+        dataNode.label = itr->name.GetString();    // 获取行名称
+        rapidjson::Value& array = jsonObject[dataNode.label.c_str()];
         for (unsigned int i = 0; i < array.Size(); ++i) {
             dataNode.node.push_back((CAISS_FLOAT)strtod(array[i].GetString(), nullptr));
         }
@@ -93,7 +93,7 @@ CAISS_STATUS RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2
         auto details = x.second;
         for (const CaissResultDetail& detail : details) {
             rapidjson::Value obj(rapidjson::kObjectType);
-            val.SetFloat((detail.distance < 0.00002 && detail.distance > -0.00002) ? (0.0f) : detail.distance);
+            val.SetFloat((detail.distance < 0.00001 && detail.distance > -0.00001) ? (0.0f) : detail.distance);
             obj.AddMember("distance", val, alloc);
             val.SetInt((int)detail.index);
             obj.AddMember("index", val, alloc);    // 这里的index，表示的是这属于模型中的第几个节点(注：跟算法类中，index和label的取名正好相反)

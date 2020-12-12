@@ -7,7 +7,8 @@
 
 
 int CaissDemo() {
-    CAISS_STATUS ret = CAISS_RET_OK;
+    CAISS_FUNCTION_BEGIN
+
     // 无论何种使用模式，使用caiss前，请调用环境函数
     ret = CAISS_Environment(max_thread_num_, algo_type_, manage_type_);
     CAISS_FUNCTION_CHECK_STATUS
@@ -23,7 +24,7 @@ int CaissDemo() {
     //ret = demo_sql_search();
     CAISS_FUNCTION_CHECK_STATUS
 
-    return ret;
+    CAISS_FUNCTION_END
 }
 
 int main() {

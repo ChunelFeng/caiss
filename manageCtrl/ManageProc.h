@@ -89,7 +89,7 @@ protected:
     RWLock lock_;
     CAISS_ALGO_TYPE algo_type_;
     unsigned int max_size_;
-    string model_path_;    // 用于记录当前的模型路径信息
+    std::string model_path_;    // 用于记录当前的模型路径信息
 };
 
 

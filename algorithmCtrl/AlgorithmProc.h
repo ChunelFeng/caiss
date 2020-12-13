@@ -98,32 +98,31 @@ public:
     /**
      * 插入结果信息
      * @param node
-     * @param index
+     * @param index 是标签，相当于"hello"
      * @param insertType
      * @return
      */
-    virtual CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) = 0;   // label 是数据标签
+    virtual CAISS_STATUS insert(CAISS_FLOAT *node,
+                                const char *index,
+                                CAISS_INSERT_TYPE insertType = CAISS_INSERT_OVERWRITE) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
 
     /**
      * 保存模型信息
      * @param modelPath
      * @return
      */
-    virtual CAISS_STATUS save(const char *modelPath = nullptr) = 0;    // 默认写成是当前模型的
+    virtual CAISS_STATUS save(const char *modelPath = nullptr) {
+        CAISS_FUNCTION_NO_SUPPORT
+    }
 
     /**
      * 获取结果的长度
      * @param size
      * @return
      */
-    virtual CAISS_STATUS getResultSize(unsigned int& size) {
-        CAISS_FUNCTION_BEGIN
-        CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
-
-        size = this->result_.size();
-
-        CAISS_FUNCTION_END
-    }
+    virtual CAISS_STATUS getResultSize(unsigned int &size);
 
     /**
      * 获取结果
@@ -131,20 +130,8 @@ public:
      * @param size
      * @return
      */
-    virtual CAISS_STATUS getResult(char *result, unsigned int size) {
-        CAISS_FUNCTION_BEGIN
-        CAISS_ASSERT_NOT_NULL(result)
-        CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
-
-        if (result_.size() > size) {
-            return CAISS_RET_RESULT_SIZE;    // 如果分配的尺寸小了，则返回异常
-        }
-
-        memset(result, 0, size);
-        memcpy(result, this->result_.data(), this->result_.size());
-
-        CAISS_FUNCTION_END
-    }
+    virtual CAISS_STATUS getResult(char *result,
+                                   unsigned int size);
 
 
     /**
@@ -153,7 +140,8 @@ public:
      * @param isIgnore 放入忽略列表/从忽略列表中取出
      * @return
      */
-    virtual CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore = CAISS_TRUE) = 0;
+    virtual CAISS_STATUS ignore(const char *label,
+                                CAISS_BOOL isIgnore = CAISS_TRUE);
 
 
 protected:
@@ -173,7 +161,8 @@ protected:
      * @param dim
      * @return
      */
-    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node, unsigned int dim);
+    CAISS_STATUS normalizeNode(std::vector<CAISS_FLOAT>& node,
+                               unsigned int dim);
 
 
     /* 函数过滤条件 */
@@ -235,8 +224,10 @@ protected:
     unsigned int last_topK_;    // 记录上一次的topK跟这一次的topK是否相同
     CAISS_SEARCH_TYPE last_search_type_;
 
+    AlgoTimerProc *timer_ptr_;    // 计时工具类
+
     static RWLock trie_lock_;
-    static TrieProc* ignore_trie_ptr_;    // 标识忽略的字典树
+    static TrieProc *ignore_trie_ptr_;    // 标识忽略的字典树
 };
 
 #endif //CAISS_ALGORITHMPROC_H

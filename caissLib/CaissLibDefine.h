@@ -107,8 +107,7 @@ enum CAISS_DISTANCE_TYPE {
 enum CAISS_ALGO_TYPE {
     CAISS_ALGO_DEFAULT = 1,
     CAISS_ALGO_HNSW = 1,            // hnsw算法（推荐）
-    CAISS_ALGO_NSG = 2,             // nsg算法
-    CAISS_ALGO_MRPT = 3             // mrpt算法
+    CAISS_ALGO_MRPT = 2             // mrpt算法
 };
 
 

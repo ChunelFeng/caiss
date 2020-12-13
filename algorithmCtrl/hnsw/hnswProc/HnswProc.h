@@ -18,7 +18,6 @@
 class HnswProc : public AlgorithmProc {
 
 public:
-
     explicit HnswProc();
     ~HnswProc() override;
 
@@ -35,8 +34,6 @@ public:
     CAISS_STATUS search(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
     CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) override;
     CAISS_STATUS save(const char *modelPath) override;    // 默认写成是当前模型的
-    CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore) override;
-
 
 protected:
     CAISS_STATUS reset();
@@ -46,7 +43,8 @@ protected:
     CAISS_STATUS loadModel();
     CAISS_STATUS createDistancePtr(CAISS_DIST_FUNC distFunc);
     CAISS_STATUS innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
-                                   unsigned int filterEditDistance);
+                                   unsigned int filterEditDistance,
+                                   ALOG_WORD2RESULT_MAP& word2ResultMap);
 
 
     // 静态成员变量

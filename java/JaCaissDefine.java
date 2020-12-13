@@ -30,8 +30,8 @@ public class JaCaissDefine {
 
     public interface CAISS_ALGO_TYPE {
         int CAISS_ALGO_DEFAULT = 1;
-        int CAISS_ALGO_HNSW = 1;    // hnsw算法（准确度高，空间复杂度较大）
-        int CAISS_ALGO_NSG = 2;     // nsg算法（准确度较高，空间复杂度小，暂不支持）
+        int CAISS_ALGO_HNSW = 1;
+        int CAISS_ALGO_MRPT = 2;
     }
 
     public interface CAISS_DISTANCE_TYPE {

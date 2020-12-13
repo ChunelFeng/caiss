@@ -16,14 +16,6 @@
 #include "../mrptAlgo/Mrpt.h"
 #include "MrptProcDefine.h"
 
-enum BIMAP_PROCESS_TYPE {
-    BIMAP_INSERT = 0,
-    BIMAP_FIND_INDEX = 1,    // 查询id信息，例：index=1
-    BIMAP_FIND_LABEL = 2,    // 查询标签信息，例：label="hello"
-    BIMAP_DELETE_INDEX = 3,
-    BIMAP_DELETE_LABEL = 4
-};
-
 
 class MrptProc : public AlgorithmProc {
 public:
@@ -40,10 +32,9 @@ public:
                        unsigned int showSpan) override;
 
     // process_mode
-    CAISS_STATUS search(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
-    CAISS_STATUS insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT_TYPE insertType) override;
-    CAISS_STATUS save(const char *modelPath) override;    // 默认写成是当前模型的
-    CAISS_STATUS ignore(const char *label, CAISS_BOOL isIgnore) override;
+    CAISS_STATUS search(void *info, CAISS_SEARCH_TYPE searchType,
+                        unsigned int topK, unsigned int filterEditDistance,
+                        CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override;
 
 protected:
     CAISS_STATUS reset();
@@ -51,7 +42,8 @@ protected:
     CAISS_STATUS innerSearchResult(void *info,
                                    CAISS_SEARCH_TYPE searchType,
                                    unsigned int topK,
-                                   unsigned int filterEditDistance);
+                                   unsigned int filterEditDistance,
+                                   ALOG_WORD2RESULT_MAP& word2ResultMap);
     CAISS_STATUS loadModel();
     CAISS_STATUS loadModelHead();
 

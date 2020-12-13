@@ -22,7 +22,9 @@ public:
     /* 以下这些函数，是同步/异步走相同的流程 */
     virtual CAISS_STATUS createHandle(void **handle);
     virtual CAISS_STATUS destroyHandle(void *handle);
-    virtual CAISS_STATUS init(void *handle, CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType, unsigned int dim, const char *modelPath,
+    virtual CAISS_STATUS init(void *handle, CAISS_MODE mode,
+                              CAISS_DISTANCE_TYPE distanceType,
+                              unsigned int dim, const char *modelPath,
                               CAISS_DIST_FUNC distFunc);
 
     /* 以下几个函数，同步和异步需要区分实现 */

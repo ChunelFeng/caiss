@@ -9,15 +9,14 @@
 
 class UtilsProc {
 public:
-    explicit UtilsProc() {
-    }
+    explicit UtilsProc() = default;
 
-    virtual ~UtilsProc() {
-    }
+    virtual ~UtilsProc() = default;
 
     virtual CAISS_STATUS init() {
         return 0;
     }
+
     virtual CAISS_STATUS deinit() {
         return 0;
     }

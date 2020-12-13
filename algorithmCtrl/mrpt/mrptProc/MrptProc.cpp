@@ -15,10 +15,11 @@ Singleton<MrptModelHead> MrptProc::mrpt_model_head_;
 Singleton<Mrpt> MrptProc::mrpt_algo_;
 
 MrptProc::MrptProc() {
-
+    this->timer_ptr_ = new AlgoTimerProc("mrpt");
 }
 
 MrptProc::~MrptProc() {
+    CAISS_DELETE_PTR(this->timer_ptr_)
     reset();
 }
 
@@ -27,9 +28,17 @@ CAISS_STATUS MrptProc::init(CAISS_MODE mode, CAISS_DISTANCE_TYPE distanceType,
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(modelPath);
 
+    if (CAISS_DISTANCE_EUC != distanceType
+        && CAISS_DISTANCE_INNER != distanceType) {
+        // 暂时不支持 这些查询方式
+        CAISS_FUNCTION_NO_SUPPORT
+    }
+
     this->dim_ = dim;
     this->cur_mode_ = mode;
-    this->model_path_ = isAnnSuffix(modelPath) ? (string(modelPath)) : (string(modelPath) + MODEL_SUFFIX);
+    this->model_path_ = isAnnSuffix(modelPath)
+                        ? (string(modelPath))
+                        : (string(modelPath) + MODEL_SUFFIX);
     this->distance_type_ = distanceType;
     MrptProc::mrpt_model_head_.create();
 
@@ -95,10 +104,16 @@ CAISS_STATUS MrptProc::train(const char *dataPath, unsigned int maxDataSize, CAI
 CAISS_STATUS MrptProc::search(void *info, CAISS_SEARCH_TYPE searchType,
                               unsigned int topK, unsigned int filterEditDistance,
                               CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) {
+    timer_ptr_->startFunc();
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+    if (!isAnnSearchType(searchType)) {
+        // mrpt暂时不支持暴力查询
+        CAISS_FUNCTION_NO_SUPPORT
+    }
 
     /* 将信息清空 */
     this->result_.clear();
@@ -110,40 +125,17 @@ CAISS_STATUS MrptProc::search(void *info, CAISS_SEARCH_TYPE searchType,
         this->lru_cache_.clear();
     }
 
-    ret = innerSearchResult(info, searchType, topK, filterEditDistance);
+    ALOG_WORD2RESULT_MAP word2ResultMap;
+    ret = innerSearchResult(info, searchType, topK, filterEditDistance, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
     processCallBack(searchCBFunc, cbParams);
 
+    ret = buildResult(topK, searchType, word2ResultMap);
+    CAISS_FUNCTION_CHECK_STATUS
+
     this->last_topK_ = topK;    // 查询完毕之后，记录当前的topK信息
     this->last_search_type_ = searchType;
-
-    CAISS_FUNCTION_END
-}
-
-CAISS_STATUS MrptProc::insert(CAISS_FLOAT *node,
-                              const char *index,
-                              CAISS_INSERT_TYPE insertType) {
-    CAISS_FUNCTION_BEGIN
-
-    CAISS_FUNCTION_NO_SUPPORT
-
-    CAISS_FUNCTION_END
-}
-
-CAISS_STATUS MrptProc::save(const char *modelPath) {
-    CAISS_FUNCTION_BEGIN
-
-    CAISS_FUNCTION_NO_SUPPORT
-
-    CAISS_FUNCTION_END
-}
-
-CAISS_STATUS MrptProc::ignore(const char *label,
-                              CAISS_BOOL isIgnore) {
-    CAISS_FUNCTION_BEGIN
-
-    CAISS_FUNCTION_NO_SUPPORT
 
     CAISS_FUNCTION_END
 }
@@ -295,7 +287,8 @@ CAISS_STATUS MrptProc::loadDatas(const char* dataPath) {
 CAISS_STATUS MrptProc::innerSearchResult(void *info,
                                          const CAISS_SEARCH_TYPE searchType,
                                          const unsigned int topK,
-                                         const unsigned int filterEditDistance) {
+                                         const unsigned int filterEditDistance,
+                                         ALOG_WORD2RESULT_MAP& word2ResultMap) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -354,13 +347,14 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
     }
 
     CAISS_FUNCTION_CHECK_STATUS
-    ALOG_WORD2RESULT_MAP word2ResultMap;
 
     for (const auto &word2vec : word2VecMap) {
         ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
         if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
+            timer_ptr_->startAlgo();
             word2ResultMap[word2vec.first] = result;
+            timer_ptr_->appendAlgo();
         } else {
             auto *query = (CAISS_FLOAT *)word2vec.second.data();
             if (query) {
@@ -372,11 +366,16 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
                 distVec.resize(querySize);
 
                 /* threshold 值越小，准确度越高，查询时间越慢
-                 * 使用默认值，确保能够查询到
+                 * 使用默认值，确保能够查询到。
+                 * 这里今后就默认2吧
                  * */
-                int threshold = 0;
-                ret = ptr->query((const float *)query, querySize, threshold, indexVec.data(), distVec.data());
+                int threshold = 2;
+
+                timer_ptr_->startAlgo();
+                ret = ptr->query((const float *)query, querySize, threshold,
+                                 indexVec.data(), distVec.data(), nullptr, distance_type_);
                 CAISS_FUNCTION_CHECK_STATUS
+                timer_ptr_->appendAlgo();
 
                 for (unsigned int i = 0; i < querySize; ++i) {
                     if (-1 == indexVec[i] || -1 == distVec[i]) {
@@ -399,7 +398,6 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
         word2ResultMap[word2vec.first] = result;
     }
 
-    ret = buildResult(topK, searchType, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -520,7 +518,9 @@ CAISS_STATUS MrptProc::buildResult(unsigned int topK,
     }
 
     std::string type = isAnnSearchType(searchType) ? "ann_search" : "force_loop";
-    ret = RapidJsonProc::buildSearchResult(word_details_map_, this->distance_type_, type, topK, this->result_);
+    timer_ptr_->endFunc();    // 这里当做函数结束
+    ret = RapidJsonProc::buildSearchResult(word_details_map_, this->distance_type_, type, topK, this->timer_ptr_,
+                                           this->result_);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END

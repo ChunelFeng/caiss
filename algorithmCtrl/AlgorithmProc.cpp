@@ -8,6 +8,80 @@
 
 #include "AlgorithmProc.h"
 
+
+/**
+ * 获取结果的长度
+ * @param size
+ * @return
+ */
+CAISS_STATUS AlgorithmProc::getResultSize(unsigned int& size) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+    if (this->result_.empty()) {
+        ret = CAISS_RET_RESULT_SIZE;
+    }
+
+    CAISS_FUNCTION_CHECK_STATUS
+
+    size = this->result_.size();
+
+    CAISS_FUNCTION_END
+}
+
+
+/**
+ * 获取结果
+ * @param result
+ * @param size
+ * @return
+ */
+CAISS_STATUS AlgorithmProc::getResult(char *result, unsigned int size) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(result)
+    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+    if (result_.size() > size) {
+        ret = CAISS_RET_RESULT_SIZE;    // 如果分配的尺寸小了，则返回异常
+    }
+
+    CAISS_FUNCTION_CHECK_STATUS
+
+    memset(result, 0, size);
+    memcpy(result, this->result_.data(), this->result_.size());
+
+    CAISS_FUNCTION_END
+}
+
+
+/**
+ * 将某个节点放入忽略列表中，或者从忽略列表中取消
+ * @param label
+ * @param isIgnore 放入忽略列表/从忽略列表中取出
+ * @return
+ */
+CAISS_STATUS AlgorithmProc::ignore(const char *label,
+                                   CAISS_BOOL isIgnore) {
+    CAISS_FUNCTION_BEGIN
+    CAISS_ASSERT_NOT_NULL(label)
+    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行
+
+    const string& info = std::string(label);
+    if (isIgnore) {
+        // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
+        AlgorithmProc::getIgnoreTrie()->insert(info);
+    } else {
+        // 对于外部的 not-ignore，相当于是在字典树中
+        AlgorithmProc::getIgnoreTrie()->eraser(info);
+    }
+
+    this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
+    this->last_search_type_ = CAISS_SEARCH_DEFAULT;
+
+    CAISS_FUNCTION_END
+}
+
+
 CAISS_STATUS AlgorithmProc::processCallBack(CAISS_SEARCH_CALLBACK searchCBFunc,
                                             const void *cbParams) {
     CAISS_FUNCTION_BEGIN

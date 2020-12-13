@@ -15,6 +15,7 @@
 #include "./lruProc/LruProc.h"
 #include "./trieProc/TrieProc.h"
 #include "./editDistanceProc/EditDistanceProc.h"
-#include "./singletonUtils/SingletonProc.h"
+#include "./singletonProc/SingletonProc.h"
+#include "./timerProc/AlgoTimerProc.h"
 
 #endif    //CAISS_UTILSINCLUDE_H

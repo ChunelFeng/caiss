@@ -18,11 +18,13 @@ TrieProc* AlgorithmProc::ignore_trie_ptr_;
 HnswProc::HnswProc() {
     this->neighbors_ = 0;
     this->distance_ptr_ = nullptr;
+    this->timer_ptr_ = new AlgoTimerProc("hnsw");
 }
 
 
 HnswProc::~HnswProc() {
     this->reset();
+    CAISS_DELETE_PTR(this->timer_ptr_);
     CAISS_DELETE_PTR(distance_ptr_)
 }
 
@@ -122,6 +124,7 @@ CAISS_STATUS HnswProc::search(void *info,
                               const unsigned int filterEditDistance,
                               const CAISS_SEARCH_CALLBACK searchCBFunc,
                               const void *cbParams) {
+    timer_ptr_->startFunc();
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -138,10 +141,14 @@ CAISS_STATUS HnswProc::search(void *info,
     }
 
     // 关于缓存的处理，已经移到此函数中去处理了
-    ret = innerSearchResult(info, searchType, topK, filterEditDistance);
+    ALOG_WORD2RESULT_MAP word2ResultMap;
+    ret = innerSearchResult(info, searchType, topK, filterEditDistance, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
-    processCallBack(searchCBFunc, cbParams);
+    processCallBack(searchCBFunc, cbParams);    // 处理回调函数
+
+    ret = buildResult(topK, searchType, word2ResultMap);
+    CAISS_FUNCTION_CHECK_STATUS
 
     this->last_topK_ = topK;    // 查询完毕之后，记录当前的topK信息
     this->last_search_type_ = searchType;
@@ -213,27 +220,6 @@ CAISS_STATUS HnswProc::save(const char *modelPath) {
 }
 
 
-CAISS_STATUS HnswProc::ignore(const char *label, CAISS_BOOL isIgnore) {
-    CAISS_FUNCTION_BEGIN
-    CAISS_ASSERT_NOT_NULL(label)
-    CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)    // process 模式下，才能进行
-
-    const string& info = std::string(label);
-    if (isIgnore) {
-        // 对于外部的 ignore 当前单词，相当于是在字典树中，加入这个词语
-        AlgorithmProc::getIgnoreTrie()->insert(info);
-    } else {
-        // 对于外部的 not-ignore，相当于是在字典树中
-        AlgorithmProc::getIgnoreTrie()->eraser(info);
-    }
-
-    this->last_topK_ = 0;    // 如果插入成功，则重新记录topK信息
-    this->last_search_type_ = CAISS_SEARCH_DEFAULT;
-
-    CAISS_FUNCTION_END
-}
-
-
 /************************ 以下是本Proc类内部函数 ************************/\
 CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
                                   unsigned int curEpoch,
@@ -285,7 +271,11 @@ CAISS_STATUS HnswProc::buildResult(unsigned int topK,
     }
 
     std::string type = isAnnSearchType(searchType) ? "ann_search" : "force_loop";
-    ret = RapidJsonProc::buildSearchResult(word_details_map_, this->distance_type_, type, topK, this->result_);
+    timer_ptr_->endFunc();    // 这里当做函数结束
+    ret = RapidJsonProc::buildSearchResult(word_details_map_,
+                                           this->distance_type_, type, topK,
+                                           this->timer_ptr_,
+                                           this->result_);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END
@@ -490,7 +480,8 @@ CAISS_STATUS HnswProc::insertByDiscard(CAISS_FLOAT *node, unsigned int label, co
 CAISS_STATUS HnswProc::innerSearchResult(void *info,
                                          const CAISS_SEARCH_TYPE searchType,
                                          const unsigned int topK,
-                                         const unsigned int filterEditDistance) {
+                                         const unsigned int filterEditDistance,
+                                         ALOG_WORD2RESULT_MAP& word2ResultMap) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -544,19 +535,23 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
     CAISS_FUNCTION_CHECK_STATUS
 
     unsigned int queryTopK = std::max(topK*7, this->neighbors_);    // 表示7分(*^▽^*)
-    ALOG_WORD2RESULT_MAP word2ResultMap;
+
     for (auto &word2vec : word2VecMap) {
         ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
         if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
+            timer_ptr_->startAlgo();
             word2ResultMap[word2vec.first] = result;
+            timer_ptr_->appendAlgo();
         } else {
             // 如果缓存中没找到
             auto *query = (CAISS_FLOAT *)word2vec.second.data();    // map的first是词语，second是向量
             if (query) {
+                timer_ptr_->startAlgo();
                 result = isAnnSearchType(searchType)
                          ? ptr->searchKnn((void *)query, queryTopK)
                          : ptr->forceLoop((void *)query, queryTopK);
+                timer_ptr_->appendAlgo();
 
                 // 需要加入一步过滤机制
                 ret = filterByRules((void *) word2vec.first.c_str(), searchType,
@@ -572,8 +567,6 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
         word2ResultMap[word2vec.first] = result;
     }
 
-    // 稍后开始这一步
-    ret = buildResult(topK, searchType, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
     CAISS_FUNCTION_END;

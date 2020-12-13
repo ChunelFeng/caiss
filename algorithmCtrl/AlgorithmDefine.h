@@ -26,6 +26,15 @@ const static unsigned int DEFAULT_STEP = 2;
 const static unsigned int DEFAULT_MAX_EPOCH = 5;
 const static unsigned int DEFAULT_SHOW_SPAN = 1000;    // 1000行会显示一次日志
 
+enum BIMAP_PROCESS_TYPE {
+    BIMAP_INSERT = 0,
+    BIMAP_FIND_INDEX = 1,    // 查询id信息，例：index=1
+    BIMAP_FIND_LABEL = 2,    // 查询标签信息，例：label="hello"
+    BIMAP_DELETE_INDEX = 3,
+    BIMAP_DELETE_LABEL = 4
+};
+
+
 // 用于记录编号和词语的双向map
 typedef boost::bimaps::bimap<unsigned int, std::string> BOOST_BIMAP;
 

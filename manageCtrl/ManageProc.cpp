@@ -137,7 +137,6 @@ AlgorithmProc* ManageProc::createAlgoProc() {
     AlgorithmProc *proc = nullptr;
     switch (this->algo_type_) {
         case CAISS_ALGO_HNSW: proc = new HnswProc(); break;
-        case CAISS_ALGO_NSG: break;
         case CAISS_ALGO_MRPT: proc = new MrptProc(); break;
         default:
             break;

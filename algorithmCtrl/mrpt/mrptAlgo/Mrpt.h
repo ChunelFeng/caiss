@@ -3,7 +3,7 @@
 @Contact: chunel@foxmail.com
 @File: Mrpt.h
 @Time: 2020/12/4 7:45 下午
-@Desc:
+@Desc: 改编自：https://github.com/vioshyvo/mrpt
 ***************************/
 
 #ifndef CAISS_MRPT_H
@@ -24,6 +24,8 @@
 
 #include <Eigen/Dense>
 #include <Eigen/SparseCore>
+
+#include "../../AlgorithmProc.h"
 
 
 struct Mrpt_Parameters {
@@ -673,10 +675,11 @@ public:
     * @param out_n_elected optional output parameter (size = 1) for the candidate set size
     */
     int query(const float *data, int k, int vote_threshold, int *out,
-               float *out_distances = nullptr, int *out_n_elected = nullptr) const {
+              float *out_distances = nullptr, int *out_n_elected = nullptr,
+              const CAISS_DISTANCE_TYPE dist_type = CAISS_DISTANCE_EUC) const {
         if (k <= 0 || k > n_samples) {
             //throw std::out_of_range("k must belong to the set {1, ..., n}.");
-            return -6;   // 表示参数问题，topK传递的值不对
+            return CAISS_RET_PARAM;
         }
 
         if (vote_threshold <= 0 || vote_threshold > n_trees) {
@@ -684,7 +687,7 @@ public:
         }
 
         if (empty()) {
-            return -12;    // 表示是模型问题
+            return CAISS_RET_MODEL_DATA;    // 表示是模型问题
         }
 
         const Eigen::Map<const Eigen::VectorXf> q(data, dim);
@@ -730,6 +733,10 @@ public:
             const std::vector<int> &indices = tree_leaves[n_tree];
             for (int i = leaf_begin; i < leaf_end; ++i) {
                 int idx = indices[i];
+                if (idx >= n_samples) {
+                    continue;    // 异常情况会超限，规避一下
+                }
+
                 // 每次votes(idx)的值都会+1，匹配到threshold，即返回
                 // 所以，threshold值设置的越大，越难以匹配到，从而进入elected就少，从而导致准确度降低
                 // 但计算的值少了，耗时就降低了
@@ -742,7 +749,7 @@ public:
             *out_n_elected = n_elected;    // 记录被粗选中的个数
         }
 
-        exact_knn(q, k, elected, n_elected, out, out_distances);
+        exact_knn(q, k, elected, n_elected, out, out_distances, dist_type);
         return 0;
     }
 
@@ -1072,17 +1079,6 @@ public:
         return n_trees == 0;
     }
 
-    /**@}*/
-
-    /** @name
-    * Friend declarations for test fixtures. Tests are located at
-    * https://github.com/vioshyvo/RP-test.
-    */
-    friend class MrptTest;
-
-    friend class UtilityTest;
-
-    /**@}*/
 
 
 private:
@@ -1125,7 +1121,8 @@ private:
     * Find k nearest neighbors from data for the query point
     */
     void exact_knn(const Eigen::Map<const Eigen::VectorXf> &q, int k, const Eigen::VectorXi &indices,
-                   int n_elected, int *out, float *out_distances = nullptr) const {
+                   int n_elected, int *out, float *out_distances = nullptr,
+                   const CAISS_DISTANCE_TYPE dist_type = CAISS_DISTANCE_EUC) const {
 
         // 如果elected值为0，则直接返回-1，表示查询结束
         if (!n_elected) {
@@ -1140,25 +1137,13 @@ private:
             return;
         }
 
-        Eigen::VectorXf distances(n_elected);
+        Eigen::VectorXf distances(n_elected);    // 最终的距离信息
 
 #pragma omp parallel for
         for (int i = 0; i < n_elected; ++i)    // 这里是选中的，在桶里的n个
-            distances(i) = (X.col(indices(i)) - q).squaredNorm();    // squaredNorm是自身的内积（a*a + b*b）
+            distances(i) = calc_distance((int)indices(i), q, dist_type);
 
-        if (k == 1) {
-            // 如果只找一个节点，直接查找，然后返回
-            Eigen::MatrixXf::Index index;
-            distances.minCoeff(&index);
-            out[0] = n_elected ? indices(index) : -1;
-
-            if (out_distances)
-                // 上面计算出来内积之后，这里又给sqrt回去了
-                out_distances[0] = n_elected ? std::sqrt(distances(index)) : -1;
-
-            return;
-        }
-
+        // 删除了针对单个召回的判断
         int n_to_sort = n_elected > k ? k : n_elected;
         Eigen::VectorXi idx(n_elected);
         std::iota(idx.data(), idx.data() + n_elected, 0);
@@ -1172,7 +1157,7 @@ private:
 
         if (out_distances) {
             for (int i = 0; i < k; ++i)
-                out_distances[i] = i < n_elected ? std::sqrt(distances(idx(i))) : -1;
+                out_distances[i] = i < n_elected ? distances(idx(i)) : -1;
         }
     }
 
@@ -1789,6 +1774,31 @@ private:
     }
 
 
+    // 计算距离的函数
+    float calc_distance(int index,
+                        const Eigen::Map<const Eigen::VectorXf> &q,
+                        const CAISS_DISTANCE_TYPE dist_type) const {
+        float distance = 0.0f;
+        switch (dist_type) {
+            case CAISS_DISTANCE_EUC: {
+                distance = (float)sqrt((X.col(index) - q).squaredNorm());    // squareNorm相当于是(a*a + b*b + c*c)
+                break;
+            }
+            case CAISS_DISTANCE_INNER: {
+                distance = 1.0f - (float)(q.dot(X.col(index)));    // 采用点成的方式
+                break;
+            }
+            case CAISS_DISTANCE_JACCARD: {
+                break;
+            }
+            default:
+                distance = (float)sqrt((X.col(index) - q).squaredNorm());    // 用欧式距离保底吧
+                break;
+        }
+
+        return distance;
+    }
+
     Eigen::MatrixXf split_points; // all split points in all trees
     std::vector<std::vector<int>> tree_leaves; // contains all leaves of all trees
     Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> dense_random_matrix; // random vectors needed for all the RP-trees
@@ -1822,7 +1832,5 @@ private:
     std::vector<std::map<int, std::pair<double, double>>> beta_voting;
     std::set<Mrpt_Parameters, decltype(is_faster) *> opt_pars;
 };
-
-
 
 #endif //CAISS_MRPT_H

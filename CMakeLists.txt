@@ -35,7 +35,7 @@ find_package(Eigen3)
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
 # 设置当前eigen路径（MY_EIGEN_PATH为选填）
-IF (WIN32)
+IF (_WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
     set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
 ELSEIF(APPLE)

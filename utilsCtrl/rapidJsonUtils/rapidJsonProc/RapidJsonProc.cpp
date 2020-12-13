@@ -64,12 +64,14 @@ CAISS_STATUS RapidJsonProc::parseInputData(const char *line, CaissDataNode& data
 }
 
 
-CAISS_STATUS RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
-                                              CAISS_DISTANCE_TYPE distanceType,
-                                              const std::string& searchType,
-                                              const unsigned int topK,
-                                              std::string &result) {
+CAISS_STATUS
+RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap, CAISS_DISTANCE_TYPE distanceType,
+                                 const std::string &searchType, unsigned int topK,
+                                 AlgoTimerProc *timerProc,
+                                 std::string &result) {
     CAISS_FUNCTION_BEGIN
+
+    CAISS_ASSERT_NOT_NULL(timerProc)
 
     Document dom;
     dom.SetObject();
@@ -80,9 +82,15 @@ CAISS_STATUS RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2
     val.SetInt((int)topK);
     dom.AddMember("size", val, alloc);
 
-    std::string distType = buildDistanceType(distanceType);    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
+    // 需要在这里开一个string，然后再构建json。否则release版本无法使用
+    std::string distType = buildDistanceType(distanceType);
     dom.AddMember("distance_type", StringRef(distType.c_str()), alloc);
     dom.AddMember("search_type", StringRef(searchType.c_str()), alloc);
+
+    // 字段取名algo-cost，因为还有lru或者loop的情况
+    dom.AddMember("algo_cost", timerProc->getAlgoTimeCost(), alloc);
+    dom.AddMember("total_cost", timerProc->getFuncTimeCost(), alloc);
+    dom.AddMember("algo_type", StringRef(timerProc->getAlgoType()), alloc);
 
     rapidjson::Value detailsArray(rapidjson::kArrayType);
     for (const auto& x : word2DetailsMap) {

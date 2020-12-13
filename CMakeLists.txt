@@ -71,7 +71,7 @@ ELSEIF(APPLE)
 ELSEIF(UNIX)
     set(CMAKE_CXX_FLAGS -m64)    # 设置64位系统
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O2 -pthread")    # set multi thread in Linux platform
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wno-format-overflow")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result -Wno-deprecated-declarations -Wno-format-overflow")
     set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
 
     if (EIGEN3_FOUND)

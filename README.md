@@ -73,9 +73,9 @@
  * @param manageType 并发类型（详见CaissLibDefine.h文件）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize,
-                               CAISS_ALGO_TYPE algoType,
-                               CAISS_MANAGE_TYPE manageType);
+CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize = 1,
+                               CAISS_ALGO_TYPE algoType = CAISS_ALGO_DEFAULT,
+                               CAISS_MANAGE_TYPE manageType = CAISS_MANAGE_DEFAULT);
 
 /**
  * 创建句柄信息

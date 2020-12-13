@@ -323,20 +323,23 @@ int main() {
 ## 六. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，查询topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语，查询结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语。耗时信息单位为毫秒。查询结果信息如下：
 
 ```json
 {
-    "version":"2.4.0",
+    "version":"3.0.0",
     "size":5,
     "distance_type":"inner",
     "search_type":"ann_search",
+    "algo_ts_cost":1,
+    "total_ts_cost":2,
+    "algo_type":"hnsw",
     "result":[
         {
             "query":"water",
             "details":[
                 {
-                    "distance":0.10039234161376953,
+                    "distance":0.10039210319519043,
                     "index":641,
                     "label":"food"
                 },
@@ -346,17 +349,17 @@ int main() {
                     "label":"glass"
                 },
                 {
-                    "distance":0.11682319641113281,
+                    "distance":0.11682325601577759,
                     "index":361,
                     "label":"light"
                 },
                 {
-                    "distance":0.12232834100723267,
+                    "distance":0.12232851982116699,
                     "index":2163,
                     "label":"alcohol"
                 },
                 {
-                    "distance":0.12482547760009766,
+                    "distance":0.12482517957687378,
                     "index":2281,
                     "label":"liquid"
                 }
@@ -444,8 +447,13 @@ int main() {
 * 提供Docker版本
 * 提供静默运行功能，优化提示信息
 
+[2020.12.13 - v3.0.0 - Chunel]
+* 提供基于MRPT算法的训练和查询功能
+* 更新输出内容，加入算法类型和耗时信息
+
 ------------
 #### 附录-2. 联系方式: 
+
 * 微信： Chunel_Fung
 * 邮箱： chunel@foxmail.com
 * 源码： https://github.com/ChunelFeng/caiss

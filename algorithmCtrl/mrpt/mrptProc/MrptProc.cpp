@@ -458,21 +458,21 @@ CAISS_STATUS MrptProc::loadModelHead() {
     MrptModelHead *modelHead = MrptProc::mrpt_model_head_.get();
     CAISS_ASSERT_NOT_NULL(modelHead)
 
-    fread(&(modelHead->modelTag), sizeof(int), 1, fd);
-    fread(&(modelHead->maxDataSize), sizeof(int), 1, fd);
-    fread(&(modelHead->dim), sizeof(int), 1, fd);
-    fread(&(modelHead->maxIndexSize), sizeof(int), 1, fd);
-    fread(&(modelHead->curSize), sizeof(int), 1, fd);
+    fread((void *)&(modelHead->modelTag), sizeof(int), 1, fd);
+    fread((void *)&(modelHead->maxDataSize), sizeof(int), 1, fd);
+    fread((void *)&(modelHead->dim), sizeof(int), 1, fd);
+    fread((void *)&(modelHead->maxIndexSize), sizeof(int), 1, fd);
+    fread((void *)&(modelHead->curSize), sizeof(int), 1, fd);
 
     int len = modelHead->curSize * modelHead->dim;
     modelHead->modelData.resize(len);
-    fread(modelHead->modelData.data(), sizeof(CAISS_FLOAT), len, fd);
+    fread((void *)modelHead->modelData.data(), sizeof(CAISS_FLOAT), len, fd);
 
     char* buf = new char[modelHead->maxIndexSize];
     memset(buf, 0, modelHead->maxIndexSize);
     for (int i = 0; i < modelHead->curSize; i++) {
         memset(buf, 0, modelHead->maxIndexSize);
-        fread(buf, modelHead->maxIndexSize, 1, fd);
+        fread((void *)buf, modelHead->maxIndexSize, 1, fd);
         modelHead->labels.emplace_back(buf);
     }
     delete []buf;

@@ -1009,16 +1009,16 @@ public:
         fseek(fd, (long)skip_size, SEEK_SET);
 
         int i = 0;
-        fread(&i, sizeof(int), 1, fd);
+        fread((void *)&i, sizeof(int), 1, fd);
         index_type = static_cast<itype>(i);
         if (index_type == autotuned_unpruned) {
             read_parameter_list(fd);
         }
 
         read_parameters(&par, fd);
-        fread(&n_trees, sizeof(int), 1, fd);
-        fread(&depth, sizeof(int), 1, fd);
-        fread(&density, sizeof(float), 1, fd);
+        fread((void *)&n_trees, sizeof(int), 1, fd);
+        fread((void *)&depth, sizeof(int), 1, fd);
+        fread((void *)&density, sizeof(float), 1, fd);
 
         n_pool = n_trees * depth;
         n_array = 1 << (depth + 1);
@@ -1027,31 +1027,31 @@ public:
         leaf_first_indices = leaf_first_indices_all[depth];
 
         split_points = Eigen::MatrixXf(n_array, n_trees);
-        fread(split_points.data(), sizeof(float), n_array * n_trees, fd);
+        fread((void *)split_points.data(), sizeof(float), n_array * n_trees, fd);
 
         // load tree leaves
         tree_leaves = std::vector<std::vector<int>>(n_trees);
         for (int i = 0; i < n_trees; ++i) {
             int sz;
-            fread(&sz, sizeof(int), 1, fd);
+            fread((void *)&sz, sizeof(int), 1, fd);
             std::vector<int> leaves(sz);
-            fread(&leaves[0], sizeof(int), sz, fd);
+            fread((void *)&leaves[0], sizeof(int), sz, fd);
             tree_leaves[i] = leaves;
         }
 
         // load random matrix
         if (density < 1) {
             int non_zeros;
-            fread(&non_zeros, sizeof(int), 1, fd);
+            fread((void *)&non_zeros, sizeof(int), 1, fd);
 
             sparse_random_matrix = Eigen::SparseMatrix<float>(n_pool, dim);
             std::vector<Eigen::Triplet<float>> triplets;
             for (int k = 0; k < non_zeros; ++k) {
                 int row, col;
                 float val;
-                fread(&row, sizeof(int), 1, fd);
-                fread(&col, sizeof(int), 1, fd);
-                fread(&val, sizeof(float), 1, fd);
+                fread((void *)&row, sizeof(int), 1, fd);
+                fread((void *)&col, sizeof(int), 1, fd);
+                fread((void *)&val, sizeof(float), 1, fd);
                 triplets.push_back(Eigen::Triplet<float>(row, col, val));
             }
 
@@ -1059,7 +1059,7 @@ public:
             sparse_random_matrix.makeCompressed();
         } else {
             dense_random_matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>(n_pool, dim);
-            fread(dense_random_matrix.data(), sizeof(float), n_pool * dim, fd);
+            fread((void *)dense_random_matrix.data(), sizeof(float), n_pool * dim, fd);
         }
 
         fclose(fd);

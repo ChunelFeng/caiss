@@ -329,7 +329,7 @@ int main() {
 ## 六. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语。耗时信息单位为毫秒。查询结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语water，topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语。耗时信息单位为微秒。查询结果信息如下：
 
 ```json
 {
@@ -337,8 +337,8 @@ int main() {
     "size":5,
     "distance_type":"inner",
     "search_type":"ann_search",
-    "algo_ts":1,
-    "search_ts":2,
+    "ann_ts":2692,
+    "search_ts":3721,
     "algo_type":"hnsw",
     "result":[
         {

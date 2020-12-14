@@ -87,9 +87,9 @@ RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap, C
     dom.AddMember("distance_type", StringRef(distType.c_str()), alloc);
     dom.AddMember("search_type", StringRef(searchType.c_str()), alloc);
 
-    // 字段取名algo-cost，因为还有lru或者loop的情况
-    dom.AddMember("algo_ts_cost", timerProc->getAlgoTimeCost(), alloc);
-    dom.AddMember("total_ts_cost", timerProc->getFuncTimeCost(), alloc);
+    // 字段取名ann_ts，因为还有lru或者loop的情况
+    dom.AddMember("ann_ts", timerProc->getAlgoTimeCost(), alloc);
+    dom.AddMember("search_ts", timerProc->getFuncTimeCost(), alloc);
     dom.AddMember("algo_type", StringRef(timerProc->getAlgoType()), alloc);
 
     rapidjson::Value detailsArray(rapidjson::kArrayType);

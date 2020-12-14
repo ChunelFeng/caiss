@@ -40,11 +40,11 @@ public:
     }
 
     int getAlgoTimeCost() {
-        return algo_time_cost_ / 1000;    // 原单位为微秒，转成毫秒
+        return algo_time_cost_;    // 单位为微秒
     }
 
     int getFuncTimeCost() {
-        return func_time_cost_ / 1000 + 1;    // 人为加1ms
+        return func_time_cost_;
     }
 
     const char* getAlgoType() {

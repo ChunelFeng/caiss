@@ -20,7 +20,14 @@ public:
                        unsigned int realRank, unsigned int step, unsigned int maxEpoch,
                        unsigned int showSpan) override ;
 
-    CAISS_STATUS search(void *handle, void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK, unsigned int filterEditDistance, CAISS_SEARCH_CALLBACK searchCBFunc, const void *cbParams) override ;
+    CAISS_STATUS search(void *handle,
+                        void *info,
+                        CAISS_SEARCH_TYPE searchType,
+                        unsigned int topK,
+                        unsigned int filterEditDistance,
+                        CAISS_SEARCH_CALLBACK searchCBFunc,
+                        const void *cbParams) override ;
+
     CAISS_STATUS getResultSize(void *handle, unsigned int &size) override ;
     CAISS_STATUS getResult(void *handle, char *result, unsigned int size) override ;
 

@@ -136,7 +136,10 @@ CAISS_STATUS SyncManageProc::save(void *handle, const char *modelPath) {
  * @param insertType
  * @return
  */
-CAISS_STATUS SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char *label, CAISS_INSERT_TYPE insertType) {
+CAISS_STATUS SyncManageProc::insert(void *handle,
+                                    CAISS_FLOAT *node,
+                                    const char *label,
+                                    CAISS_INSERT_TYPE insertType) {
     CAISS_FUNCTION_BEGIN
 
     /* 插入逻辑设计到写锁，还是使用同步的方式进行 */
@@ -159,7 +162,9 @@ CAISS_STATUS SyncManageProc::insert(void *handle, CAISS_FLOAT *node, const char 
  * @param isIgnore
  * @return
  */
-CAISS_STATUS SyncManageProc::ignore(void *handle, const char *label, CAISS_BOOL isIgnore) {
+CAISS_STATUS SyncManageProc::ignore(void *handle,
+                                    const char *label,
+                                    CAISS_BOOL isIgnore) {
     CAISS_FUNCTION_BEGIN
 
     AlgorithmProc *proc = this->getInstance(handle);

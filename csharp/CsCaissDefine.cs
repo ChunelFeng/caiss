@@ -25,6 +25,8 @@ namespace CsCaissSpace
         public const int CAISS_RET_MODEL_SIZE   = -9;    // 模型尺寸限制问题
         public const int CAISS_RET_WORD_SIZE    = -10;   // 词语长度限制问题
         public const int CAISS_RET_SQL_PARSE    = -11;   // 传入的sql无法解析
+        public const int CAISS_RET_MODEL_DATA   = -12;   // 模型内容问题
+        public const int CAISS_RET_RESULT_SIZE  = -13;   // 结果长度问题
         public const int CAISS_RET_NO_SUPPORT   = -99;   // 暂不支持该功能
 
         public enum CAISS_MODE {

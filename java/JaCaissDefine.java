@@ -7,20 +7,22 @@
 
 public class JaCaissDefine {
 
-    public static int CAISS_RET_WARNING     =  1;     // 流程告警
-    public static int CAISS_RET_OK          =  0;     // 流程正常
-    public static int CAISS_RET_ERR         =  -1;    // 流程异常
-    public static int CAISS_RET_RES         =  -2;    // 资源问题
-    public static int CAISS_RET_MODE        =  -3;    // 模式选择问题
-    public static int CAISS_RET_PATH        =  -4;    // 路径问题
-    public static int CAISS_RET_JSON        =  -5;    // json解析问题
-    public static int CAISS_RET_PARAM       =  -6;    // 参数问题
-    public static int CAISS_RET_HANDLE      =  -7;    // 句柄申请问题
-    public static int CAISS_RET_DIM         =  -8;    // 维度问题
-    public static int CAISS_RET_MODEL_SIZE  =  -9;    // 模型尺寸限制问题
-    public static int CAISS_RET_WORD_SIZE   =  -10;   // 词语长度限制问题
-    public static int CAISS_RET_SQL_PARSE   =  -11;   // 传入的sql无法解析
-    public static int CAISS_RET_NO_SUPPORT  =  -99;   // 暂不支持该功能
+    public static int CAISS_RET_WARNING      = 1;     // 流程告警
+    public static int CAISS_RET_OK           = 0;     // 流程正常
+    public static int CAISS_RET_ERR          = -1;    // 流程异常
+    public static int CAISS_RET_RES          = -2;    // 资源问题
+    public static int CAISS_RET_MODE         = -3;    // 模式选择问题
+    public static int CAISS_RET_PATH         = -4;    // 路径问题
+    public static int CAISS_RET_JSON         = -5;    // json解析问题
+    public static int CAISS_RET_PARAM        = -6;    // 参数问题
+    public static int CAISS_RET_HANDLE       = -7;    // 句柄申请问题
+    public static int CAISS_RET_DIM          = -8;    // 维度问题
+    public static int CAISS_RET_MODEL_SIZE   = -9;    // 模型尺寸限制问题
+    public static int CAISS_RET_WORD_SIZE    = -10;   // 词语长度限制问题
+    public static int CAISS_RET_SQL_PARSE    = -11;   // 传入的sql无法解析
+    public static int CAISS_RET_MODEL_DATA   = -12;   // 模型内容问题
+    public static int CAISS_RET_RESULT_SIZE  = -13;   // 结果长度问题
+    public static int CAISS_RET_NO_SUPPORT   = -99;   // 暂不支持该功能
 
     public interface CAISS_MANAGE_TYPE {
         int CAISS_MANAGE_DEFAULT = 1;

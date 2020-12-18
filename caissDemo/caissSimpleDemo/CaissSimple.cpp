@@ -83,7 +83,7 @@ int demo_insert() {
     //ret = CAISS_Save(handle);
     //CAISS_FUNCTION_CHECK_STATUS
 
-    ret = CAISS_Search(handle, (void *)word.c_str(), search_type_, top_k_);
+    ret = CAISS_Search(handle, (void *)word.c_str(), search_type_, top_k_, filter_edit_distance_);
     CAISS_FUNCTION_CHECK_STATUS
 
     unsigned int size = 0;

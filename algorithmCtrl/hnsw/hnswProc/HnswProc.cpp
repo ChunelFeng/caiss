@@ -172,8 +172,8 @@ CAISS_STATUS HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT
     }
 
     std::vector<CAISS_FLOAT> vec;
-    vec.reserve(this->dim_);
-    vec.assign((CAISS_FLOAT *)node, (CAISS_FLOAT *)node + sizeof(CAISS_FLOAT) * dim_);
+    vec.resize(this->dim_);
+    vec.assign((CAISS_FLOAT *)node, (CAISS_FLOAT *)node + dim_);
 
     ret = normalizeNode(vec, this->dim_);
     CAISS_FUNCTION_CHECK_STATUS
@@ -492,9 +492,8 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
         case CAISS_SEARCH_QUERY:
         case CAISS_LOOP_QUERY: {    // 如果传入的是query信息的话
             std::vector<CAISS_FLOAT> vec;    // 向量查询的时候，使用的数据
-            vec.reserve(this->dim_);
-
-            vec.assign((float *)info, (CAISS_FLOAT *)info + sizeof(CAISS_FLOAT) * dim_);
+            vec.resize(this->dim_);
+            vec.assign((float *)info, (CAISS_FLOAT *)info + dim_);
             ret = normalizeNode(vec, this->dim_);    // 前面将信息转成query的形式
             CAISS_FUNCTION_CHECK_STATUS
 

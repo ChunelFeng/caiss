@@ -173,9 +173,7 @@ CAISS_STATUS HnswProc::insert(CAISS_FLOAT *node, const char *index, CAISS_INSERT
 
     std::vector<CAISS_FLOAT> vec;
     vec.reserve(this->dim_);
-    for (int i = 0; i < this->dim_; i++) {
-        vec.push_back(node[i]);
-    }
+    vec.assign((CAISS_FLOAT *)node, (CAISS_FLOAT *)node + sizeof(CAISS_FLOAT) * dim_);
 
     ret = normalizeNode(vec, this->dim_);
     CAISS_FUNCTION_CHECK_STATUS

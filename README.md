@@ -460,7 +460,7 @@ int main() {
 ------------
 #### 附录-2. 联系方式: 
 
-* 微信： Chunel_Fung
+* 微信： ChunelFeng
 * 邮箱： chunel@foxmail.com
 * 源码： https://github.com/ChunelFeng/caiss
 * 论坛： www.chunel.cn

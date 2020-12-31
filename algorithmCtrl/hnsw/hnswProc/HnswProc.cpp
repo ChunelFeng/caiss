@@ -124,11 +124,12 @@ CAISS_STATUS HnswProc::search(void *info,
                               const unsigned int filterEditDistance,
                               const CAISS_SEARCH_CALLBACK searchCBFunc,
                               const void *cbParams) {
-    timer_ptr_->startFunc();
     CAISS_FUNCTION_BEGIN
-
+    CAISS_ASSERT_NOT_NULL(timer_ptr_);
     CAISS_ASSERT_NOT_NULL(info)
     CAISS_CHECK_MODE_ENABLE(CAISS_MODE_PROCESS)
+
+    timer_ptr_->startFunc();    // 开始计时信息
 
     /* 将信息清空 */
     this->result_.clear();

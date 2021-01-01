@@ -11,14 +11,14 @@
 
 &emsp;&emsp;在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
-&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至20秒左右。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至约20秒。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
 
 ## 二. 编译说明
 
-* Caiss在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中MY_BOOST_PATH（必须）和MY_EIGEN_PATH（非必须）修改为新环境中boost库和eigen库的位置，即可完成编译。建议boost库版本不低于v1.67.0，以免出现编译问题。
+* Caiss在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中【MY_BOOST_PATH】和【MY_EIGEN_PATH】修改为新环境中boost库和eigen库的位置，即可完成编译。
 * Linux环境开发者（以C++为例），命令行模式下，输入:
   ```shell
   $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
@@ -64,7 +64,7 @@
   {"four": ["0.0", "0.0", "0.0", "1.0"]}
   ```
 
-5，参考下文第4部分关于Caiss的使用demo，开始训练、查询等功能吧。
+5，参考下文第5部分关于Caiss的使用demo，开始训练、查询等功能吧。
 
 
 ![Caiss 架构设计图](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Skeleton.png)

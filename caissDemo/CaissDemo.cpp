@@ -16,7 +16,7 @@ CAISS_STATUS CaissDemo() {
     ret = demo_train();
     CAISS_FUNCTION_CHECK_STATUS
 
-    //ret = demo_search();
+    ret = demo_search();
     //ret = demo_insert();
     //ret = demo_ignore();
     //ret = demo_asyncMultiThreadSearch();

@@ -6,7 +6,7 @@
 #**************************************************************/
 
 echo -e "\033[32m ************************************************************** \033[0m"
-echo -e "\033[32m [caiss] begin to update environment, please always enter Y if needed. \033[0m"
+echo -e "\033[32m [caiss] begin to update environment, please always enter [Y] if needed. \033[0m"
 apt-get update     # 更新软件列表
 apt-get upgrade    # 更新软件
 

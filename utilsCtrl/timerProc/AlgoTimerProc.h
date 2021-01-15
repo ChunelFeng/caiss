@@ -32,18 +32,18 @@ public:
     }
 
     void appendAlgo() {
-        algo_time_cost_ += (clock() - algo_start_);
+        algo_time_cost_ += int(clock() - algo_start_);
     }
 
     void endFunc() {
         func_time_cost_ = clock() - func_start_;
     }
 
-    int getAlgoTimeCost() {
+    int getAlgoTimeCost() const {
         return algo_time_cost_;    // 单位为微秒
     }
 
-    int getFuncTimeCost() {
+    int getFuncTimeCost() const {
         return func_time_cost_;
     }
 

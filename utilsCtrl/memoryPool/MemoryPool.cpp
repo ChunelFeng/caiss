@@ -66,7 +66,8 @@ FreeBlock *MemoryPool::allocate() {
     std::lock_guard<std::mutex> lock(mtx_);
     if (!free_block_head_) {
         // 如果空闲节点的信息为空了
-        auto *curChunk = new MemChunk(this->block_num_per_chunk_, this->block_size_);
+        auto *curChunk = new MemChunk(this->block_num_per_chunk_,
+                                      this->block_size_);
         free_block_head_ = curChunk->blocks[0];    // 获得新的Chunk的信息，作为头结点
         for (unsigned int i = 1; i < this->block_num_per_chunk_; i++) {
             curChunk->blocks[i-1]->next = curChunk->blocks[i];

@@ -1,7 +1,7 @@
 /**************************************************************
 * @Author Chunel
 * @Name CaissLib.h
-* @Date 2020/11/15 1:29 上午
+* @Date 2020/5/15 1:23 上午
 * @Desc Caiss库函数定义头文件
 * @Version 3.0.0
 *　　　　　　　　┏┓　 ┏┓+ +
@@ -44,16 +44,16 @@ extern "C" {
      * @param manageType 并发类型（详见CaissLibDefine.h文件）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Environment(CAISS_UINT maxThreadSize = 1,
-                                                         CAISS_ALGO_TYPE algoType = CAISS_ALGO_DEFAULT,
-                                                         CAISS_MANAGE_TYPE manageType = CAISS_MANAGE_DEFAULT);
+    CAISS_API CAISS_Environment(CAISS_UINT maxThreadSize = 1,
+                                CAISS_ALGO_TYPE algoType = CAISS_ALGO_DEFAULT,
+                                CAISS_MANAGE_TYPE manageType = CAISS_MANAGE_DEFAULT);
 
     /**
      * 创建句柄信息
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_CreateHandle(CAISS_HANDLE *handle);
+    CAISS_API CAISS_CreateHandle(CAISS_HANDLE *handle);
 
     /**
      * 初始化信息
@@ -65,12 +65,12 @@ extern "C" {
      * @param distFunc 距离计算函数（仅针对自定义距离计算生效）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Init(CAISS_HANDLE handle,
-                                                  CAISS_MODE mode,
-                                                  CAISS_DISTANCE_TYPE distanceType,
-                                                  CAISS_UINT dim,
-                                                  CAISS_STRING modelPath,
-                                                  CAISS_DIST_FUNC distFunc = nullptr);
+    CAISS_API CAISS_Init(CAISS_HANDLE handle,
+                         CAISS_MODE mode,
+                         CAISS_DISTANCE_TYPE distanceType,
+                         CAISS_UINT dim,
+                         CAISS_STRING modelPath,
+                         CAISS_DIST_FUNC distFunc = nullptr);
 
     /**
      * 模型训练功能
@@ -88,17 +88,17 @@ extern "C" {
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Train(CAISS_HANDLE handle,
-                                                   CAISS_STRING dataPath,
-                                                   CAISS_UINT maxDataSize,
-                                                   CAISS_BOOL normalize,
-                                                   CAISS_UINT maxIndexSize = 64,
-                                                   CAISS_FLOAT precision = 0.95,
-                                                   CAISS_UINT fastRank = 5,
-                                                   CAISS_UINT realRank = 5,
-                                                   CAISS_UINT step = 1,
-                                                   CAISS_UINT maxEpoch = 5,
-                                                   CAISS_UINT showSpan = 1000);
+    CAISS_API CAISS_Train(CAISS_HANDLE handle,
+                          CAISS_STRING dataPath,
+                          CAISS_UINT maxDataSize,
+                          CAISS_BOOL normalize,
+                          CAISS_UINT maxIndexSize = 64,
+                          CAISS_FLOAT precision = 0.95,
+                          CAISS_UINT fastRank = 5,
+                          CAISS_UINT realRank = 5,
+                          CAISS_UINT step = 1,
+                          CAISS_UINT maxEpoch = 5,
+                          CAISS_UINT showSpan = 1000);
 
     /**
      * 查询功能
@@ -115,13 +115,13 @@ extern "C" {
      *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
      *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Search(CAISS_HANDLE handle,
-                                                    void *info,
-                                                    CAISS_SEARCH_TYPE searchType,
-                                                    CAISS_UINT topK,
-                                                    CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
-                                                    CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                                                    const void *cbParams = nullptr);
+    CAISS_API CAISS_Search(CAISS_HANDLE handle,
+                           void *info,
+                           CAISS_SEARCH_TYPE searchType,
+                           CAISS_UINT topK,
+                           CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+                           CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                           const void *cbParams = nullptr);
 
     /**
      * 获取结果字符串长度
@@ -129,8 +129,8 @@ extern "C" {
      * @param size 结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_GetResultSize(CAISS_HANDLE handle,
-                                                           CAISS_UINT &size);
+    CAISS_API CAISS_GetResultSize(CAISS_HANDLE handle,
+                                  CAISS_UINT &size);
 
     /**
      * 获取查询结果信息
@@ -139,9 +139,9 @@ extern "C" {
      * @param size 对应结果长度
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_GetResult(CAISS_HANDLE handle,
-                                                       char *result,
-                                                       CAISS_UINT size);
+    CAISS_API CAISS_GetResult(CAISS_HANDLE handle,
+                              char *result,
+                              CAISS_UINT size);
 
     /**
      * 插入信息
@@ -152,10 +152,10 @@ extern "C" {
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Insert(CAISS_HANDLE handle,
-                                                    CAISS_FLOAT *node,
-                                                    CAISS_STRING label,
-                                                    CAISS_INSERT_TYPE insertType);
+    CAISS_API CAISS_Insert(CAISS_HANDLE handle,
+                           CAISS_FLOAT *node,
+                           CAISS_STRING label,
+                           CAISS_INSERT_TYPE insertType);
 
     /**
      * 忽略信息
@@ -164,9 +164,9 @@ extern "C" {
      * @param isIgnore 表示忽略（true）或者不再忽略（false）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Ignore(CAISS_HANDLE handle,
-                                                    CAISS_STRING label,
-                                                    CAISS_BOOL isIgnore = CAISS_TRUE);
+    CAISS_API CAISS_Ignore(CAISS_HANDLE handle,
+                           CAISS_STRING label,
+                           CAISS_BOOL isIgnore = CAISS_TRUE);
 
     /**
      * 保存模型
@@ -174,8 +174,8 @@ extern "C" {
      * @param modelPath 模型保存路径（默认值是覆盖当前模型）
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_Save(CAISS_HANDLE handle,
-                                                  CAISS_STRING modelPath = nullptr);
+    CAISS_API CAISS_Save(CAISS_HANDLE handle,
+                         CAISS_STRING modelPath = nullptr);
 
     /**
      * 执行sql指令
@@ -185,17 +185,17 @@ extern "C" {
      * @param sqlParams 传入的条件信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_ExecuteSQL(CAISS_HANDLE handle,
-                                                        CAISS_STRING sql,
-                                                        CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
-                                                        const void *sqlParams = nullptr);
+    CAISS_API CAISS_ExecuteSQL(CAISS_HANDLE handle,
+                               CAISS_STRING sql,
+                               CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
+                               const void *sqlParams = nullptr);
 
     /**
      * 销毁句柄信息
      * @param handle 句柄信息
      * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
      */
-    CAISS_LIB_API CAISS_STATUS STDCALL CAISS_DestroyHandle(CAISS_HANDLE handle);
+    CAISS_API CAISS_DestroyHandle(CAISS_HANDLE handle);
 
 #ifdef __cplusplus
 }

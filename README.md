@@ -9,7 +9,7 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;在这里，我们基于Google，Facebook，阿里巴巴等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至约20秒。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
@@ -29,7 +29,7 @@
   $ cd caissDemo/    
   $ ./CaissDemo                              # 即可查看C++版本demo的运行结果    
   ```
-* Docker环境开发者（以python为例），输入:
+* Docker环境开发者（以Python为例），输入:
   ```shell
   $ docker pull chunelfeng/caiss                        # 获取Caiss的最新Docker版本
   $ docker run -it --name CaissDemo chunelfeng/caiss    # 启动容器，并进入内部环境
@@ -79,16 +79,16 @@
  * @param manageType 并发类型（详见CaissLibDefine.h文件）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Environment(CAISS_UINT maxThreadSize = 1,
-                               CAISS_ALGO_TYPE algoType = CAISS_ALGO_DEFAULT,
-                               CAISS_MANAGE_TYPE manageType = CAISS_MANAGE_DEFAULT);
+CAISS_API CAISS_Environment(CAISS_UINT maxThreadSize = 1,
+                            CAISS_ALGO_TYPE algoType = CAISS_ALGO_DEFAULT,
+                            CAISS_MANAGE_TYPE manageType = CAISS_MANAGE_DEFAULT);
 
 /**
  * 创建句柄信息
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_CreateHandle(CAISS_HANDLE *handle);
+CAISS_API CAISS_CreateHandle(CAISS_HANDLE *handle);
 
 /**
  * 初始化信息
@@ -100,12 +100,12 @@ CAISS_STATUS CAISS_CreateHandle(CAISS_HANDLE *handle);
  * @param distFunc 距离计算函数（仅针对自定义距离计算生效）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Init(CAISS_HANDLE handle,
-                        CAISS_MODE mode,
-                        CAISS_DISTANCE_TYPE distanceType,
-                        CAISS_UINT dim,
-                        CAISS_STRING modelPath,
-                        CAISS_DIST_FUNC distFunc = nullptr);
+CAISS_API CAISS_Init(CAISS_HANDLE handle,
+                     CAISS_MODE mode,
+                     CAISS_DISTANCE_TYPE distanceType,
+                     CAISS_UINT dim,
+                     CAISS_STRING modelPath,
+                     CAISS_DIST_FUNC distFunc = nullptr);
 
 /**
  * 模型训练功能
@@ -123,17 +123,17 @@ CAISS_STATUS CAISS_Init(CAISS_HANDLE handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 当快速查询fastRank个数，均在真实realRank个数的范围内的准确率，超过precision的时候，训练完成
  */
-CAISS_STATUS CAISS_Train(CAISS_HANDLE handle,
-                         CAISS_STRING dataPath,
-                         CAISS_UINT maxDataSize,
-                         CAISS_BOOL normalize,
-                         CAISS_UINT maxIndexSize = 64,
-                         CAISS_FLOAT precision = 0.95,
-                         CAISS_UINT fastRank = 5,
-                         CAISS_UINT realRank = 5,
-                         CAISS_UINT step = 1,
-                         CAISS_UINT maxEpoch = 5,
-                         CAISS_UINT showSpan = 1000);
+CAISS_API CAISS_Train(CAISS_HANDLE handle,
+                      CAISS_STRING dataPath,
+                      CAISS_UINT maxDataSize,
+                      CAISS_BOOL normalize,
+                      CAISS_UINT maxIndexSize = 64,
+                      CAISS_FLOAT precision = 0.95,
+                      CAISS_UINT fastRank = 5,
+                      CAISS_UINT realRank = 5,
+                      CAISS_UINT step = 1,
+                      CAISS_UINT maxEpoch = 5,
+                      CAISS_UINT showSpan = 1000);
 
 /**
  * 查询功能
@@ -150,13 +150,13 @@ CAISS_STATUS CAISS_Train(CAISS_HANDLE handle,
  *         =3表示过滤跟当前词语相编辑距离的在3以内的，以此类推；
  *         最大值不超过CAISS_MAX_EDIT_DISTANCE值
  */
-CAISS_STATUS CAISS_Search(CAISS_HANDLE handle,
-                          void *info,
-                          CAISS_SEARCH_TYPE searchType,
-                          CAISS_UINT topK,
-                          CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
-                          CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
-                          const void *cbParams = nullptr);
+CAISS_API CAISS_Search(CAISS_HANDLE handle,
+                       void *info,
+                       CAISS_SEARCH_TYPE searchType,
+                       CAISS_UINT topK,
+                       CAISS_UINT filterEditDistance = CAISS_DEFAULT_EDIT_DISTANCE,
+                       CAISS_SEARCH_CALLBACK searchCBFunc = nullptr,
+                       const void *cbParams = nullptr);
 
 /**
  * 获取结果字符串长度
@@ -164,8 +164,8 @@ CAISS_STATUS CAISS_Search(CAISS_HANDLE handle,
  * @param size 结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_GetResultSize(CAISS_HANDLE handle,
-                                 CAISS_UINT &size);
+CAISS_API CAISS_GetResultSize(CAISS_HANDLE handle,
+                              CAISS_UINT &size);
 
 /**
  * 获取查询结果信息
@@ -174,9 +174,9 @@ CAISS_STATUS CAISS_GetResultSize(CAISS_HANDLE handle,
  * @param size 对应结果长度
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_GetResult(CAISS_HANDLE handle,
-                             char *result,
-                             CAISS_UINT size);
+CAISS_API CAISS_GetResult(CAISS_HANDLE handle,
+                          char *result,
+                          CAISS_UINT size);
 
 /**
  * 插入信息
@@ -187,10 +187,10 @@ CAISS_STATUS CAISS_GetResult(CAISS_HANDLE handle,
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  * @notice 插入信息实时生效。程序结束后，是否保存新插入的信息，取决于是否调用CAISS_Save()方法
  */
-CAISS_STATUS CAISS_Insert(CAISS_HANDLE handle,
-                          CAISS_FLOAT *node,
-                          CAISS_STRING label,
-                          CAISS_INSERT_TYPE insertType);
+CAISS_API CAISS_Insert(CAISS_HANDLE handle,
+                       CAISS_FLOAT *node,
+                       CAISS_STRING label,
+                       CAISS_INSERT_TYPE insertType);
 
 /**
  * 忽略信息
@@ -199,9 +199,9 @@ CAISS_STATUS CAISS_Insert(CAISS_HANDLE handle,
  * @param isIgnore 表示忽略（true）或者不再忽略（false）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Ignore(CAISS_HANDLE handle,
-                          CAISS_STRING label,
-                          CAISS_BOOL isIgnore = CAISS_TRUE);
+CAISS_API CAISS_Ignore(CAISS_HANDLE handle,
+                       CAISS_STRING label,
+                       CAISS_BOOL isIgnore = CAISS_TRUE);
 
 /**
  * 保存模型
@@ -209,8 +209,8 @@ CAISS_STATUS CAISS_Ignore(CAISS_HANDLE handle,
  * @param modelPath 模型保存路径（默认值是覆盖当前模型）
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_Save(CAISS_HANDLE handle,
-                        CAISS_STRING modelPath = nullptr);
+CAISS_API CAISS_Save(CAISS_HANDLE handle,
+                     CAISS_STRING modelPath = nullptr);
 
 /**
  * 执行sql指令
@@ -220,17 +220,17 @@ CAISS_STATUS CAISS_Save(CAISS_HANDLE handle,
  * @param sqlParams 传入的条件信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_ExecuteSQL(CAISS_HANDLE handle,
-                              CAISS_STRING sql,
-                              CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
-                              const void *sqlParams = nullptr);
+CAISS_API CAISS_ExecuteSQL(CAISS_HANDLE handle,
+                           CAISS_STRING sql,
+                           CAISS_SEARCH_CALLBACK sqlCBFunc = nullptr,
+                           const void *sqlParams = nullptr);
 
 /**
  * 销毁句柄信息
  * @param handle 句柄信息
  * @return 运行成功返回0，警告返回1，其他异常值，参考错误码定义
  */
-CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
+CAISS_API CAISS_DestroyHandle(CAISS_HANDLE handle);
 ```
 
 ## 五. 使用Demo
@@ -245,7 +245,6 @@ CAISS_STATUS CAISS_DestroyHandle(CAISS_HANDLE handle);
 #include <iostream>
 #include "CaissLib.h"
 
-using namespace std;
 
 static const CAISS_UINT max_thread_num_ = 1;    // 线程数量
 static const CAISS_ALGO_TYPE algo_type_ = CAISS_ALGO_HNSW;
@@ -382,11 +381,10 @@ int main() {
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
-* 直接查看效果，可以直接在浏览器的搜索框内输入：
+* 直接查看效果，可以在浏览器搜索框内输入以下内容，并点击回车，即可展示hello和world语义相近的词语。
   ```shell
   www.chunel.cn:8888/caiss/word?top=5&query=hello|world
   ```
-  并点击回车，即可查看hello和world语义相近的词语。其中，hello和world可以换成其他任意英语单词。不同单词之间以"|"分隔，不区分大小写，例：Search|What|You|Want
 
 
 ------------

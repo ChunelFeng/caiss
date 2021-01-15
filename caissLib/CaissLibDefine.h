@@ -1,26 +1,26 @@
-/**
- * @author Chunel
+/******************************
+ * @Author Chunel
  * @Name CaissLibDefine.h
- * @date 2020/5/15 1:23 上午
+ * @Date 2020/5/15 1:23 上午
  * @Desc Caiss库类型定义头文件
  * @Version 3.0.0
- */
+ ******************************/
 
 #ifndef _CAISS_LIBRARY_DEFINE_H_
 #define _CAISS_LIBRARY_DEFINE_H_
 
-#ifdef WIN32
+#ifdef _WIN32
     #define STDCALL __stdcall
-    #ifndef CAISS_LIB_API
+    #ifndef CAISS_LIB_HEAD
         #if defined(_CAISS_EXPORTS_)
-            #define CAISS_LIB_API __declspec(dllexport)
+            #define CAISS_LIB_HEAD __declspec(dllexport)
         #else
-            #define CAISS_LIB_API __declspec(dllimport)
+            #define CAISS_LIB_HEAD __declspec(dllimport)
         #endif
     #endif
 #else
     #define STDCALL
-    #define CAISS_LIB_API
+    #define CAISS_LIB_HEAD
 #endif
 
 
@@ -45,6 +45,8 @@ typedef CAISS_FLOAT (STDCALL *CAISS_DIST_FUNC)(CAISS_VOID *vec1, CAISS_VOID *vec
 /* 查询到结果后，触发的回调函数 */
 typedef CAISS_VOID (STDCALL *CAISS_SEARCH_CALLBACK)(const char *query, const CAISS_STRING_ARRAY &infos, const CAISS_FLOAT_ARRAY &distances, const CAISS_VOID *params);
 
+/* 定义函数返回类型 */
+#define CAISS_API    CAISS_LIB_HEAD CAISS_STATUS STDCALL
 
 /* 函数返回值定义 */
 #define CAISS_RET_WARNING       (1)     // 流程告警

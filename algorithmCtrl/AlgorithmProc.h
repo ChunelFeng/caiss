@@ -39,7 +39,7 @@ public:
     }
 
     AlgorithmProc(const AlgorithmProc&) = delete;
-    AlgorithmProc& operator= (const AlgorithmProc& pool) = delete;
+    AlgorithmProc& operator= (const AlgorithmProc& proc) = delete;
 
     /**
      * 初始化状态和参数信息

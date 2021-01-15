@@ -26,6 +26,6 @@ echo -e "\033[32m [caiss] begin to install [eigen3], please enter [Y] if needed.
 apt-get install libeigen3-dev     # 安装eigen3
 cp -r /usr/include/eigen3/Eigen/ /usr/local/include/
 
-echo -e "\033[32m [caiss] congratulation! U have been finished installing environment all Caiss needed on Linux. \033[0m"
+echo -e "\033[32m [caiss] congratulation! U have been finished install environment all Caiss needed on Linux. \033[0m"
 echo -e "\033[32m [caiss] please go on as README described. \033[0m"
 echo -e "\033[32m ************************************************************** \033[0m"

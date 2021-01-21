@@ -458,7 +458,7 @@ int main() {
 ------------
 #### 附录-2. 推荐阅读: 
 * [Why Caiss —— 谈谈我为什么要做Caiss](http://chunel.cn/archives/whycaiss)
-* [What Caiss（上）—— 谈谈我在Caiss中，对ANN算法做了哪些优化](http://chunel.cn/archives/whatcaiss)
+* [What Caiss（上）—— 谈谈我在Caiss中，做了哪些算法优化](http://chunel.cn/archives/whatcaiss)
 * [What Caiss（中）—— 谈谈我在Caiss中，做了哪些工程优化](http://chunel.cn/archives/whatcaiss2)
 
 ------------

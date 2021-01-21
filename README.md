@@ -39,7 +39,7 @@
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
-* 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录-2）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+* 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 
 ## 三. 训练流程
@@ -456,7 +456,13 @@ int main() {
 * 更新输出内容，加入算法类型和耗时信息
 
 ------------
-#### 附录-2. 联系方式: 
+#### 附录-2. 推荐阅读: 
+* [Why Caiss —— 谈谈我为什么要做Caiss](http://chunel.cn/archives/whycaiss)
+* [What Caiss（上）—— 谈谈我在Caiss中，对ANN算法做了哪些优化](http://chunel.cn/archives/whatcaiss)
+* [What Caiss（中）—— 谈谈我在Caiss中，做了哪些工程优化](http://chunel.cn/archives/whatcaiss2)
+
+------------
+#### 附录-3. 联系方式: 
 
 * 微信： ChunelFeng
 * 邮箱： chunel@foxmail.com

@@ -380,7 +380,7 @@ int main() {
 * 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
-* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[杭州名猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
+* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 * 直接查看效果，可以在浏览器搜索框内输入以下内容，并点击回车，即可展示hello和world语义相近的词语。
   ```shell
   www.chunel.cn:8888/caiss/word?top=5&query=hello|world

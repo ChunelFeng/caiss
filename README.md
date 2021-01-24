@@ -383,7 +383,7 @@ int main() {
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
 * 直接查看效果，可以在浏览器搜索框内输入以下内容，并点击回车，即可展示hello和world语义相近的词语。
   ```shell
-  www.chunel.cn:8888/caiss/word?top=5&query=hello|world
+  www.chunel.cn:8888/caiss/invite?top=5&query=hello|world
   ```
 
 

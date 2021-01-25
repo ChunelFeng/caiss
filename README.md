@@ -39,7 +39,9 @@
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
+* Web端可以登录 [Caiss网页版](www.chunel.cn:3001) 查看效果。
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
+![Caiss 网页版界面](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Web.png)
 
 
 ## 三. 训练流程
@@ -381,10 +383,6 @@ int main() {
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
-* 直接查看效果，可以在浏览器搜索框内输入以下内容，并点击回车，即可展示hello和world语义相近的词语。
-  ```shell
-  www.chunel.cn:8888/caiss/invite?top=5&query=hello|world
-  ```
 
 
 ------------

@@ -9,9 +9,9 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路开源的解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的开源解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
 
-&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以将原先100分钟才能暴力计算完成的逻辑，在保持97%准确率的情况下，耗时降低至约20秒。且随着数据量的不断增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以在保持超高准确率的情况下，极大的降低查询耗时。且随着数据量的增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
@@ -39,7 +39,7 @@
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
 * Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
-* Web端可以登录 [Caiss网页版](https://www.chunel.cn:3001) 查看效果。
+* Web端/移动端，可以进入 [Caiss网页版](https://www.chunel.cn:3001) 查看简易展示效果。（注：暂时仅限英文单词的相似词语查询，多词批量查询请使用"|"分隔）
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 
 ![Caiss 网页版界面](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Web.png)
@@ -382,8 +382,9 @@ int main() {
 
 * 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
-* 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据（内存）持续存在，直到获取结果为止。
-* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导。如有使用需求，周末可提供支持服务。
+* 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据在内存中持续存在，直到获取结果为止。
+* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导和贡献代码。
+* 如有使用需求，周末可提供支持服务。
 
 
 ------------

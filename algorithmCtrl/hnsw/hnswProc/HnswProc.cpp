@@ -536,7 +536,8 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
 
     for (auto &word2vec : word2VecMap) {
         ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
-        if (isWordSearchType(searchType) && !result.empty()) {
+        if (false) {
+        //if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
             timer_ptr_->startAlgo();
             word2ResultMap[word2vec.first] = result;

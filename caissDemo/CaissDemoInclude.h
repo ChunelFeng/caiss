@@ -14,13 +14,13 @@
 #include "caissSqlDemo/CaissSql.h"
 
 
-#define max_thread_num_ (1)
+#define max_thread_num_ (16)
 #define manage_type_ (CAISS_MANAGE_SYNC)
 
 #define algo_type_ (CAISS_ALGO_HNSW)
 #define dist_type_ (CAISS_DISTANCE_INNER)
 #define dim_ (768)
-#define model_path_ ("../doc/demo_2500words_768dim.caiss")
+#define model_path_ ("/Users/chunel/Documents/code/cpp/models/bert_71290words_768dim.caiss")
 #define dist_func_ (nullptr)
 #define info_ ("water")
 #define search_type_ (CAISS_SEARCH_WORD)

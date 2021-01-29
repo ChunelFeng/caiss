@@ -20,8 +20,8 @@ namespace hnswlib {
     static float
     InnerProductEigen(const void *pVect1, const void *pVect2, const void *qty_ptr) {
         int qty = *((size_t *) qty_ptr);    // 计算出来
-        DynamicArrayType vec1((float *)pVect1, (const int)qty);
-        DynamicArrayType vec2((float *)pVect2, (const int)qty);
+        Eigen::Map<Eigen::Array<float, 1, Eigen::Dynamic>> vec1((float *)pVect1, (const int)qty);
+        Eigen::Map<Eigen::Array<float, 1, Eigen::Dynamic>> vec2((float *)pVect2, (const int)qty);
         auto x = (vec1 * vec2).sum();
         return 1 - x;
     }
@@ -232,12 +232,13 @@ namespace hnswlib {
     public:
         InnerProductSpace(size_t dim) {
             fstdistfunc_ = InnerProduct;
-    #if defined(USE_AVX) || defined(USE_SSE)
+
+#if defined(USE_AVX) || defined(USE_SSE)
             if (dim % 4 == 0)
                 fstdistfunc_ = InnerProductSIMD4Ext;
             if (dim % 16 == 0)
                 fstdistfunc_ = InnerProductSIMD16Ext;
-    #endif
+#endif
 
 #if _USE_EIGEN3_
             fstdistfunc_ = InnerProductEigen;    // 优先支持eigen计算方式

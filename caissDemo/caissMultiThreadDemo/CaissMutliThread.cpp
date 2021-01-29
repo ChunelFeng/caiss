@@ -10,7 +10,7 @@
 #include "../CaissDemoInclude.h"
 
 const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-static int SEARCH_TIMES = 1000;
+static int SEARCH_TIMES = 1000000;
 
 void STDCALL searchCallbackFunc(const char *query,
                                 const CAISS_STRING_ARRAY& words,
@@ -68,20 +68,8 @@ int syncSearch(void *handle) {
     int times = SEARCH_TIMES;
     while (times--) {
         // 查询SEARCH_TIMES次，结束之后正常退出
-        int i = (int)rand() % (int)WORDS.size();
-        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, filter_edit_distance_, searchCallbackFunc, nullptr);
-        CAISS_FUNCTION_CHECK_STATUS
-
-        unsigned int size = 0;
-        ret = CAISS_GetResultSize(handle, size);
-        CAISS_FUNCTION_CHECK_STATUS
-
-        char *result = new char[size + 1];
-        memset(result, 0, size + 1);
-        ret = CAISS_GetResult(handle, result, size);
-        CAISS_FUNCTION_CHECK_STATUS
-        std::cout << result << std::endl;
-        delete [] result;
+        //int i = (int)rand() % (int)WORDS.size();
+        ret = CAISS_Search(handle, (void *)"hello", search_type_, top_k_, filter_edit_distance_);
     }
 
     CAISS_FUNCTION_END

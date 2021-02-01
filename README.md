@@ -459,6 +459,7 @@ int main() {
 * [What Caiss（上）—— 谈谈我在Caiss中，做了哪些算法优化](http://www.chunel.cn/archives/whatcaiss)
 * [What Caiss（中）—— 谈谈我在Caiss中，做了哪些工程优化](http://www.chunel.cn/archives/whatcaiss2)
 * [What Caiss（下）—— 谈谈我在Caiss中，做了哪些服务化工作](http://www.chunel.cn/archives/whatcaiss3)
+* [How Caiss —— 谈谈我实测的Caiss的性能指标如何](http://www.chunel.cn/archives/howcaiss)
 
 ------------
 #### 附录-3. 联系方式: 

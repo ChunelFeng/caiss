@@ -453,6 +453,9 @@ int main() {
 * 提供基于MRPT算法的训练和查询功能
 * 更新输出内容，加入算法类型和耗时信息
 
+[2021.02.09 - v3.0.1 - Chunel]
+* 添加针对web版本的说明
+
 ------------
 #### 附录-2. 推荐阅读: 
 * [Why Caiss —— 谈谈我为什么要做Caiss](http://www.chunel.cn/archives/whycaiss)

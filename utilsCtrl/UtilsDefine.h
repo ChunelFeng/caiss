@@ -17,7 +17,7 @@
     #include <sys/timeb.h>
 #endif
 
-#define CAISS_VERSION       ("3.0.0")    // 版本信息外部不可改变
+#define CAISS_VERSION       ("3.0.1")    // 版本信息外部不可改变
 
 
 struct CaissDataNode {

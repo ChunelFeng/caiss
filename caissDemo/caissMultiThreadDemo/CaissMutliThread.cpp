@@ -68,8 +68,8 @@ int syncSearch(void *handle) {
     int times = SEARCH_TIMES;
     while (times--) {
         // 查询SEARCH_TIMES次，结束之后正常退出
-        //int i = (int)rand() % (int)WORDS.size();
-        ret = CAISS_Search(handle, (void *)"hello", search_type_, top_k_, filter_edit_distance_);
+        int i = (int)rand() % (int)WORDS.size();
+        ret = CAISS_Search(handle, (void *)(WORDS[i]).c_str(), search_type_, top_k_, filter_edit_distance_);
     }
 
     CAISS_FUNCTION_END
@@ -105,8 +105,6 @@ int demo_syncMultiThreadSearch() {
         ret = fut.get();
         CAISS_FUNCTION_CHECK_STATUS
     }
-
-    CAISS_ECHO("[%d] thread process [%d] times query, cost [%d] ms.", max_thread_num_, SEARCH_TIMES, (int)(clock() - start) / 1000);
 
     for (auto &handle : hdlsVec) {
         ret = CAISS_DestroyHandle(handle);

@@ -43,12 +43,12 @@ protected:
                                    CAISS_SEARCH_TYPE searchType,
                                    unsigned int topK,
                                    unsigned int filterEditDistance,
-                                   ALOG_WORD2RESULT_MAP& word2ResultMap);
+                                   ALGO_WORD2RESULT_MAP &word2ResultMap);
     CAISS_STATUS loadModel();
     CAISS_STATUS loadModelHead();
 
     CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType,
-                             const ALOG_WORD2RESULT_MAP &word2ResultMap);
+                             const ALGO_WORD2RESULT_MAP &word2ResultMap);
 
 
 protected:

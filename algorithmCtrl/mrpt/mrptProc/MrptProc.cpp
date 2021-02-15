@@ -125,7 +125,7 @@ CAISS_STATUS MrptProc::search(void *info, CAISS_SEARCH_TYPE searchType,
         this->lru_cache_.clear();
     }
 
-    ALOG_WORD2RESULT_MAP word2ResultMap;
+    ALGO_WORD2RESULT_MAP word2ResultMap;
     ret = innerSearchResult(info, searchType, topK, filterEditDistance, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
@@ -288,7 +288,7 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
                                          const CAISS_SEARCH_TYPE searchType,
                                          const unsigned int topK,
                                          const unsigned int filterEditDistance,
-                                         ALOG_WORD2RESULT_MAP& word2ResultMap) {
+                                         ALGO_WORD2RESULT_MAP& word2ResultMap) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
@@ -298,7 +298,7 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
     MrptModelHead *modelHead = MrptProc::mrpt_model_head_.get();
     CAISS_ASSERT_NOT_NULL(modelHead)
 
-    ALOG_WORD2VEC_MAP word2VecMap;
+    ALGO_WORD2VEC_MAP word2VecMap;
     word2VecMap.reserve(8);    // 先分配若干个节点信息
 
     CAISS_FLOAT_ARRAY vec;    // 向量查询的时候，使用的数据
@@ -349,7 +349,7 @@ CAISS_STATUS MrptProc::innerSearchResult(void *info,
     CAISS_FUNCTION_CHECK_STATUS
 
     for (const auto &word2vec : word2VecMap) {
-        ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
+        ALGO_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
         if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
             timer_ptr_->startAlgo();
@@ -484,7 +484,7 @@ CAISS_STATUS MrptProc::loadModelHead() {
 
 CAISS_STATUS MrptProc::buildResult(unsigned int topK,
                                    CAISS_SEARCH_TYPE searchType,
-                                   const ALOG_WORD2RESULT_MAP &word2ResultMap) {
+                                   const ALGO_WORD2RESULT_MAP &word2ResultMap) {
     CAISS_FUNCTION_BEGIN
 
     auto ptr = MrptProc::mrpt_algo_.get();

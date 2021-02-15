@@ -11,12 +11,13 @@ using namespace std;
 
 const static unsigned int DEFAULT_CAPACITY = 10;
 
+template<typename T>
 struct LruNode {
 public:
     string word;    // 被查询的单词
-    ALOG_RET_TYPE result{};
+    T result;
 
-    LruNode(const string &word, const ALOG_RET_TYPE &result) {
+    LruNode(const string &word, const T &result) {
         this->word = word;
         this->result = result;
     }

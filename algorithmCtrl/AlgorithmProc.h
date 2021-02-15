@@ -168,15 +168,15 @@ protected:
     /* 函数过滤条件 */
     CAISS_STATUS filterByRules(void *info,
                                const CAISS_SEARCH_TYPE searchType,
-                               ALOG_RET_TYPE &result,
+                               ALGO_RET_TYPE &result,
                                unsigned int topK,
                                const unsigned int filterEditDistance,
                                const BOOST_BIMAP &indexLabelLookup);
     CAISS_STATUS filterByEditDistance(void *info, CAISS_SEARCH_TYPE searchType,
-                                      ALOG_RET_TYPE &result,
+                                      ALGO_RET_TYPE &result,
                                       unsigned int filterEditDistance,
                                       const BOOST_BIMAP &indexLabelLookup);
-    CAISS_STATUS filterByIgnoreTrie(ALOG_RET_TYPE &result,
+    CAISS_STATUS filterByIgnoreTrie(ALGO_RET_TYPE &result,
                                     const BOOST_BIMAP &indexLabelLookup);
 
 
@@ -217,10 +217,10 @@ protected:
     CAISS_MODE cur_mode_;
     CAISS_BOOL normalize_;    // 是否需要标准化数据
     std::string result_;
-    ALOG_WORD2DETAILS_MAP word_details_map_;    // 记录结果使用的信息
+    ALGO_WORD2DETAILS_MAP word_details_map_;    // 记录结果使用的信息
     CAISS_DISTANCE_TYPE distance_type_;
 
-    LruProc lru_cache_;    // 最近N次的查询记录
+    LruProc<ALGO_RET_TYPE> lru_cache_;    // 最近N次的查询记录
     unsigned int last_topK_;    // 记录上一次的topK跟这一次的topK是否相同
     CAISS_SEARCH_TYPE last_search_type_;
 

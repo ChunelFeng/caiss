@@ -56,13 +56,13 @@ struct CaissResultDetail {
 };
 
 /* 算法返回的结果类型 */
-using ALOG_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, size_t>>;
+using ALGO_RET_TYPE = std::priority_queue<std::pair<CAISS_FLOAT, size_t>>;
 /* 单词和算法查询的result的匹配 */
-using ALOG_WORD2RESULT_MAP = std::unordered_map<std::string, ALOG_RET_TYPE>;
+using ALGO_WORD2RESULT_MAP = std::unordered_map<std::string, ALGO_RET_TYPE>;
 /* 单词和向量的匹配 */
-using ALOG_WORD2VEC_MAP = std::unordered_map<std::string, std::vector<CAISS_FLOAT>>;
+using ALGO_WORD2VEC_MAP = std::unordered_map<std::string, std::vector<CAISS_FLOAT>>;
 /* 单词和向量的和最终展示结果单匹配 */
-using ALOG_WORD2DETAILS_MAP = std::unordered_map<std::string, std::list<CaissResultDetail>>;
+using ALGO_WORD2DETAILS_MAP = std::unordered_map<std::string, std::list<CaissResultDetail>>;
 
 
 inline void CAISS_ECHO(const char *cmd, ...) {

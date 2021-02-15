@@ -15,6 +15,7 @@
 
 using namespace std;
 
+template<typename T>
 class LruProc : public UtilsProc {
 public:
     explicit LruProc(unsigned int capacity) {
@@ -36,8 +37,8 @@ public:
      * @param word
      * @return
      */
-    ALOG_RET_TYPE get(const string& word) {
-        ALOG_RET_TYPE result;
+    T get(const string& word) {
+        T result;
         auto cur = cache_.find(word);
         if (cur != cache_.end()) {
             result = cur->second->result;    // 找到的情况
@@ -53,7 +54,7 @@ public:
      * @param result
      * @return
      */
-    int put(const string& word, const ALOG_RET_TYPE& result) {
+    int put(const string& word, const T &result) {
         auto cur = cache_.find(word);
         if (cur != cache_.end()) {
             nodes_.erase(cache_[word]);    // 删除对应的iter信息
@@ -66,7 +67,7 @@ public:
             cur_size_--;
         }
 
-        nodes_.push_front(LruNode(word, result));
+        nodes_.push_front(LruNode<T>(word, result));
         cache_[word] = nodes_.begin();
         cur_size_++;
 
@@ -89,8 +90,8 @@ public:
 private:
     unsigned int cur_size_;
     unsigned int capacity_;
-    unordered_map<string, list<LruNode>::iterator> cache_;    // 缓存的信息，保存list中的
-    list<LruNode> nodes_;
+    unordered_map<string, typename std::list<LruNode<T>>::iterator> cache_;    // 缓存的信息，保存list中的
+    list<LruNode<T>> nodes_;
 };
 
 

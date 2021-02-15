@@ -65,14 +65,13 @@ CAISS_STATUS RapidJsonProc::parseInputData(const char *line, CaissDataNode& data
 
 
 CAISS_STATUS
-RapidJsonProc::buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
+RapidJsonProc::buildSearchResult(const ALGO_WORD2DETAILS_MAP &word2DetailsMap,
                                  CAISS_DISTANCE_TYPE distanceType,
                                  const std::string &searchType,
                                  unsigned int topK,
                                  AlgoTimerProc *timerProc,
                                  std::string &result) {
     CAISS_FUNCTION_BEGIN
-
     CAISS_ASSERT_NOT_NULL(timerProc)
 
     Document dom;

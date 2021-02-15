@@ -39,12 +39,12 @@ protected:
     CAISS_STATUS reset();
     CAISS_STATUS loadDatas(const char *dataPath, std::vector<CaissDataNode> &datas);
     CAISS_STATUS trainModel(std::vector<CaissDataNode> &datas, unsigned int curEpoch, unsigned int maxEpoch, unsigned int showSpan);
-    CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, const ALOG_WORD2RESULT_MAP &word2ResultMap);
+    CAISS_STATUS buildResult(unsigned int topK, CAISS_SEARCH_TYPE searchType, const ALGO_WORD2RESULT_MAP &word2ResultMap);
     CAISS_STATUS loadModel();
     CAISS_STATUS createDistancePtr(CAISS_DIST_FUNC distFunc);
     CAISS_STATUS innerSearchResult(void *info, CAISS_SEARCH_TYPE searchType, unsigned int topK,
                                    unsigned int filterEditDistance,
-                                   ALOG_WORD2RESULT_MAP& word2ResultMap);
+                                   ALGO_WORD2RESULT_MAP& word2ResultMap);
 
 
     // 静态成员变量

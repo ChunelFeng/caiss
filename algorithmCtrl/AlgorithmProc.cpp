@@ -136,7 +136,7 @@ CAISS_STATUS AlgorithmProc::normalizeNode(std::vector<CAISS_FLOAT>& node, unsign
 
 
 CAISS_STATUS AlgorithmProc::filterByRules(void *info, const CAISS_SEARCH_TYPE searchType,
-                                          ALOG_RET_TYPE &result, unsigned int topK,
+                                          ALGO_RET_TYPE &result, unsigned int topK,
                                           const unsigned int filterEditDistance,
                                           const BOOST_BIMAP &indexLabelLookup) {
     CAISS_FUNCTION_BEGIN
@@ -160,7 +160,7 @@ CAISS_STATUS AlgorithmProc::filterByRules(void *info, const CAISS_SEARCH_TYPE se
 
 CAISS_STATUS AlgorithmProc::filterByEditDistance(void *info,
                                                  CAISS_SEARCH_TYPE searchType,
-                                                 ALOG_RET_TYPE &result,
+                                                 ALGO_RET_TYPE &result,
                                                  unsigned int filterEditDistance,
                                                  const BOOST_BIMAP &indexLabelLookup) {
     CAISS_FUNCTION_BEGIN
@@ -175,9 +175,8 @@ CAISS_STATUS AlgorithmProc::filterByEditDistance(void *info,
         return CAISS_RET_PARAM;    // 如果值设置的太大了，则返回参数校验错误
     }
 
-
     string word = std::string((char *)info);    // 已经确定是查词语类型的了
-    ALOG_RET_TYPE resultBackUp;
+    ALGO_RET_TYPE resultBackUp;
 
     while (!result.empty()) {
         auto cur = result.top();
@@ -200,12 +199,12 @@ CAISS_STATUS AlgorithmProc::filterByEditDistance(void *info,
  * @param result
  * @return
  */
-CAISS_STATUS AlgorithmProc::filterByIgnoreTrie(ALOG_RET_TYPE &result,
+CAISS_STATUS AlgorithmProc::filterByIgnoreTrie(ALGO_RET_TYPE &result,
                                                const BOOST_BIMAP &indexLabelLookup) {
     CAISS_FUNCTION_BEGIN
     CAISS_ASSERT_NOT_NULL(AlgorithmProc::getIgnoreTrie())
 
-    ALOG_RET_TYPE resultBackUp;
+    ALGO_RET_TYPE resultBackUp;
 
     while (!result.empty()) {
         auto cur = result.top();

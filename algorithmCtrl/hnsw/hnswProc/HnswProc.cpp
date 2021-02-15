@@ -142,7 +142,7 @@ CAISS_STATUS HnswProc::search(void *info,
     }
 
     // 关于缓存的处理，已经移到此函数中去处理了
-    ALOG_WORD2RESULT_MAP word2ResultMap;
+    ALGO_WORD2RESULT_MAP word2ResultMap;
     ret = innerSearchResult(info, searchType, topK, filterEditDistance, word2ResultMap);
     CAISS_FUNCTION_CHECK_STATUS
 
@@ -246,7 +246,7 @@ CAISS_STATUS HnswProc::trainModel(std::vector<CaissDataNode> &datas,
 
 CAISS_STATUS HnswProc::buildResult(unsigned int topK,
                                    CAISS_SEARCH_TYPE searchType,
-                                   const ALOG_WORD2RESULT_MAP &word2ResultMap) {
+                                   const ALGO_WORD2RESULT_MAP &word2ResultMap) {
     CAISS_FUNCTION_BEGIN
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
@@ -480,14 +480,14 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
                                          const CAISS_SEARCH_TYPE searchType,
                                          const unsigned int topK,
                                          const unsigned int filterEditDistance,
-                                         ALOG_WORD2RESULT_MAP& word2ResultMap) {
+                                         ALGO_WORD2RESULT_MAP& word2ResultMap) {
     CAISS_FUNCTION_BEGIN
 
     CAISS_ASSERT_NOT_NULL(info)
     auto ptr = HnswProc::getHnswSingleton();
     CAISS_ASSERT_NOT_NULL(ptr)
 
-    ALOG_WORD2VEC_MAP word2VecMap;
+    ALGO_WORD2VEC_MAP word2VecMap;
     word2VecMap.reserve(8);    // 先分配若干个节点信息
     switch (searchType) {
         case CAISS_SEARCH_QUERY:
@@ -535,9 +535,8 @@ CAISS_STATUS HnswProc::innerSearchResult(void *info,
     unsigned int queryTopK = std::max(topK*7, this->neighbors_);    // 表示7分(*^▽^*)
 
     for (auto &word2vec : word2VecMap) {
-        ALOG_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
-        if (false) {
-        //if (isWordSearchType(searchType) && !result.empty()) {
+        ALGO_RET_TYPE&& result = this->lru_cache_.get(word2vec.first);
+        if (isWordSearchType(searchType) && !result.empty()) {
             // 如果是查询词语的模式，并且缓存中找到了，就不要过滤了，直接当做结果信息
             timer_ptr_->startAlgo();
             word2ResultMap[word2vec.first] = result;

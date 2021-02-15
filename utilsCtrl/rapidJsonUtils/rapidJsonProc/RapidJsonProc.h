@@ -24,7 +24,7 @@ public:
     ~RapidJsonProc();
 
     static CAISS_STATUS parseInputData(const char *line, CaissDataNode& node);
-    static CAISS_STATUS buildSearchResult(const ALOG_WORD2DETAILS_MAP &word2DetailsMap,
+    static CAISS_STATUS buildSearchResult(const ALGO_WORD2DETAILS_MAP &word2DetailsMap,
                                           CAISS_DISTANCE_TYPE distanceType,
                                           const std::string &searchType,
                                           unsigned int topK,

@@ -10,7 +10,7 @@
 #include "../CaissDemoInclude.h"
 
 const static vector<string> WORDS = {"this", "is", "an", "open", "source", "project", "and", "hope", "it", "will", "be", "useful", "for", "you", "best", "wishes"};
-static int SEARCH_TIMES = 1000000;
+static int SEARCH_TIMES = 1000;
 
 void STDCALL searchCallbackFunc(const char *query,
                                 const CAISS_STRING_ARRAY& words,

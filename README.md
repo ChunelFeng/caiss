@@ -1,8 +1,12 @@
 <p align="left">
   <a href="https://github.com/ChunelFeng/caiss"><img src="https://badgen.net/badge/langs/C++,Python,Java,CSharp/cyan?list=1" alt="languages"></a>
+  <a href="https://github.com/ChunelFeng/caiss"><img src="https://badgen.net/badge/os/MacOS,Linux,Windows/cyan?list=1" alt="os"></a>
+  <a href="https://github.com/ChunelFeng/caiss"><img src="https://badgen.net/badge/support/sdk,sql,restful/cyan?list=1" alt="support"></a><br>
   <a href="https://github.com/ChunelFeng/caiss"><img src="https://badgen.net/github/stars/ChunelFeng/caiss?color=cyan" alt="stars"></a>
   <a href="https://github.com/ChunelFeng/caiss/stargazers"><img src="https://badgen.net/github/forks/ChunelFeng/caiss?color=cyan" alt="forks"></a>
   <a href="http://www.chunel.cn"><img src="https://badgen.net/badge/🔥/forum/cyan" alt="forum"></a>
+  <a href="https://hub.docker.com/r/chunelfeng/caiss"><img src="https://badgen.net/badge/🐳/docker/cyan?list=1" alt="docker"></a>
+  <a href="http://www.chunel.cn:3001/"><img src="https://badgen.net/badge/👀/web/cyan" alt="web"></a>
   <a href="https://github.com/ChunelFeng/caiss"><img src="https://badgen.net/badge/🌟/github/cyan" alt="github"></a>
   </a>
 </p>
@@ -20,7 +24,7 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的开源解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改。支持Windows，Linux和Mac系统，并提供了详细的Demo示例。
+&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的开源解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改，并提供了详细的Demo示例。支持MacOS，Linux和Windows系统，提供了Docker镜像和Web展示。
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以在保持超高准确率的情况下，极大的降低查询耗时。且随着数据量的增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 

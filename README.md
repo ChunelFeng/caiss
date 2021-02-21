@@ -24,7 +24,7 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的开源解决方案。提供面向最终结果的训练方法，会在训练过程中，根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持训练过程中，标签信息和向量信息的绑定。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，同时支持SQL语法进行增删查改，并提供了详细的Demo示例。支持MacOS，Linux和Windows系统，提供了Docker镜像和Web展示。
+&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的海量数据检索开源解决方案。提供面向最终结果的训练方法，在训练过程中根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，支持基础SQL语法进行增删查改，支持MacOS，Linux和Windows系统。提供了详细的Demo示例，并提供了Docker镜像和Web页面展示。
 
 &emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以在保持超高准确率的情况下，极大的降低查询耗时。且随着数据量的增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
@@ -64,7 +64,7 @@
 
 1，安装python3环境，安装tensorflow库，安装keras库，安装keras-bert库，安装numpy库，安装pprint库。
 
-2，根据自身需求，下载对应的bert模型，并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/knowledge-of-bert)。
+2，根据需求，下载对应的bert模型并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/knowledge-of-bert)。
 
 3，准备待embedding的文本文件。比如，英文单词的相似词查询任务，将不同的单词按行分开即可。具体格式，如下所示：
   ```shell script
@@ -395,17 +395,18 @@ int main() {
 
 * 训练功能仅支持单线程。查询、插入、修改和删除等功能，支持多线程并发。
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
-* 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据在内存中持续存在，直到获取结果为止。
-* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导和贡献代码。
-* 如有使用需求，周末可提供支持服务。
+* 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据在内存中持续存在，直至结果生效为止。
+* Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导和贡献代码。如有使用需求，周末可提供支持服务。
+* 感谢知名AI科技博主——北邮PRIS模式识别实验室 陈光教授 [@爱可可-爱生活](https://weibo.com/fly51fly?profile_ftype=1&is_hot=1#_0) 微博推荐。
 
+![感谢教授推荐](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Recommend.jpg)
 
 ------------
 #### 附录-1. 版本信息
 
 [2020.06.15 - v1.0.0 - Chunel] 
 * 新建，第一个功能版本
-* 实现训练、查询、插入、保存等功能
+* 提供训练、查询、插入、保存等功能
 
 [2020.06.25 - v1.2.0 - Chunel]
 * 新增多线程功能
@@ -433,8 +434,8 @@ int main() {
 * 解决跨平台兼容性问题
 
 [2020.08.22 - v1.6.0 - Chunel]
-* 加入降维算法。确保少量降低准确率的情况下，大幅度降低查询耗时
-* 提供针对文本的embedding处理方法，方便自行生成符合格式的训练文件
+* 提供降维算法
+* 提供针对文本的embedding处理方法，用于自行生成符合格式的训练文件
 
 [2020.08.30 - v2.0.0 - Chunel]
 * 提供基础SQL语句查询功能
@@ -489,3 +490,4 @@ int main() {
 * 论坛： www.chunel.cn
 
 ![Caiss 作者微信二维码](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
+

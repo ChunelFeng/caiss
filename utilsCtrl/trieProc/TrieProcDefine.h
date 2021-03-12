@@ -19,10 +19,10 @@ struct TrieNode {
     }
 
     ~TrieNode() {
-        for (auto& i : children) {
-            if (i != nullptr) {
-                delete i ;
-                i  = nullptr;
+        for (auto& child : children) {
+            if (child != nullptr) {
+                delete child ;
+                child = nullptr;
             }
         }
     }

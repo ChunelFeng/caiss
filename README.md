@@ -489,7 +489,6 @@ int main() {
 * 源码： https://github.com/ChunelFeng/caiss
 * 镜像： https://hub.docker.com/repository/docker/chunelfeng/caiss
 * 论坛： www.chunel.cn
-* 网页： www.chunel.cn:3001
 
 ![Caiss 作者微信二维码](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Author.jpg)
 

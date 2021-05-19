@@ -36,7 +36,7 @@
 * Caiss在Mac(MacOS-10.15，主环境)，Linux（Ubuntu-20.04）和Windows（Windows-10）上开发，使用的IDE均是CLion。使用Clion读取CMakeList.txt文件，并生成对应工程，将CMakeList.txt文件中【MY_BOOST_PATH】和【MY_EIGEN_PATH】修改为新环境中boost库和eigen库的位置，即可完成编译。
 * Linux环境开发者（以C++为例），命令行模式下，输入:
   ```shell
-  $ git clone https://github.com.cnpmjs.org/ChunelFeng/caiss.git    # 下载代码至本地
+  $ git clone https://github.com/ChunelFeng/caiss.git    # 下载代码至本地
   $ cd caiss/
   $ ./caiss-linux-env.sh                     # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
   $ cmake .                                  # 注意，cmake后面有一个"."，表示当前目录    
@@ -473,7 +473,8 @@ int main() {
 * 提供Web页面版本
 
 ------------
-#### 附录-2. 推荐阅读: 
+#### 附录-2. 推荐阅读  
+
 * [Why Caiss —— 谈谈我为什么要做Caiss](http://www.chunel.cn/archives/whycaiss)
 * [What Caiss（上）—— 谈谈我在Caiss中，做了哪些算法优化](http://www.chunel.cn/archives/whatcaiss)
 * [What Caiss（中）—— 谈谈我在Caiss中，做了哪些工程优化](http://www.chunel.cn/archives/whatcaiss2)
@@ -482,7 +483,7 @@ int main() {
 * [Where Caiss —— 谈谈我关于Caiss下一步做什么的想法](http://www.chunel.cn/archives/wherecaiss)
 
 ------------
-#### 附录-3. 联系方式: 
+#### 附录-3. 联系方式  
 
 * 微信： ChunelFeng
 * 邮箱： chunel@foxmail.com

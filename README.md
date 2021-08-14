@@ -24,11 +24,11 @@
 * 功能不够全面，无法覆盖日常需要的"增删改查"功能。
 * 部分解决方案，对于平台或者对于编程语言的依赖，导致了各种环境问题。
 
-&emsp;&emsp;在这里，我们基于Google，Facebook，Alibaba等科技巨头的现有成果，实现了一套全新思路的海量数据检索开源解决方案。提供面向最终结果的训练方法，在训练过程中根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，支持基础SQL语法进行增删查改，支持MacOS，Linux和Windows系统。提供了详细的Demo示例，并提供了Docker镜像和Web页面展示。
+&emsp;&emsp;在这里，我们基于`Google`，`Facebook`，`Alibaba`等科技巨头的现有成果，实现了一套全新思路的海量数据检索开源解决方案。提供面向最终结果的训练方法，在训练过程中根据设定的目标自动调节参数。提供常用距离和自定义距离的训练和查询方式。支持缓存和多线程调用，支持批量查询功能。提供纯C风格的SDK接口，提供多种语言（如：Python，Java，C#）的版本，支持基础SQL语法进行增删查改，支持MacOS，Linux和Windows系统。提供了详细的Demo示例，并提供了Docker镜像和Web页面展示。
 
-&emsp;&emsp;我们把这套解决方案，命名为Caiss(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以在保持超高准确率的情况下，极大的降低查询耗时。且随着数据量的增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
+&emsp;&emsp;我们把这套解决方案，命名为`Caiss`(Chunel Artificial Intelligence Similarity Search)。经过实测，它可以在保持超高准确率的情况下，极大的降低查询耗时。且随着数据量的增加，其性能上的优势会更加明显。希望它可以在大家的研究和生产过程中，发挥积极的作用。
 
-&emsp;&emsp;&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
+&emsp;&emsp;&emsp; ![Caiss Logo](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Logo.jpg)
 
 
 ## 二. 编译说明
@@ -62,7 +62,7 @@
 
 ## 三. 训练流程
 
-1，安装python3环境，安装tensorflow库，安装keras库，安装keras-bert库，安装numpy库，安装pprint库。
+1，安装python3环境，安装`tensorflow`、`keras`、`keras-bert`、`numpy`、`pprint`库。
 
 2，根据需求，下载对应的bert模型并解压至本地。bert模型下载，请参考链接：[bert入门资料和模型下载地址](http://chunel.cn/archives/knowledge-of-bert)。
 
@@ -344,7 +344,7 @@ int main() {
 ## 六. 输出内容
 
 * 训练接口执行完毕后，会在对应的目录下生成 *.caiss 模型文件。不同操作操作系统之间生成的模型文件，不能混用。如需跨平台使用，请重新训练。
-* 查询结果输出，为标准json格式。例：查询词语water，topK=5，返回相似词语为：[food,glass,light,alcohol,liquid]这5个词语。耗时信息单位为微秒。查询结果信息如下：
+* 查询结果输出，为标准json格式。例：查询词语`water`，topK=5，返回相似词语为：[`food`,`glass`,`light`,`alcohol`,`liquid`]这5个词语。耗时信息单位为微秒。查询结果信息如下：
 
 ```json
 {
@@ -397,6 +397,7 @@ int main() {
 * 插入、修改或删除数据，实时生效。进程重启后是否生效，取决于是否调用save方法。
 * 在异步模式下，查询、插入等需要传入向量信息的方法中，请自行保证传入的向量数据在内存中持续存在，直至结果生效为止。
 * Caiss的源代码，发布在：https://github.com/ChunelFeng/caiss ，技术交流论坛地址：[一面之猿网](http://www.chunel.cn)，欢迎随时交流指导和贡献代码。如有使用需求，周末可提供支持服务。
+* Caiss图化版本升级中。图化架构工程链接：https://github.com/ChunelFeng/CGraph ，敬请期待。
 * 感谢知名AI科技博主——北邮PRIS模式识别实验室 陈光教授 [@爱可可-爱生活](https://weibo.com/fly51fly?profile_ftype=1&is_hot=1#_0) 微博推荐。
 
 ![感谢教授推荐](https://github.com/ChunelFeng/caiss/blob/master/doc/image/Caiss%20Recommend.jpg)

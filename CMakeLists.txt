@@ -41,16 +41,14 @@ IF (_WIN32)
 ELSEIF(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wno-unused-command-line-argument")    # 设置64位系统
 
-    set(MY_BOOST_PATH /usr/local/Cellar/boost/1.72.0_3/include/)
-
-    #set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
-    #set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
-    set(MY_EIGEN_PATH /usr/local/Cellar/eigen/3.3.7/include/eigen3/)
+    # set(BLAS_INC_DIR /usr/local/opt/openblas/include/)
+    # set(BLAS_LINK_DIR /usr/local/opt/openblas/lib/)
+    #link_libraries(libopenblas.a)    # import openblas static lib
+    set(MY_BOOST_PATH /opt/homebrew/Cellar/boost/1.76.0/include/)
+    set(MY_EIGEN_PATH /opt/homebrew/Cellar/eigen/3.4.0/include/eigen3/)
 
     include_directories(${BLAS_INC_DIR} ${MY_EIGEN_PATH})
     link_directories(${BLAS_LINK_DIR})
-
-    #link_libraries(libopenblas.a)    # import openblas static lib
 
     if (EIGEN3_FOUND)
         add_definitions(-D_USE_EIGEN3_)
@@ -60,8 +58,10 @@ ELSEIF(APPLE)
     endif()
 
     if (OPENMP_FOUND)
-        link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
-        include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+        link_directories("/usr/local/lib" "/opt/homebrew/Cellar/llvm/12.0.1/lib/")    # import info with openmp if find openmp
+        include_directories("/usr/local/include"
+                "/opt/homebrew/Cellar/llvm/12.0.1/include/"
+                "/opt/homebrew/Cellar/libomp/12.0.1/include/")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xpreprocessor -fopenmp -lomp -mavx2")
         add_definitions(-D_USE_OPENMP_)
         message("[caiss] mac openmp support.")
@@ -83,7 +83,7 @@ ELSEIF(UNIX)
 
     if (OPENMP_FOUND)
         link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
-        include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+        include_directories("/usr/local/include/" "/usr/local/opt/llvm/include/")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -mavx2")
         add_definitions(-D_USE_OPENMP_)
         message("[caiss] linux openmp support.")

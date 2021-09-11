@@ -8,7 +8,7 @@
 
 #include <list>
 #include <./boost/bimap/bimap.hpp>
-#include <immintrin.h>
+// #include <immintrin.h>    // 兼容m1版本mac，删除此处
 
 #include "../hnswAlgo/hnswlib.h"
 #include "../../AlgorithmProc.h"

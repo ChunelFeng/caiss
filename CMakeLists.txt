@@ -35,9 +35,22 @@ find_package(Eigen3)
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
 # 设置当前eigen路径（MY_EIGEN_PATH为选填）
-IF (_WIN32)
+IF (WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
-    set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
+    set(MY_BOOST_PATH E:/04Code/Github/boost_1_80_0/)
+    set(MY_EIGEN_PATH E:/04Code/Github/eigen-3.4.0/)
+    include_directories(./win32patch)
+    include_directories(${MY_EIGEN_PATH})
+    add_definitions(-D_USE_EIGEN3_)
+    if (OPENMP_FOUND)
+#        link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")    # import info with openmp if find openmp
+#        include_directories("/usr/local/include/" "/usr/local/opt/llvm/include/")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -mavx2")
+        add_definitions(-D_USE_OPENMP_)
+        message("[caiss] windows openmp support.")
+    else()
+        message("[caiss] windows openmp no support, please install for speed up.")
+    endif()
 ELSEIF(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wno-unused-command-line-argument")    # 设置64位系统
 

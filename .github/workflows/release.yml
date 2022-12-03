@@ -1,10 +1,6 @@
 name: Release
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
 
 env:
@@ -15,7 +11,7 @@ permissions:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.zip
       EIGEN_URL: https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
@@ -53,7 +49,6 @@ jobs:
         ls ${{github.workspace}}/thrid-party/eigen-3.4.0
 
     - name: CMake Generate
-      shell: bash
       env:
         MY_BOOST_PATH: ${{github.workspace}}/thrid-party/boost_1_80_0
         MY_EIGEN_PATH: ${{github.workspace}}/thrid-party/eigen-3.4.0
@@ -62,7 +57,6 @@ jobs:
         cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022" -B ${{github.workspace}}/build_x86 -A WIN32
 
     - name: CMake Build
-      shell: bash
       run: |
         cmake --build ${{github.workspace}}/build_x64 --config ${{env.BUILD_TYPE}}
         cmake --build ${{github.workspace}}/build_x86 --config ${{env.BUILD_TYPE}}

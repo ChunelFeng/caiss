@@ -52,22 +52,27 @@ jobs:
         ls ${{github.workspace}}/thrid-party/boost_1_80_0
         ls ${{github.workspace}}/thrid-party/eigen-3.4.0
 
-    - name: Configure CMake
+    - name: CMake Generate
       shell: bash
       env:
         MY_BOOST_PATH: ${{github.workspace}}/thrid-party/boost_1_80_0
         MY_EIGEN_PATH: ${{github.workspace}}/thrid-party/eigen-3.4.0
-      working-directory: ${{github.workspace}}/build
-      run: cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022"
+      run: | 
+        cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022" -B ${{github.workspace}}/build_x64
+        cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022" -B ${{github.workspace}}/build_x86 -A WIN32
 
-    - name: Build
-      working-directory: ${{github.workspace}}/build
+    - name: CMake Build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: |
+        cmake --build ${{github.workspace}}/build_x64 --config ${{env.BUILD_TYPE}}
+        cmake --build ${{github.workspace}}/build_x86 --config ${{env.BUILD_TYPE}}
+        mv ${{github.workspace}}/build_x64/${{env.BUILD_TYPE}}/Caiss.dll ${{github.workspace}}/build_x64/${{env.BUILD_TYPE}}/Caiss_x64.dll
+        mv ${{github.workspace}}/build_x86/${{env.BUILD_TYPE}}/Caiss.dll ${{github.workspace}}/build_x86/${{env.BUILD_TYPE}}/Caiss_x86.dll
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       if: "env.BUILD_TYPE == 'Release'"
       with:
-        name: windows_artficats
-        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/*.dll
+        name: CaissLib
+        path: | 
+          ${{github.workspace}}/build*/${{env.BUILD_TYPE}}/*.dll

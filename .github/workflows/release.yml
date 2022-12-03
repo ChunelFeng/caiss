@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+            
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Download & Extract
+      # You may pin to the exact commit or the version.
+      # uses: gamedev-thingy/Download-Extract@20063b5f6b2b847425c9e3ff02830b19bcb66d70
+      uses: gamedev-thingy/Download-Extract@done
+      with:
+        # The URL to download from
+        url: https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.7z
+        # Where the files will be extracted to
+        destination: ${{github.workspace}}/thrid-party
+        # Name of the downloaded ZIP file
+        ZIPname: boost_1_80_0hhh.7z
+        
+    - run: ls ${{github.workspace}}/thrid-party
+    
+    - name: Configure CMake
+      shell: bash
+      env:
+        MY_BOOST_PATH: ${{github.workspace}}/thrid-party/boost_1_80_0
+        MY_EIGEN_PATH: ${{github.workspace}}/thrid-party/eigen-3.4.0
+      working-directory: ${{github.workspace}}/build
+      run: cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022"
+
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      if: "env.BUILD_TYPE == 'Release'"
+      with:
+        name: windows_artficats
+        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/*.dll

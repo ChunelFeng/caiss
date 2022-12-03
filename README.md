@@ -38,11 +38,23 @@
   ```shell
   $ git clone https://github.com/ChunelFeng/caiss.git    # 下载代码至本地
   $ cd caiss/
-  $ ./caiss-linux-env.sh                     # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
-  $ cmake .                                  # 注意，cmake后面有一个"."，表示当前目录    
-  $ make                                     # 即可完成编译    
-  $ cd caissDemo/    
-  $ ./CaissDemo                              # 即可查看C++版本demo的运行结果    
+  $ ./caiss-linux-env.sh                                 # 一键安装Caiss在Linux（Ubuntu）上的运行环境    
+  $ cmake -S . -B buildDir                                  
+  $ cmake --build buildDir                               # 完成编译    
+  $ cd buildDir/    
+  $ ./caissDemo/CaissDemo                                # 查看C++版本demo的运行结果    
+  ```
+* Windows环境开发者:
+  1. 下载[boost](https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.7z)库和[eigen](https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip)库，将CMakeList.txt文件中【MY_BOOST_PATH】和【MY_EIGEN_PATH】修改为新环境中boost库和eigen库的位置
+  2. 安装Visual Studio，安装【使用C++的桌面开发】工作负载
+  3. 在PowerShell中运行以下命令：
+  ```pwsh
+  > git clone https://github.com/ChunelFeng/caiss.git    # 下载代码至本地
+  > cd caiss/   
+  > cmake -S . -B buildDir                                  
+  > cmake --build buildDir --config Release              # 完成编译    
+  > cd buildDir/    
+  > ./caissDemo/Release/CaissDemo.exe                    # 查看C++版本demo的运行结果    
   ```
 * Docker环境开发者（以Python为例），输入:
   ```shell
@@ -53,7 +65,6 @@
   $ cd python/    
   $ python3 pyCaissDemo.py                              # 即可查看python版本demo的运行结果
   ```
-* Windows上，开发环境为Visual Studio的C++开发者，请使用[feature/for-windows-visual-studio]分支，通过CMakeList.txt文件自动生成对应的*.sln文件，然后通过Visual Studio打开，即可完成编译。
 * Web端或者移动端，可以点击进入 [Caiss 网页版](http://www.chunel.cn:3001) 查看简易展示效果。网页版暂时仅支持英文单词的相似语义词语查询，多词查询请使用"|"分隔，例：hello|world
 * 如果在编译或使用过程中遇到任何问题，欢迎随时联系我们（联系方式见附录）。我们很乐意跟您一起探讨和解决使用过程中可能遇到的任何问题，并携手做进一步优化。
 

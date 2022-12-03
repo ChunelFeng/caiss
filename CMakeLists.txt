@@ -35,9 +35,46 @@ find_package(Eigen3)
 
 # 设置当前的boost路径(MY_BOOST_PATH为必填)
 # 设置当前eigen路径（MY_EIGEN_PATH为选填）
-IF (_WIN32)
-    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")    # set on windows to make sure *.exe can work fine
-    set(MY_BOOST_PATH C:/Users/Chunel/Documents/Chunel_File/Project_File/C++/boost_1_67_0/)
+IF (WIN32)
+    if (MINGW)
+        # 试了下MinGW编译的程序在Windows上运行，会出现一些问题，所以推荐使用MSVC编译
+        set(CMAKE_CXX_FLAGS -m64) # 设置64位系统
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result -Wno-deprecated-declarations -Wno-format-overflow")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O2 -pthread")    # set multi thread
+    else ()
+        # 1. Generate: > cmake -G "Visual Studio 17 2022" -S . -B cmake-build-release-vs64
+        # 2. Build:    > cmake --build cmake-build-release-vs64 --config [Debug|Release|RelWithDebInfo|MinSizeRel]
+        # MSVC 编译32位程序需要在 Generate 命令中加入 -A Win32，这样 cmake 才会生成32位的工程
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14 /O2 /EHsc /MP")    # set multi thread
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4819")    # Suppresses the compiler warning C4819: 该文件包含不能在当前代码页(936)中表示的字符
+    endif ()
+
+    if(DEFINED ENV{MY_BOOST_PATH})
+        set(MY_BOOST_PATH $ENV{MY_BOOST_PATH})
+    else()
+        set(MY_BOOST_PATH E:/04Code/Github/boost_1_80_0/)
+    endif()
+    if(DEFINED ENV{MY_EIGEN_PATH})
+        set(MY_EIGEN_PATH $ENV{MY_EIGEN_PATH})
+    else()
+        set(MY_EIGEN_PATH E:/04Code/Github/eigen-3.4.0/)
+    endif()
+    message("[caiss] MY_BOOST_PATH: ${MY_BOOST_PATH}")
+    message("[caiss] MY_EIGEN_PATH: ${MY_EIGEN_PATH}")
+    include_directories(${MY_EIGEN_PATH})
+    add_definitions(-D_USE_EIGEN3_)
+    include_directories(./win32patch)
+    if (OPENMP_FOUND)
+        if (MINGW)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -mavx2")
+        else ()
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp /arch:AVX2")
+        endif ()
+        add_definitions(-D_USE_OPENMP_)
+        message("[caiss] windows openmp support.")
+    else()
+        message("[caiss] windows openmp no support, please install for speed up.")
+    endif()
 ELSEIF(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wno-unused-command-line-argument")    # 设置64位系统
 

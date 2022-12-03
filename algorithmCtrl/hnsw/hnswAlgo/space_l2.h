@@ -123,8 +123,8 @@ namespace hnswlib {
         size_t qty16 = qty >> 2;
 
         const float *pEnd1 = pVect1 + (qty16 << 2);
-
-        /*https://zhuanlan.zhihu.com/p/94649418 参考文档*/
+        // 震惊我一整年，*/前面不加空格，会导致 MSVC 编译错误？？？
+        /* https://zhuanlan.zhihu.com/p/94649418 参考文档 */
         __m128 diff, v1, v2;
         __m128 sum = _mm_set1_ps(0);    // 128表示128（32*4）bytes数据，相当于是4个float数据
 

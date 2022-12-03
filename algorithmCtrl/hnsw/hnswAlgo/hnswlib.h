@@ -1,6 +1,7 @@
 #pragma once
 #ifndef NO_MANUAL_VECTORIZATION
-#ifdef __SSE__
+// compatible with msvc https://stackoverflow.com/questions/18563978/detect-the-availability-of-sse-sse2-instruction-set-in-visual-studio
+#if defined(__SSE2__) || (_MSC_VER && (defined(_M_AMD64) || defined(_M_X64) || _M_IX86_FP == 2 || _M_IX86_FP == 1))
 #define USE_SSE
 #ifdef __AVX__
 #define USE_AVX

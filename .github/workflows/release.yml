@@ -21,9 +21,9 @@ jobs:
     - uses: actions/checkout@v3
             
     - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
+      run: cmake -E make_directory ${{github.workspace}}/build && cmake -E make_directory ${{github.workspace}}/thrid-party
 
-    - name: Download & Extract
+    - name: Download Boost
       # You may pin to the exact commit or the version.
       # uses: gamedev-thingy/Download-Extract@20063b5f6b2b847425c9e3ff02830b19bcb66d70
       uses: gamedev-thingy/Download-Extract@done
@@ -34,6 +34,13 @@ jobs:
         destination: ${{github.workspace}}/thrid-party
         # Name of the downloaded ZIP file
         ZIPname: boost_1_80_0hhh.7z
+        
+    - name: Download Eigen3
+      uses: gamedev-thingy/Download-Extract@done
+      with:
+        url: https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
+        destination: ${{github.workspace}}/thrid-party
+        ZIPname: eigen-3.4.0.zip
         
     - run: ls ${{github.workspace}}/thrid-party
     

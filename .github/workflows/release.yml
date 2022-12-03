@@ -22,14 +22,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
             
-    - name: Create Build Environment
+    - name: Create Build And Library Directory
       run: cmake -E make_directory ${{github.workspace}}/build && cmake -E make_directory ${{github.workspace}}/thrid-party
 
     - name: Cache Third Party Library
       id: cacheLibrary
       uses: actions/cache@v3.0.11
       with:
-        # A list of files, directories, and wildcard patterns to cache and restore
         path: ${{github.workspace}}/thrid-party
         key: ${{env.BOOST_URL}}-${{env.EIGEN_URL}}
         
@@ -49,8 +48,10 @@ jobs:
         destination: ${{github.workspace}}/thrid-party
         ZIPname: eigen-3.4.0
         
-    - run: ls ${{github.workspace}}/thrid-party
-    
+    - run: |
+        ls ${{github.workspace}}/thrid-party/boost_1_80_0
+        ls ${{github.workspace}}/thrid-party/eigen-3.4.0
+
     - name: Configure CMake
       shell: bash
       env:
@@ -58,15 +59,15 @@ jobs:
         MY_EIGEN_PATH: ${{github.workspace}}/thrid-party/eigen-3.4.0/eigen-3.4.0
       working-directory: ${{github.workspace}}/build
       run: cmake -S $GITHUB_WORKSPACE -G "Visual Studio 17 2022"
-
-    - name: Build
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-        
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      if: "env.BUILD_TYPE == 'Release'"
-      with:
-        name: windows_artficats
-        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/*.dll
+#
+#    - name: Build
+#      working-directory: ${{github.workspace}}/build
+#      shell: bash
+#      run: cmake --build . --config $BUILD_TYPE
+#
+#    - name: Upload Artifacts
+#      uses: actions/upload-artifact@v3
+#      if: "env.BUILD_TYPE == 'Release'"
+#      with:
+#        name: windows_artficats
+#        path: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/*.dll

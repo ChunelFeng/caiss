@@ -74,5 +74,6 @@ jobs:
       if: "env.BUILD_TYPE == 'Release'"
       with:
         name: CaissLib
-        path: | 
-          ${{github.workspace}}/build*/${{env.BUILD_TYPE}}/*.dll
+        path: |
+          ${{github.workspace}}/build_x64/${{env.BUILD_TYPE}}/Caiss_x64.dll
+          ${{github.workspace}}/build_x86/${{env.BUILD_TYPE}}/Caiss_x86.dll
